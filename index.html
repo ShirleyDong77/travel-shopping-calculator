@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅行购物计算器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; min-height: 100vh; padding: 16px; }
+  .container { max-width: 480px; margin: 0 auto; }
+
+  .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+  .header { text-align: center; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #1a1a2e; margin-bottom: 4px; }
+  .header p { font-size: 12px; color: #888; }
+
+  label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 500; }
+
+  select, input { width: 100%; padding: 12px 14px; border: 1.5px solid #e8e8e8; border-radius: 10px; font-size: 16px; outline: none; transition: border-color 0.2s; background: #fff; }
+  select:focus, input:focus { border-color: #4a90d9; }
+
+  .form-group { margin-bottom: 16px; }
+
+  .discount-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .discount-btn { flex: 1; min-width: 60px; padding: 10px 4px; border: 1.5px solid #e8e8e8; border-radius: 8px; background: #fff; font-size: 13px; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .discount-btn.active { border-color: #4a90d9; background: #e8f2ff; color: #4a90d9; font-weight: 600; }
+
+  .result-card { background: linear-gradient(135deg, #1a1a2e, #2d3a5c); border-radius: 16px; padding: 24px; color: #fff; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .result-row:last-child { margin-bottom: 0; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.15); }
+  .result-label { font-size: 13px; color: rgba(255,255,255,0.6); }
+  .result-value { font-size: 15px; color: rgba(255,255,255,0.8); text-decoration: line-through; }
+  .result-row:last-child .result-label { font-size: 14px; color: rgba(255,255,255,0.8); }
+  .result-row:last-child .result-value { font-size: 22px; color: #4ade80; font-weight: 700; }
+
+  .save-btn { width: 100%; padding: 14px; background: #4a90d9; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+  .save-btn:active { background: #3a7bc8; }
+
+  .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .history-header h3 { font-size: 14px; color: #333; }
+  .history-header span { font-size: 12px; color: #888; cursor: pointer; }
+
+  .history-item { background: #f8f9fb; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .history-item:last-child { margin-bottom: 0; }
+  .history-name { font-size: 14px; color: #333; font-weight: 500; }
+  .history-meta { font-size: 11px; color: #999; margin-top: 2px; }
+  .history-price { font-size: 16px; color: #4ade80; font-weight: 600; }
+
+  .empty-state { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
+
+  .api-status { font-size: 11px; color: #aaa; text-align: center; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="card">
+    <div class="header">
+      <h1>🧮 旅行购物计算器</h1>
+      <p>退税后实付多少？一键算清</p>
+    </div>
+
+    <div class="form-group">
+      <label>目的国家</label>
+      <select id="country">
+        <option value="fr">法国 🇫🇷（退12%）</option>
+        <option value="it">意大利 🇮🇹（退10-15%）</option>
+        <option value="jp">日本 🇯🇵（退8-10%）</option>
+        <option value="th">泰国 🇹🇭（退7%）</option>
+        <option value="kr">韩国 🇰🇷（退10%）</option>
+        <option value="au">澳大利亚 🇦🇺（退10%）</option>
+        <option value="uk">英国 🇬🇧（退20%）</option>
+        <option value="sg">新加坡 🇸🇬（退9%）</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>商品原价（外币）</label>
+      <input type="number" id="price" placeholder="输入价格" value="1000">
+    </div>
+
+    <div class="form-group">
+      <label>折扣</label>
+      <div class="discount-btns">
+        <div class="discount-btn active" onclick="setDiscount(0)">无折扣</div>
+        <div class="discount-btn" onclick="setDiscount(10)">9折</div>
+        <div class="discount-btn" onclick="setDiscount(20)">8折</div>
+        <div class="discount-btn" onclick="setDiscount(30)">7折</div>
+        <div class="discount-btn" onclick="setDiscount(15)">85折</div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-row">
+        <span class="result-label">原价</span>
+        <span class="result-value" id="originalPrice">€1,000</span>
+      </div>
+      <div class="result-row" id="discountRow" style="display:none;">
+        <span class="result-label">折后价</span>
+        <span class="result-value" id="discountedPrice">¥800</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">退税后实付</span>
+        <span class="result-value" id="finalPrice">¥7,040</span>
+      </div>
+    </div>
+
+    <button class="save-btn" onclick="saveRecord()">💾 保存到历史</button>
+    <p class="api-status">汇率来源：exchangerate-api.com</p>
+  </div>
+
+  <div class="card">
+    <div class="history-header">
+      <h3>📋 计算历史</h3>
+      <span onclick="clearHistory()">清空</span>
+    </div>
+    <div id="historyList">
+      <div class="empty-state">暂无记录<br>保存后会在此显示</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const EXCHANGE_RATES = { usd: 7.24, eur: 7.80, jpy: 0.048, gbp: 9.10, thb: 0.21, krw: 0.0054, aud: 4.71, sgd: 5.38 };
+const TAX_RATES = { fr: 0.12, it: 0.12, jp: 0.10, th: 0.07, kr: 0.10, au: 0.10, uk: 0.20, sg: 0.09 };
+const CURRENCY = { fr: '€', it: '€', jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$' };
+const CURRENCY_NAME = { fr: 'EUR', it: 'EUR', jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD' };
+
+let currentDiscount = 0;
+let currentCountry = 'fr';
+
+function setDiscount(val) {
+  currentDiscount = val;
+  document.querySelectorAll('.discount-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (val === 0 && i === 0) || (val === 10 && i === 1) || (val === 20 && i === 2) || (val === 30 && i === 3) || (val === 15 && i === 4));
+  });
+  calculate();
+}
+
+function calculate() {
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  const rate = EXCHANGE_RATES[CURRENCY_NAME[currentCountry].toLowerCase()] || 7.8;
+  const taxRate = TAX_RATES[currentCountry];
+  const symbol = CURRENCY[currentCountry];
+
+  const discounted = price * (1 - currentDiscount / 100);
+  const afterTax = discounted * (1 - taxRate);
+  const finalCny = afterTax * rate;
+
+  document.getElementById('originalPrice').textContent = `${symbol}${formatNum(price)}`;
+  document.getElementById('discountRow').style.display = currentDiscount > 0 ? 'flex' : 'none';
+  document.getElementById('discountedPrice').textContent = `¥${formatNum(Math.round(discounted))}`;
+  document.getElementById('finalPrice').textContent = `¥${formatNum(Math.round(finalCny))}`;
+}
+
+function formatNum(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function saveRecord() {
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  const finalCny = document.getElementById('finalPrice').textContent;
+  const now = new Date();
+  const time = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const countryName = document.getElementById('country').selectedOptions[0].text.split('（')[0];
+
+  const item = { name: countryName, price, final: finalCny, time, discount: currentDiscount };
+  let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+  history.unshift(item);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('calcHistory', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+  const el = document.getElementById('historyList');
+  if (history.length === 0) {
+    el.innerHTML = '<div class="empty-state">暂无记录<br>保存后会在此显示</div>';
+    return;
+  }
+  el.innerHTML = history.map(item => `
+    <div class="history-item">
+      <div>
+        <div class="history-name">${item.name}${item.discount > 0 ? ' ' + (100-item.discount) + '折' : ''}</div>
+        <div class="history-meta">${item.time} · €${formatNum(item.price)}</div>
+      </div>
+      <div class="history-price">${item.final}</div>
+    </div>
+  `).join('');
+}
+
+function clearHistory() {
+  localStorage.removeItem('calcHistory');
+  renderHistory();
+}
+
+document.getElementById('country').addEventListener('change', e => { currentCountry = e.target.value; calculate(); });
+document.getElementById('price').addEventListener('input', calculate);
+
+calculate();
+renderHistory();
+</script>
+</body>
+</html>
