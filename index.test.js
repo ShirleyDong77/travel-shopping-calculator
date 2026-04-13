@@ -52,11 +52,15 @@ describe('旅行购物计算器 - 代码结构测试', () => {
 
   test('历史显示币种符号 (P0-7)', () => {
     expect(html).toContain('sourceSymbol');
+    expect(html).toContain('sourceCurrency');
     expect(html).toContain('finalPriceText');
+    expect(html).toContain('CNY ${formatAmount(item.finalCny, \'CNY\', \'¥\')}');
   });
 
   test('历史显示格式化时间 (P0-8)', () => {
     expect(html).toContain('savedAtShort');
+    expect(html).toContain('savedAtTime');
+    expect(html).toContain('formatHistoryTime');
     expect(html).toContain('formatShortDateTime');
   });
 
@@ -107,5 +111,11 @@ describe('旅行购物计算器 - 代码结构测试', () => {
   test('包含ESC键关闭弹窗功能', () => {
     expect(html).toContain("Escape");
     expect(html).toContain("closeHistoryModal");
+  });
+
+  test('历史条目支持点击和键盘打开详情', () => {
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).toContain('handleHistoryItemKeydown');
   });
 });

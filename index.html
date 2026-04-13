@@ -701,6 +701,13 @@ function formatShortDateTime(dateValue) {
   return `${y}/${m}/${d} ${h}:${min}`;
 }
 
+function formatHistoryTime(dateValue) {
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${h}:${min}`;
+}
+
 function getDisplayItemName(value) {
   return String(value || '').trim() || '未命名商品';
 }
@@ -898,7 +905,8 @@ function migrateHistoryItem(item) {
     finalPriceText: item.finalPriceText || formatCodeAmount(finalAmount, resultCurrency, RESULT_CURRENCIES.find(currency => currency.code === resultCurrency)?.symbol),
     savedAt: savedTime,
     savedAtText: item.savedAtText || formatDateTime(savedTime),
-    savedAtShort: item.savedAtShort || formatShortDateTime(savedTime)
+    savedAtShort: item.savedAtShort || formatShortDateTime(savedTime),
+    savedAtTime: item.savedAtTime || formatHistoryTime(savedTime)
   };
 }
 
@@ -946,7 +954,8 @@ function saveRecord() {
     finalPriceText: formatCodeAmount(data.finalAmount, data.selectedResultCurrency, resultCurrencyMeta?.symbol),
     savedAt,
     savedAtText: formatDateTime(savedAt),
-    savedAtShort: formatShortDateTime(savedAt)
+    savedAtShort: formatShortDateTime(savedAt),
+    savedAtTime: formatHistoryTime(savedAt)
   };
 
   const history = getHistory();
@@ -964,14 +973,20 @@ function renderHistory() {
   }
 
   list.innerHTML = history.map(item => `
-    <div class="history-item" onclick="openHistoryDetail(${item.id})">
+    <div class="history-item" role="button" tabindex="0" onclick="openHistoryDetail(${item.id})" onkeydown="handleHistoryItemKeydown(event, ${item.id})">
       <div>
         <div class="history-name">${escapeHtml(getDisplayItemName(item.itemName))}</div>
-        <div class="history-meta">${escapeHtml(item.countryName)} · ${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} · ${escapeHtml(item.savedAtShort)}</div>
+        <div class="history-meta">${escapeHtml(item.countryName)} · ${escapeHtml(item.sourceCurrency)} ${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} · ${escapeHtml(item.savedAtTime || formatHistoryTime(item.savedAt))}</div>
       </div>
-      <div class="history-price">${formatAmount(item.finalCny, 'CNY', '¥')}</div>
+      <div class="history-price">CNY ${formatAmount(item.finalCny, 'CNY', '¥')}</div>
     </div>
   `).join('');
+}
+
+function handleHistoryItemKeydown(event, recordId) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  openHistoryDetail(recordId);
 }
 
 function openHistoryDetail(recordId) {
