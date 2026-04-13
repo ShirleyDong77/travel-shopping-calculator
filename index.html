@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>境外算价</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.2s ease; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif;
-    background: #F0EFF4;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 50%, #F0EFF4 100%);
     min-height: 100vh;
     padding: 16px;
     padding-bottom: 100px;
@@ -18,11 +18,38 @@
   .container { max-width: 480px; margin: 0 auto; }
 
   .card {
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 24px rgba(97, 91, 176, 0.1);
+    border: 1px solid rgba(97, 91, 176, 0.08);
+  }
+
+  .rate-hero {
+    background: linear-gradient(135deg, #8E78FF 0%, #6B52EF 100%);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(107, 82, 239, 0.25);
+  }
+  .rate-hero-icon { font-size: 22px; }
+  .rate-hero-content { flex: 1; }
+  .rate-hero-pair { font-size: 15px; color: #fff; }
+  .rate-hero-pair strong { font-size: 18px; font-weight: 700; }
+  .rate-hero-source { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .rate-hero-badge {
+    background: rgba(255,255,255,0.25);
     border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 12px rgba(97, 91, 176, 0.06);
+    padding: 4px 10px;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 600;
   }
 
   .header { text-align: center; margin-bottom: 18px; }
@@ -42,19 +69,20 @@
     font-weight: 500;
   }
 
-  input, select {
+  select, input {
     width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #E8E4F0;
+    padding: 14px 16px;
+    border: 1.5px solid #E8E0F0;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 16px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
     background: #FAFAFA;
     color: #333;
   }
-  input:focus, select:focus {
-    border-color: #8B7FCC;
+  select:focus, input:focus {
+    border-color: #B094E0;
+    box-shadow: 0 0 0 3px rgba(97, 91, 176, 0.15);
   }
   input::placeholder { color: #BDB6CF; }
 
@@ -139,23 +167,28 @@
 
   .discount-btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .discount-btn {
-    flex: 1;
-    min-width: 52px;
-    padding: 10px 6px;
-    border: 1.5px solid #E8E4F0;
-    border-radius: 999px;
+    flex: 1; min-width: 60px;
+    padding: 12px 4px;
+    border: 1.5px solid #E8E0F0;
+    border-radius: 12px;
     background: #FAFAFA;
     font-size: 13px;
     cursor: pointer;
     text-align: center;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     color: #666;
   }
   .discount-btn.active {
-    border-color: #615BB0;
-    background: #615BB0;
-    color: #FFFFFF;
+    border-color: #8E78FF;
+    background: linear-gradient(135deg, #8E78FF, #6B52EF);
+    color: #fff;
     font-weight: 600;
+    box-shadow: 0 4px 12px rgba(107, 82, 239, 0.3);
+    transform: scale(1.05);
+  }
+  .discount-btn:hover {
+    border-color: #C8BAFF;
+    transform: translateY(-1px);
   }
   .discount-input-wrap {
     flex: 1;
@@ -270,24 +303,22 @@
 
   .save-btn {
     width: 100%;
-    padding: 15px;
-    background: #615BB0;
+    padding: 16px;
+    background: linear-gradient(135deg, #8E78FF, #6B52EF);
     color: #fff;
     border: none;
-    border-radius: 14px;
-    font-size: 16px;
+    border-radius: 16px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 14px;
-    box-shadow: 0 4px 14px rgba(97, 91, 176, 0.3);
-    transition: transform 0.15s, box-shadow 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    margin-top: 12px;
+    box-shadow: 0 4px 20px rgba(107, 82, 239, 0.35);
+    transition: all 0.2s ease;
+    letter-spacing: 2px;
   }
   .save-btn:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
+    box-shadow: 0 2px 10px rgba(107, 82, 239, 0.25);
   }
 
   .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -295,15 +326,18 @@
   .history-header span { font-size: 12px; color: #8B7FCC; cursor: pointer; }
 
   .history-item {
-    background: #FAFAFA;
-    border-radius: 14px;
-    padding: 14px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 8px rgba(97, 91, 176, 0.08);
+    border: 1px solid rgba(97, 91, 176, 0.08);
+    border-left: 4px solid #8E78FF;
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: all 0.2s ease;
   }
   .history-item:active {
     transform: scale(0.985);
@@ -407,6 +441,15 @@
     <div class="header">
       <h1>🧮 境外算价</h1>
       <p>先算再买，不花冤枉钱</p>
+    </div>
+
+    <div class="rate-hero">
+      <div class="rate-hero-icon">💱</div>
+      <div class="rate-hero-content">
+        <div class="rate-hero-pair" id="heroRatePair">加载中...</div>
+        <div class="rate-hero-source" id="heroRateSource">汇率更新时间 — · open.er-api.com</div>
+      </div>
+      <div class="rate-hero-badge">实时</div>
     </div>
 
     <div class="form-group">
@@ -775,6 +818,7 @@ function getExchangeRates() {
     apiRates = cached.rates;
     rateUpdatedAt = cached.updatedAt;
     calculate();
+    updateHeroRate();
     updateRateBanner();
   }
 
@@ -786,11 +830,13 @@ function getExchangeRates() {
       rateUpdatedAt = formatDateTime(new Date());
       writeCache(apiRates, rateUpdatedAt);
       calculate();
+      updateHeroRate();
       updateRateBanner();
     })
     .catch(() => {
       apiRates = { CNY: 1, USD: 7.25, EUR: 0.127, GBP: 0.114, JPY: 15.5, KRW: 135, AUD: 1.53, SGD: 1.35, CHF: 0.91, THB: 36 };
       calculate();
+      updateHeroRate();
       updateRateBanner();
     });
 }
@@ -812,6 +858,36 @@ function updateRateBanner() {
     document.getElementById('rateValue').textContent = '—';
     document.getElementById('rateTime').textContent = '';
   }
+  updateHeroRate();
+}
+
+function updateHeroRate() {
+  try {
+    const country = document.getElementById('country').value;
+    const currency = COUNTRY_META[country]?.currency || 'CNY';
+    const rate = apiRates[currency] || 0;
+    const cnyRate = apiRates.CNY || 1;
+    const heroEl = document.getElementById('heroRatePair');
+    const sourceEl = document.getElementById('heroRateSource');
+    if (rate && cnyRate) {
+      const displayRate = (rate / cnyRate).toFixed(4);
+      heroEl.innerHTML = `1 ${currency} = <strong>${displayRate} CNY</strong>`;
+    } else {
+      heroEl.innerHTML = `1 CNY = <strong>—</strong>`;
+    }
+    sourceEl.textContent = rateUpdatedAt ? `汇率更新时间 ${rateUpdatedAt} · open.er-api.com` : 'open.er-api.com';
+  } catch {
+    document.getElementById('heroRatePair').innerHTML = `1 CNY = <strong>—</strong>`;
+  }
+}
+
+function setHistoryItemColor(item, currency) {
+  const colorMap = {
+    EUR: '#8E78FF', JPY: '#F59E0B', USD: '#10B981',
+    GBP: '#3B82F6', KRW: '#EC4899', AUD: '#14B8A6',
+    SGD: '#F97316', CHF: '#6366F1'
+  };
+  item.style.borderLeftColor = colorMap[currency] || '#8E78FF';
 }
 
 function getHistory() {
@@ -840,6 +916,7 @@ function saveRecord() {
     discountedPrice: data.discounted,
     taxRate: data.customTaxRate,
     taxAmount: data.taxAmount,
+    currency: data.sourceCurrency,
     sourceCurrency: data.sourceCurrency,
     sourceSymbol: data.sourceSymbol,
     exchangeRate: data.sourceToCny,
@@ -876,6 +953,9 @@ function renderHistory() {
       <div class="history-price">¥${Number(item.finalCny).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
     </div>
   `).join('');
+  list.querySelectorAll('.history-item').forEach((item, index) => {
+    setHistoryItemColor(item, history[index]?.currency || history[index]?.sourceCurrency);
+  });
 }
 
 function openHistoryDetail(recordId) {
@@ -924,6 +1004,7 @@ document.getElementById('country').addEventListener('change', function() {
   lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
   updateTaxRateInputDisplay();
   calculate();
+  updateHeroRate();
   updateRateBanner();
 });
 
