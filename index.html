@@ -201,6 +201,38 @@
     color: #fff;
     box-shadow: 0 8px 32px rgba(155, 111, 212, 0.3), 0 2px 8px rgba(0,0,0,0.08);
   }
+  .result-switcher-wrap {
+    margin-bottom: 16px;
+  }
+  .result-switcher-label {
+    display: block;
+    font-size: 12px;
+    color: rgba(255,255,255,0.72);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .result-switcher {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .currency-chip {
+    border: 1px solid rgba(255,255,255,0.24);
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.88);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .currency-chip.active {
+    background: #FFFFFF;
+    color: #6B3FA0;
+    border-color: #FFFFFF;
+    transform: translateY(-1px);
+  }
   .result-row {
     display: flex;
     justify-content: space-between;
@@ -382,7 +414,7 @@
 
     <div class="form-group">
       <label for="itemName">商品名称</label>
-      <input type="text" id="itemName" placeholder="例如：Speedy 25">
+      <input type="text" id="itemName" placeholder="商品名称（选填）">
     </div>
 
     <div class="form-group">
@@ -444,12 +476,11 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <label for="resultCurrency">结果币种</label>
-      <select id="resultCurrency"></select>
-    </div>
-
     <div class="result-card">
+      <div class="result-switcher-wrap">
+        <label class="result-switcher-label" for="resultCurrency">结果币种</label>
+        <div class="result-switcher" id="resultCurrency" aria-label="结果币种切换器"></div>
+      </div>
       <div class="result-row">
         <span class="result-label">原价</span>
         <span class="result-value" id="originalPrice">EUR €1,000.00</span>
@@ -500,6 +531,13 @@ const EXCHANGE_CACHE_KEY = 'exchangeRatesCacheV3';
 const HISTORY_KEY = 'calcHistory';
 const EXCHANGE_CACHE_TTL = 60 * 60 * 1000;
 const DEFAULT_FEE_RATE = 0;
+const FIXED_CNY_RATES = {
+  CNY: 1,
+  USD: 7.25,
+  JPY: 1 / 15.5,
+  EUR: 7.65,
+  HKD: 0.92
+};
 const COUNTRY_META = {
   fr: { name: '法国', emoji: '🇫🇷', taxRate: 0.12, currency: 'EUR', symbol: '€' },
   it: { name: '意大利', emoji: '🇮🇹', taxRate: 0.12, currency: 'EUR', symbol: '€' },
@@ -523,14 +561,9 @@ const COUNTRY_META = {
 const RESULT_CURRENCIES = [
   { code: 'CNY', label: '人民币 CNY', symbol: '¥' },
   { code: 'USD', label: '美元 USD', symbol: '$' },
-  { code: 'EUR', label: '欧元 EUR', symbol: '€' },
-  { code: 'GBP', label: '英镑 GBP', symbol: '£' },
   { code: 'JPY', label: '日元 JPY', symbol: '¥' },
-  { code: 'KRW', label: '韩元 KRW', symbol: '₩' },
-  { code: 'THB', label: '泰铢 THB', symbol: '฿' },
-  { code: 'SGD', label: '新加坡元 SGD', symbol: 'S$' },
-  { code: 'AUD', label: '澳元 AUD', symbol: 'A$' },
-  { code: 'CHF', label: '瑞士法郎 CHF', symbol: 'CHF ' }
+  { code: 'EUR', label: '欧元 EUR', symbol: '€' },
+  { code: 'HKD', label: '港币 HKD', symbol: 'HK$' }
 ];
 
 let currentDiscount = 0;
@@ -540,11 +573,26 @@ let apiRates = {};
 let rateUpdatedAt = '';
 let currentHistory = [];
 let lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+let currentResultCurrency = 'CNY';
 
 function populateResultCurrencyOptions() {
-  const select = document.getElementById('resultCurrency');
-  select.innerHTML = RESULT_CURRENCIES.map(item => `<option value="${item.code}">${item.label}</option>`).join('');
-  select.value = 'CNY';
+  const switcher = document.getElementById('resultCurrency');
+  switcher.innerHTML = RESULT_CURRENCIES.map(item => `
+    <button
+      type="button"
+      class="currency-chip${item.code === currentResultCurrency ? ' active' : ''}"
+      data-currency="${item.code}"
+      onclick="setResultCurrency('${item.code}')"
+    >${item.code}</button>
+  `).join('');
+}
+
+function setResultCurrency(currencyCode) {
+  currentResultCurrency = RESULT_CURRENCIES.some(item => item.code === currencyCode) ? currencyCode : 'CNY';
+  document.querySelectorAll('.currency-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.currency === currentResultCurrency);
+  });
+  calculate();
 }
 
 function setDefaultTaxRate() {
@@ -653,6 +701,10 @@ function formatShortDateTime(dateValue) {
   return `${y}/${m}/${d} ${h}:${min}`;
 }
 
+function getDisplayItemName(value) {
+  return String(value || '').trim() || '未命名商品';
+}
+
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, char => ({
     '&': '&amp;',
@@ -672,9 +724,18 @@ function getCurrentTaxRate() {
   return Math.min(Math.max(lastEditableTaxRate, 0), 100) / 100;
 }
 
+function getRateToCny(currencyCode) {
+  if (FIXED_CNY_RATES[currencyCode]) return FIXED_CNY_RATES[currencyCode];
+  if (!apiRates[currencyCode] || !apiRates['CNY']) return 0;
+  return apiRates['CNY'] / apiRates[currencyCode];
+}
+
 function getRateBetween(fromCurrency, toCurrency) {
-  if (!apiRates[fromCurrency] || !apiRates[toCurrency]) return 0;
-  return apiRates[toCurrency] / apiRates[fromCurrency];
+  if (fromCurrency === toCurrency) return 1;
+  const fromToCny = getRateToCny(fromCurrency);
+  const toToCny = getRateToCny(toCurrency);
+  if (!fromToCny || !toToCny) return 0;
+  return fromToCny / toToCny;
 }
 
 function getJpyToCnyRate() {
@@ -686,7 +747,7 @@ function getCalculationData() {
   const sourceCurrency = meta.currency;
   const sourceSymbol = meta.symbol;
   const price = Math.max(parseFloat(document.getElementById('price').value) || 0, 0);
-  const selectedResultCurrency = document.getElementById('resultCurrency').value || 'CNY';
+  const selectedResultCurrency = currentResultCurrency;
   const itemName = document.getElementById('itemName').value.trim();
   const customTaxRate = getCurrentTaxRate();
   const discounted = price * (1 - currentDiscount / 100);
@@ -756,14 +817,14 @@ function writeCache(rates, updatedAt) {
 }
 
 function updateRateStatus(fromCache) {
-  const usdToCny = apiRates['CNY'] || 0;
-  const usdToJpy = apiRates['JPY'] || 0;
-  document.getElementById('jpyCnyRate').textContent = usdToCny
-    ? `1 USD = ${usdToCny.toFixed(4)} CNY  |  1 USD = ${usdToJpy.toFixed(2)} JPY`
-    : '汇率获取中...';
-  document.getElementById('rateStatus').textContent = usdToCny
-    ? `更新时间: ${rateUpdatedAt}`
-    : '汇率获取中...';
+  const usdToCny = FIXED_CNY_RATES.USD;
+  const eurToCny = FIXED_CNY_RATES.EUR;
+  const hkdToCny = FIXED_CNY_RATES.HKD;
+  const cnyToJpy = 1 / FIXED_CNY_RATES.JPY;
+  document.getElementById('jpyCnyRate').textContent =
+    `固定汇率：1 USD = ${usdToCny.toFixed(2)} CNY  |  1 EUR = ${eurToCny.toFixed(2)} CNY`;
+  document.getElementById('rateStatus').textContent =
+    `1 HKD = ${hkdToCny.toFixed(2)} CNY  |  1 CNY = ${cnyToJpy.toFixed(2)} JPY`;
 }
 
 function getExchangeRates() {
@@ -817,7 +878,7 @@ function migrateHistoryItem(item) {
   const countryName = item.countryName || `${meta.name} ${meta.emoji}`;
   return {
     id: item.id || Date.now(),
-    itemName: item.itemName || '未命名商品',
+    itemName: typeof item.itemName === 'string' ? item.itemName : '',
     country: countryCode,
     countryName,
     price,
@@ -865,7 +926,7 @@ function saveRecord() {
   const resultCurrencyMeta = RESULT_CURRENCIES.find(item => item.code === data.selectedResultCurrency);
   const record = {
     id: savedAt,
-    itemName: data.itemName || '未命名商品',
+    itemName: data.itemName,
     country: currentCountry,
     countryName: `${meta.name} ${meta.emoji}`,
     price: data.price,
@@ -905,10 +966,10 @@ function renderHistory() {
   list.innerHTML = history.map(item => `
     <div class="history-item" onclick="openHistoryDetail(${item.id})">
       <div>
-        <div class="history-name">${escapeHtml(item.itemName)}</div>
-        <div class="history-meta">${escapeHtml(item.countryName)} · ${item.sourceSymbol || item.sourceCurrency}${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} · ${escapeHtml(item.savedAtShort)}</div>
+        <div class="history-name">${escapeHtml(getDisplayItemName(item.itemName))}</div>
+        <div class="history-meta">${escapeHtml(item.countryName)} · ${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} · ${escapeHtml(item.savedAtShort)}</div>
       </div>
-      <div class="history-price">¥${formatAmount(item.finalCny, 'CNY', '¥')}</div>
+      <div class="history-price">${formatAmount(item.finalCny, 'CNY', '¥')}</div>
     </div>
   `).join('');
 }
@@ -923,7 +984,7 @@ function openHistoryDetail(recordId) {
   const finalCnyText = formatCodeAmount(record.finalCny, 'CNY', '¥');
   const resultCurrencyText = `${record.finalPriceText}（查看币种）`;
   const detailHtml = [
-    { label: '商品名称', value: record.itemName },
+    { label: '商品名称', value: getDisplayItemName(record.itemName) },
     { label: '购买地点（目的国家）', value: record.countryName },
     { label: '保存时间', value: record.savedAtShort || record.savedAtText },
     { label: '原价币种', value: originalPriceText },
@@ -971,7 +1032,6 @@ document.getElementById('itemName').addEventListener('input', calculate);
 document.getElementById('taxRateInput').addEventListener('input', event => handleTaxRateInput(event.target.value));
 document.getElementById('taxRateInput').addEventListener('blur', normalizeTaxRateInput);
 document.getElementById('taxFreeToggle').addEventListener('change', event => setTaxFreeState(event.target.checked));
-document.getElementById('resultCurrency').addEventListener('change', calculate);
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeHistoryModal();
