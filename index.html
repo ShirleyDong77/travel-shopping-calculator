@@ -68,6 +68,18 @@
   }
 
   .form-group { margin-bottom: 14px; }
+  .rate-banner {
+    background: linear-gradient(135deg, #F5F0FF, #EEE8FA);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .rate-label { font-size: 11px; color: #9C97B5; }
+  .rate-value { font-size: 14px; color: #615BB0; font-weight: 700; }
+  .rate-time { font-size: 10px; color: #BDB6CF; margin-left: auto; }
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -421,6 +433,12 @@
       </select>
     </div>
 
+    <div class="rate-banner" id="rateBanner">
+      <span class="rate-label">实时汇率</span>
+      <span class="rate-value" id="rateValue">加载中...</span>
+      <span class="rate-time" id="rateTime"></span>
+    </div>
+
     <div class="form-group">
       <label for="itemName">商品名称（选填）</label>
       <input type="text" id="itemName" placeholder="例如：Speedy 25">
@@ -757,6 +775,7 @@ function getExchangeRates() {
     apiRates = cached.rates;
     rateUpdatedAt = cached.updatedAt;
     calculate();
+    updateRateBanner();
   }
 
   fetch(EXCHANGE_API_URL)
@@ -767,11 +786,32 @@ function getExchangeRates() {
       rateUpdatedAt = formatDateTime(new Date());
       writeCache(apiRates, rateUpdatedAt);
       calculate();
+      updateRateBanner();
     })
     .catch(() => {
       apiRates = { CNY: 1, USD: 7.25, EUR: 0.127, GBP: 0.114, JPY: 15.5, KRW: 135, AUD: 1.53, SGD: 1.35, CHF: 0.91, THB: 36 };
       calculate();
+      updateRateBanner();
     });
+}
+
+function updateRateBanner() {
+  try {
+    const country = document.getElementById('country').value;
+    const currency = COUNTRY_META[country]?.currency || 'CNY';
+    const rate = apiRates[currency] || 0;
+    const cnyRate = apiRates.CNY || 1;
+    if (rate && cnyRate) {
+      const displayRate = (rate / cnyRate).toFixed(4);
+      document.getElementById('rateValue').textContent = `1 CNY = ${displayRate} ${currency}`;
+    } else {
+      document.getElementById('rateValue').textContent = '—';
+    }
+    document.getElementById('rateTime').textContent = rateUpdatedAt ? `更新 ${rateUpdatedAt}` : '';
+  } catch {
+    document.getElementById('rateValue').textContent = '—';
+    document.getElementById('rateTime').textContent = '';
+  }
 }
 
 function getHistory() {
@@ -884,6 +924,7 @@ document.getElementById('country').addEventListener('change', function() {
   lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
   updateTaxRateInputDisplay();
   calculate();
+  updateRateBanner();
 });
 
 document.getElementById('price').addEventListener('input', calculate);
