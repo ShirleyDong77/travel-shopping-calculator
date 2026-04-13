@@ -1,4 +1,4 @@
-// Simple test - just verify HTML file structure
+// Simple test - verify HTML file structure
 const fs = require('fs');
 const path = require('path');
 
@@ -24,18 +24,9 @@ describe('旅行购物计算器 - 代码结构测试', () => {
     expect(html).toContain('免税');
   });
 
-  test('包含自定义税率输入 (P0-3)', () => {
+  test('包含退税率输入 (P0-3)', () => {
     expect(html).toContain('taxRateInput');
-    expect(html).toContain('自定义税率');
-  });
-
-  test('包含多币种选择器 (P0-4)', () => {
-    expect(html).toContain('resultCurrency');
-    expect(html).toContain('CNY');
-    expect(html).toContain('USD');
-    expect(html).toContain('EUR');
-    expect(html).toContain('JPY');
-    expect(html).toContain('HKD');
+    expect(html).toContain('退税率');
   });
 
   test('包含历史详情弹窗 (P0-6)', () => {
@@ -45,23 +36,16 @@ describe('旅行购物计算器 - 代码结构测试', () => {
     expect(html).toContain('closeHistoryModal');
   });
 
-  test('汇率面板显示USD/CNY (P0-1)', () => {
-    expect(html).toContain('jpyCnyRate');
-    expect(html).toContain('1 USD =');
+  test('结果卡片显示三列详情', () => {
+    expect(html).toContain('originalPrice');
+    expect(html).toContain('discountSaving');
+    expect(html).toContain('taxRefund');
+    expect(html).toContain('result-final');
   });
 
-  test('历史显示币种符号 (P0-7)', () => {
-    expect(html).toContain('sourceSymbol');
-    expect(html).toContain('sourceCurrency');
-    expect(html).toContain('finalPriceText');
-    expect(html).toContain('CNY ${formatAmount(item.finalCny, \'CNY\', \'¥\')}');
-  });
-
-  test('历史显示格式化时间 (P0-8)', () => {
-    expect(html).toContain('savedAtShort');
-    expect(html).toContain('savedAtTime');
-    expect(html).toContain('formatHistoryTime');
-    expect(html).toContain('formatShortDateTime');
+  test('结果卡片显示实付金额', () => {
+    expect(html).toContain('finalPrice');
+    expect(html).toContain('实付金额');
   });
 
   test('包含18个国家选项', () => {
@@ -69,10 +53,12 @@ describe('旅行购物计算器 - 代码结构测试', () => {
     expect(countryMatches.length).toBe(18);
   });
 
-  test('包含折扣按钮', () => {
+  test('包含折扣按钮和自定义折扣输入', () => {
     expect(html).toContain('discount-btn');
     expect(html).toContain('data-discount');
     expect(html).toContain('setDiscount');
+    expect(html).toContain('customDiscountInput');
+    expect(html).toContain('activateCustomDiscount');
   });
 
   test('包含calculate函数', () => {
@@ -82,7 +68,7 @@ describe('旅行购物计算器 - 代码结构测试', () => {
 
   test('包含汇率API配置', () => {
     expect(html).toContain('open.er-api.com');
-    expect(html).toContain('exchangeRates');
+    expect(html).toContain('apiRates');
   });
 
   test('包含保存记录功能', () => {
@@ -99,13 +85,10 @@ describe('旅行购物计算器 - 代码结构测试', () => {
     expect(html).toContain("us:");
   });
 
-  test('包含RESULT_CURRENCIES配置', () => {
-    expect(html).toContain('RESULT_CURRENCIES');
-    expect(html).toContain("CNY");
-    expect(html).toContain("USD");
-    expect(html).toContain("EUR");
-    expect(html).toContain("JPY");
-    expect(html).toContain("HKD");
+  test('底部弹窗样式', () => {
+    expect(html).toContain('modal-overlay');
+    expect(html).toContain('modal-sheet');
+    expect(html).toContain('modal-handle');
   });
 
   test('包含ESC键关闭弹窗功能', () => {
@@ -113,9 +96,8 @@ describe('旅行购物计算器 - 代码结构测试', () => {
     expect(html).toContain("closeHistoryModal");
   });
 
-  test('历史条目支持点击和键盘打开详情', () => {
-    expect(html).toContain('role="button"');
-    expect(html).toContain('tabindex="0"');
-    expect(html).toContain('handleHistoryItemKeydown');
+  test('历史条目支持点击打开详情', () => {
+    expect(html).toContain('onclick="openHistoryDetail');
+    expect(html).toContain('history-item');
   });
 });
