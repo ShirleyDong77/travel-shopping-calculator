@@ -643,6 +643,16 @@ function formatDateTime(dateValue) {
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
+function formatShortDateTime(dateValue) {
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${y}/${m}/${d} ${h}:${min}`;
+}
+
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, char => ({
     '&': '&amp;',
@@ -746,12 +756,13 @@ function writeCache(rates, updatedAt) {
 }
 
 function updateRateStatus(fromCache) {
-  const jpyToCny = getJpyToCnyRate();
-  document.getElementById('jpyCnyRate').textContent = jpyToCny
-    ? `1 JPY = ${jpyToCny.toFixed(4)} CNY`
+  const usdToCny = apiRates['CNY'] || 0;
+  const usdToJpy = apiRates['JPY'] || 0;
+  document.getElementById('jpyCnyRate').textContent = usdToCny
+    ? `1 USD = ${usdToCny.toFixed(4)} CNY  |  1 USD = ${usdToJpy.toFixed(2)} JPY`
     : '汇率获取中...';
-  document.getElementById('rateStatus').textContent = jpyToCny
-    ? '来源:open.er-api.com'
+  document.getElementById('rateStatus').textContent = usdToCny
+    ? `更新时间: ${rateUpdatedAt}`
     : '汇率获取中...';
 }
 
@@ -825,7 +836,8 @@ function migrateHistoryItem(item) {
     resultCurrency,
     finalPriceText: item.finalPriceText || formatCodeAmount(finalAmount, resultCurrency, RESULT_CURRENCIES.find(currency => currency.code === resultCurrency)?.symbol),
     savedAt: savedTime,
-    savedAtText: item.savedAtText || formatDateTime(savedTime)
+    savedAtText: item.savedAtText || formatDateTime(savedTime),
+    savedAtShort: item.savedAtShort || formatShortDateTime(savedTime)
   };
 }
 
@@ -872,7 +884,8 @@ function saveRecord() {
     resultCurrency: data.selectedResultCurrency,
     finalPriceText: formatCodeAmount(data.finalAmount, data.selectedResultCurrency, resultCurrencyMeta?.symbol),
     savedAt,
-    savedAtText: formatDateTime(savedAt)
+    savedAtText: formatDateTime(savedAt),
+    savedAtShort: formatShortDateTime(savedAt)
   };
 
   const history = getHistory();
@@ -893,9 +906,9 @@ function renderHistory() {
     <div class="history-item" onclick="openHistoryDetail(${item.id})">
       <div>
         <div class="history-name">${escapeHtml(item.itemName)}</div>
-        <div class="history-meta">${escapeHtml(item.countryName)} · ${escapeHtml(item.sourceCurrency)} · ${escapeHtml(item.savedAtText)}</div>
+        <div class="history-meta">${escapeHtml(item.countryName)} · ${item.sourceSymbol || item.sourceCurrency}${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} · ${escapeHtml(item.savedAtShort)}</div>
       </div>
-      <div class="history-price">${escapeHtml(item.finalPriceText)}</div>
+      <div class="history-price">¥${formatAmount(item.finalCny, 'CNY', '¥')}</div>
     </div>
   `).join('');
 }
@@ -912,7 +925,7 @@ function openHistoryDetail(recordId) {
   const detailHtml = [
     { label: '商品名称', value: record.itemName },
     { label: '购买地点（目的国家）', value: record.countryName },
-    { label: '保存时间', value: record.savedAtText },
+    { label: '保存时间', value: record.savedAtShort || record.savedAtText },
     { label: '原价币种', value: originalPriceText },
     { label: '汇率', value: record.exchangeRateText },
     { label: '手续费 / 汇率损耗', value: formatPercent(record.feeRate) },
