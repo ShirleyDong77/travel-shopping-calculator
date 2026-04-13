@@ -329,10 +329,12 @@
   .modal-sheet {
     width: 100%;
     max-width: 480px;
-    max-height: 85vh;
+    max-height: 72vh;
     background: #fff;
     border-radius: 24px 24px 0 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transform: translateY(100%);
     transition: transform 0.3s ease;
   }
@@ -348,7 +350,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 20px 16px;
+    padding: 6px 18px 12px;
     border-bottom: 1px solid #F0EEF7;
   }
   .modal-title { font-size: 17px; color: #333; font-weight: 700; }
@@ -365,16 +367,20 @@
     align-items: center;
     justify-content: center;
   }
-  .detail-grid { padding: 16px 20px 32px; }
+  .detail-grid {
+    padding: 12px 18px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .detail-item {
     background: #FAFAFA;
     border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
   }
   .detail-item:last-child { margin-bottom: 0; }
   .detail-label { font-size: 11px; color: #9C97B5; margin-bottom: 5px; }
-  .detail-value { font-size: 15px; color: #333; font-weight: 600; }
+  .detail-value { font-size: 14px; color: #333; font-weight: 600; line-height: 1.35; }
 
   @media (max-width: 420px) {
     .form-row { grid-template-columns: 1fr; }
@@ -653,6 +659,20 @@ function formatHistoryTime(dateValue) {
   return `${h}:${min}`;
 }
 
+function normalizeHistory(history) {
+  return history
+    .map(item => {
+      const savedAt = Number(item.savedAt || item.id || 0);
+      return {
+        ...item,
+        savedAt,
+        savedAtText: item.savedAtText || formatDateTime(savedAt),
+        savedAtTime: item.savedAtTime || formatHistoryTime(savedAt)
+      };
+    })
+    .sort((a, b) => b.savedAt - a.savedAt);
+}
+
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -758,12 +778,13 @@ function getHistory() {
   try {
     currentHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
   } catch { currentHistory = []; }
+  currentHistory = normalizeHistory(currentHistory);
   return currentHistory;
 }
 
 function saveHistory(history) {
-  currentHistory = history;
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  currentHistory = normalizeHistory(history);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(currentHistory));
 }
 
 function saveRecord() {
