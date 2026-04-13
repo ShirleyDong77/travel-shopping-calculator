@@ -82,7 +82,6 @@
         <option value="sg">新加坡 🇸🇬（退9%）</option>
         <option value="ch">瑞士 🇨🇭（退8%）</option>
         <option value="us">美国 🇺🇸（退0%）</option>
-        <option value="ae">阿联酋 🇦🇪（退5%）</option>
       </select>
     </div>
 
@@ -139,16 +138,14 @@ const EXCHANGE_CACHE_KEY = 'exchangeRatesCacheV2';
 const EXCHANGE_CACHE_TTL = 60 * 60 * 1000;
 const TAX_RATES = {
   fr: 0.12, it: 0.12, de: 0.12, es: 0.12, nl: 0.12, be: 0.12, at: 0.12, pt: 0.12, ie: 0.12, fi: 0.12,
-  jp: 0.10, kr: 0.10, th: 0.07, au: 0.10, uk: 0.20, sg: 0.09, ch: 0.08, us: 0.00, ae: 0.05
+  jp: 0.10, kr: 0.10, th: 0.07, au: 0.10, uk: 0.20, sg: 0.09, ch: 0.08, us: 0.00
 };
 const CURRENCY = {
   fr: '€', it: '€', de: '€', es: '€', nl: '€', be: '€', at: '€', pt: '€', ie: '€', fi: '€',
-  jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$', ch: 'CHF', us: '$', ae: 'AED'
-};
+  jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$', ch: 'CHF', us: '$'};
 const CURRENCY_NAME = {
   fr: 'EUR', it: 'EUR', de: 'EUR', es: 'EUR', nl: 'EUR', be: 'EUR', at: 'EUR', pt: 'EUR', ie: 'EUR', fi: 'EUR',
-  jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD', ch: 'CHF', us: 'USD', ae: 'AED'
-};
+  jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD', ch: 'CHF', us: 'USD'};
 
 let currentDiscount = 0;
 let currentCountry = 'fr';
@@ -299,3 +296,4 @@ fetchExchangeRates();
 </script>
 </body>
 </html>
+
