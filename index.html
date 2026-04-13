@@ -38,7 +38,13 @@
   }
   .header p { font-size: 12px; color: #A090B8; }
 
-  label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 500; }
+  label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
 
   select, input {
     width: 100%;
@@ -56,25 +62,136 @@
   }
 
   .form-group { margin-bottom: 16px; }
+  .split-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
 
-  .discount-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .switch-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1.5px solid #E8E0F0;
+    border-radius: 14px;
+    background: #FAFAFA;
+  }
+
+  .switch-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .switch-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5E4A78;
+  }
+
+  .switch-hint {
+    font-size: 12px;
+    color: #9C8BB7;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 52px;
+    height: 30px;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    border-radius: 999px;
+    background: #DED6E8;
+    transition: background 0.2s ease;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    left: 3px;
+    top: 3px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    transition: transform 0.2s ease;
+  }
+
+  .toggle-switch input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #C892E8 0%, #9B6FD4 100%);
+  }
+
+  .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(22px);
+  }
+
+  .tax-rate-input.tax-free-display {
+    color: #6B3FA0;
+    font-weight: 600;
+    text-align: center;
+    cursor: default;
+    background: linear-gradient(135deg, rgba(232, 216, 248, 0.75), rgba(250, 250, 250, 0.95));
+  }
+
+  .tax-rate-input.tax-free-display:focus {
+    box-shadow: none;
+    border-color: #E8E0F0;
+  }
+
   .discount-btn {
-    flex: 1; min-width: 60px;
-    padding: 12px 4px;
+    flex: 1;
+    min-width: 60px;
+    padding: 12px 8px;
     border: 1.5px solid #E8E0F0;
     border-radius: 12px;
     background: #FAFAFA;
-    font-size: 13px; cursor: pointer;
+    font-size: 13px;
+    cursor: pointer;
     text-align: center;
     transition: all 0.2s ease;
     color: #666;
   }
+
+  .discount-btns { display: flex; gap: 8px; flex-wrap: wrap; }
   .discount-btn.active {
     border-color: #B094E0;
     background: linear-gradient(135deg, #E8D8F8 0%, #D4B8EE 100%);
     color: #6B3FA0;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(176, 148, 224, 0.3);
+  }
+
+  .rate-panel {
+    background: linear-gradient(135deg, rgba(232, 216, 248, 0.75), rgba(250, 250, 250, 0.95));
+    border: 1px solid #E8E0F0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .rate-main {
+    font-size: 14px;
+    color: #6B3FA0;
+    font-weight: 600;
+  }
+  .rate-sub {
+    font-size: 12px;
+    color: #9C8BB7;
+    margin-top: 4px;
   }
 
   .result-card {
@@ -84,12 +201,40 @@
     color: #fff;
     box-shadow: 0 8px 32px rgba(155, 111, 212, 0.3), 0 2px 8px rgba(0,0,0,0.08);
   }
-  .result-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .result-row:last-child { margin-bottom: 0; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.2); }
-  .result-label { font-size: 13px; color: rgba(255,255,255,0.7); }
-  .result-value { font-size: 15px; color: rgba(255,255,255,0.85); text-decoration: line-through; }
-  .result-row:last-child .result-label { font-size: 15px; color: rgba(255,255,255,0.9); }
-  .result-row:last-child .result-value { font-size: 26px; color: #A8F5C8; font-weight: 700; }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .result-row:last-child {
+    margin-bottom: 0;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  .result-label { font-size: 13px; color: rgba(255,255,255,0.72); }
+  .result-value {
+    font-size: 15px;
+    color: rgba(255,255,255,0.9);
+    text-align: right;
+  }
+  .result-row:last-child .result-label {
+    font-size: 15px;
+    color: rgba(255,255,255,0.92);
+  }
+  .result-row:last-child .result-value {
+    font-size: 26px;
+    color: #A8F5C8;
+    font-weight: 700;
+  }
+  .result-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+  }
 
   .save-btn {
     width: 100%;
@@ -122,16 +267,103 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .history-item:active {
+    transform: scale(0.985);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.08);
   }
   .history-item:last-child { margin-bottom: 0; }
   .history-name { font-size: 14px; color: #333; font-weight: 500; }
-  .history-meta { font-size: 11px; color: #999; margin-top: 2px; }
-  .history-price { font-size: 16px; color: #7B5DB4; font-weight: 600; }
+  .history-meta {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .history-price {
+    font-size: 16px;
+    color: #7B5DB4;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
 
   .empty-state { text-align: center; padding: 24px; color: #C8B8E0; font-size: 13px; }
+  .api-status { font-size: 12px; color: #B094E0; text-align: center; margin-top: 10px; line-height: 1.5; }
 
-  .api-status { font-size: 12px; color: #B094E0; text-align: center; margin-top: 8px; }
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 19, 48, 0.48);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 999;
+  }
+  .modal.show { display: flex; }
+  .modal-card {
+    width: min(100%, 420px);
+    max-height: 88vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 16px 48px rgba(72, 38, 120, 0.24);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .modal-title {
+    font-size: 18px;
+    color: #4C2B75;
+    font-weight: 700;
+  }
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #F2ECFA;
+    color: #7B5DB4;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .detail-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .detail-item {
+    background: #FAFAFA;
+    border: 1px solid #EEE6F5;
+    border-radius: 16px;
+    padding: 14px 16px;
+  }
+  .detail-label {
+    font-size: 12px;
+    color: #A090B8;
+    margin-bottom: 6px;
+  }
+  .detail-value {
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  @media (max-width: 420px) {
+    .split-row { grid-template-columns: 1fr; }
+    .result-row { align-items: flex-start; }
+    .result-value { max-width: 58%; }
+  }
 </style>
 </head>
 <body>
@@ -143,8 +375,18 @@
       <p>退税后实付多少？一键算清</p>
     </div>
 
+    <div class="rate-panel">
+      <div class="rate-main" id="jpyCnyRate">汇率获取中...</div>
+      <div class="rate-sub" id="rateStatus">汇率获取中...</div>
+    </div>
+
     <div class="form-group">
-      <label>目的国家</label>
+      <label for="itemName">商品名称</label>
+      <input type="text" id="itemName" placeholder="例如：Speedy 25">
+    </div>
+
+    <div class="form-group">
+      <label for="country">目的国家</label>
       <select id="country">
         <option value="fr">法国 🇫🇷（退12%）</option>
         <option value="it">意大利 🇮🇹（退12%）</option>
@@ -167,39 +409,67 @@
       </select>
     </div>
 
+    <div class="split-row">
+      <div class="form-group">
+        <label for="price">商品原价（外币）</label>
+        <input type="number" id="price" placeholder="输入价格" value="1000" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label for="taxRateInput">自定义税率（%）</label>
+        <input class="tax-rate-input" type="number" id="taxRateInput" placeholder="输入税率" min="0" max="100" step="0.1" inputmode="decimal">
+      </div>
+    </div>
+
     <div class="form-group">
-      <label>商品原价（外币）</label>
-      <input type="number" id="price" placeholder="输入价格" value="1000">
+      <div class="switch-group">
+        <div class="switch-label">
+          <span class="switch-title">免税</span>
+          <span class="switch-hint">开启后税率清零，关闭后恢复</span>
+        </div>
+        <label class="toggle-switch" for="taxFreeToggle" aria-label="免税开关">
+          <input id="taxFreeToggle" type="checkbox">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
     </div>
 
     <div class="form-group">
       <label>折扣</label>
       <div class="discount-btns">
-        <div class="discount-btn active" onclick="setDiscount(0)">无折扣</div>
-        <div class="discount-btn" onclick="setDiscount(10)">9折</div>
-        <div class="discount-btn" onclick="setDiscount(20)">8折</div>
-        <div class="discount-btn" onclick="setDiscount(30)">7折</div>
-        <div class="discount-btn" onclick="setDiscount(15)">85折</div>
+        <div class="discount-btn active" data-discount="0" onclick="setDiscount(0)">无折扣</div>
+        <div class="discount-btn" data-discount="10" onclick="setDiscount(10)">9折</div>
+        <div class="discount-btn" data-discount="20" onclick="setDiscount(20)">8折</div>
+        <div class="discount-btn" data-discount="30" onclick="setDiscount(30)">7折</div>
+        <div class="discount-btn" data-discount="15" onclick="setDiscount(15)">85折</div>
       </div>
+    </div>
+
+    <div class="form-group">
+      <label for="resultCurrency">结果币种</label>
+      <select id="resultCurrency"></select>
     </div>
 
     <div class="result-card">
       <div class="result-row">
         <span class="result-label">原价</span>
-        <span class="result-value" id="originalPrice">€1,000</span>
+        <span class="result-value" id="originalPrice">EUR €1,000.00</span>
       </div>
       <div class="result-row" id="discountRow" style="display:none;">
         <span class="result-label">折后价</span>
-        <span class="result-value" id="discountedPrice">¥800</span>
+        <span class="result-value" id="discountedPrice">EUR €900.00</span>
       </div>
       <div class="result-row">
-        <span class="result-label">退税后实付</span>
-        <span class="result-value" id="finalPrice">¥7,040</span>
+        <span class="result-label">税费状态</span>
+        <span class="result-value" id="taxSummary">税率 12%</span>
       </div>
+      <div class="result-row">
+        <span class="result-label" id="finalPriceLabel">应付金额（CNY）</span>
+        <span class="result-value" id="finalPrice">CNY ¥7,040.00</span>
+      </div>
+      <div class="result-note" id="resultNote">按实时汇率折算，支持切换结果币种查看。</div>
     </div>
 
     <button class="save-btn" onclick="saveRecord()">💾 保存到历史</button>
-    <p class="api-status" id="rateStatus">汇率获取中...</p>
   </div>
 
   <div class="card">
@@ -214,170 +484,491 @@
 
 </div>
 
+<div class="modal" id="historyModal" onclick="handleModalBackdrop(event)">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="historyModalTitle">历史详情</div>
+      <button class="modal-close" type="button" onclick="closeHistoryModal()">×</button>
+    </div>
+    <div class="detail-grid" id="historyModalContent"></div>
+  </div>
+</div>
+
 <script>
 const EXCHANGE_API_URL = 'https://open.er-api.com/v6/latest/USD';
-const EXCHANGE_CACHE_KEY = 'exchangeRatesCacheV2';
+const EXCHANGE_CACHE_KEY = 'exchangeRatesCacheV3';
+const HISTORY_KEY = 'calcHistory';
 const EXCHANGE_CACHE_TTL = 60 * 60 * 1000;
-const TAX_RATES = {
-  fr: 0.12, it: 0.12, de: 0.12, es: 0.12, nl: 0.12, be: 0.12, at: 0.12, pt: 0.12, ie: 0.12, fi: 0.12,
-  jp: 0.10, kr: 0.10, th: 0.07, au: 0.10, uk: 0.20, sg: 0.09, ch: 0.08, us: 0.00
+const DEFAULT_FEE_RATE = 0;
+const COUNTRY_META = {
+  fr: { name: '法国', emoji: '🇫🇷', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  it: { name: '意大利', emoji: '🇮🇹', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  de: { name: '德国', emoji: '🇩🇪', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  es: { name: '西班牙', emoji: '🇪🇸', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  nl: { name: '荷兰', emoji: '🇳🇱', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  be: { name: '比利时', emoji: '🇧🇪', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  at: { name: '奥地利', emoji: '🇦🇹', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  pt: { name: '葡萄牙', emoji: '🇵🇹', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  ie: { name: '爱尔兰', emoji: '🇮🇪', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  fi: { name: '芬兰', emoji: '🇫🇮', taxRate: 0.12, currency: 'EUR', symbol: '€' },
+  jp: { name: '日本', emoji: '🇯🇵', taxRate: 0.10, currency: 'JPY', symbol: '¥' },
+  th: { name: '泰国', emoji: '🇹🇭', taxRate: 0.07, currency: 'THB', symbol: '฿' },
+  kr: { name: '韩国', emoji: '🇰🇷', taxRate: 0.10, currency: 'KRW', symbol: '₩' },
+  au: { name: '澳大利亚', emoji: '🇦🇺', taxRate: 0.10, currency: 'AUD', symbol: 'A$' },
+  uk: { name: '英国', emoji: '🇬🇧', taxRate: 0.20, currency: 'GBP', symbol: '£' },
+  sg: { name: '新加坡', emoji: '🇸🇬', taxRate: 0.09, currency: 'SGD', symbol: 'S$' },
+  ch: { name: '瑞士', emoji: '🇨🇭', taxRate: 0.08, currency: 'CHF', symbol: 'CHF ' },
+  us: { name: '美国', emoji: '🇺🇸', taxRate: 0.00, currency: 'USD', symbol: '$' }
 };
-const CURRENCY_SYMBOL = {
-  fr: '€', it: '€', de: '€', es: '€', nl: '€', be: '€', at: '€', pt: '€', ie: '€', fi: '€',
-  jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$', ch: 'CHF', us: '$'
-};
-const CURRENCY_NAME = {
-  fr: 'EUR', it: 'EUR', de: 'EUR', es: 'EUR', nl: 'EUR', be: 'EUR', at: 'EUR', pt: 'EUR', ie: 'EUR', fi: 'EUR',
-  jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD', ch: 'CHF', us: 'USD'
-};
+const RESULT_CURRENCIES = [
+  { code: 'CNY', label: '人民币 CNY', symbol: '¥' },
+  { code: 'USD', label: '美元 USD', symbol: '$' },
+  { code: 'EUR', label: '欧元 EUR', symbol: '€' },
+  { code: 'GBP', label: '英镑 GBP', symbol: '£' },
+  { code: 'JPY', label: '日元 JPY', symbol: '¥' },
+  { code: 'KRW', label: '韩元 KRW', symbol: '₩' },
+  { code: 'THB', label: '泰铢 THB', symbol: '฿' },
+  { code: 'SGD', label: '新加坡元 SGD', symbol: 'S$' },
+  { code: 'AUD', label: '澳元 AUD', symbol: 'A$' },
+  { code: 'CHF', label: '瑞士法郎 CHF', symbol: 'CHF ' }
+];
 
 let currentDiscount = 0;
 let currentCountry = 'fr';
-let exchangeRates = {};
+let isTaxFree = false;
+let apiRates = {};
 let rateUpdatedAt = '';
+let currentHistory = [];
+let lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+
+function populateResultCurrencyOptions() {
+  const select = document.getElementById('resultCurrency');
+  select.innerHTML = RESULT_CURRENCIES.map(item => `<option value="${item.code}">${item.label}</option>`).join('');
+  select.value = 'CNY';
+}
+
+function setDefaultTaxRate() {
+  lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+  updateTaxRateInputDisplay();
+}
 
 function setDiscount(val) {
   currentDiscount = val;
-  document.querySelectorAll('.discount-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', parseInt(btn.getAttribute('onclick').match(/\d+/)[0]) === val);
+  document.querySelectorAll('.discount-btn').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.discount) === val);
   });
   calculate();
 }
 
-function formatNum(num) {
-  if (num >= 10000) return (num / 10000).toFixed(1) + '万';
-  return num.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+function formatTaxRateInputValue(value) {
+  return Number(value).toFixed(1).replace('.0', '');
+}
+
+function updateTaxRateInputDisplay() {
+  const input = document.getElementById('taxRateInput');
+  if (isTaxFree) {
+    input.type = 'text';
+    input.value = '免税';
+    input.readOnly = true;
+    input.setAttribute('aria-label', '当前为免税状态');
+    input.classList.add('tax-free-display');
+    return;
+  }
+
+  input.type = 'number';
+  input.readOnly = false;
+  input.min = '0';
+  input.max = '100';
+  input.step = '0.1';
+  input.setAttribute('aria-label', '自定义税率百分比');
+  input.value = formatTaxRateInputValue(lastEditableTaxRate);
+  input.classList.remove('tax-free-display');
+}
+
+function setTaxFreeState(nextValue) {
+  isTaxFree = Boolean(nextValue);
+  document.getElementById('taxFreeToggle').checked = isTaxFree;
+  updateTaxRateInputDisplay();
+  calculate();
+}
+
+function handleTaxRateInput(value) {
+  const parsed = parseFloat(value);
+  if (Number.isFinite(parsed)) {
+    lastEditableTaxRate = Math.min(Math.max(parsed, 0), 100);
+  }
+  calculate();
+}
+
+function normalizeTaxRateInput() {
+  if (isTaxFree) return;
+  const input = document.getElementById('taxRateInput');
+  const parsed = parseFloat(input.value);
+  lastEditableTaxRate = Number.isFinite(parsed)
+    ? Math.min(Math.max(parsed, 0), 100)
+    : COUNTRY_META[currentCountry].taxRate * 100;
+  updateTaxRateInputDisplay();
+  calculate();
+}
+
+function getDecimals(currencyCode) {
+  return ['JPY', 'KRW'].includes(currencyCode) ? 0 : 2;
+}
+
+function formatAmount(amount, currencyCode, symbolOverride) {
+  const fallback = RESULT_CURRENCIES.find(item => item.code === currencyCode);
+  const symbol = symbolOverride || (fallback ? fallback.symbol : '');
+  return `${symbol}${Number(amount || 0).toLocaleString('zh-CN', {
+    minimumFractionDigits: getDecimals(currencyCode),
+    maximumFractionDigits: getDecimals(currencyCode)
+  })}`;
+}
+
+function formatCodeAmount(amount, currencyCode, symbolOverride) {
+  return `${currencyCode} ${formatAmount(amount, currencyCode, symbolOverride)}`;
+}
+
+function formatPercent(num) {
+  return `${(Number(num || 0) * 100).toFixed(1).replace('.0', '')}%`;
+}
+
+function formatDateTime(dateValue) {
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}:${s}`;
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function getCurrentTaxRate() {
+  if (isTaxFree) return 0;
+  const inputValue = parseFloat(document.getElementById('taxRateInput').value);
+  if (Number.isFinite(inputValue) && inputValue >= 0) {
+    return Math.min(inputValue, 100) / 100;
+  }
+  return Math.min(Math.max(lastEditableTaxRate, 0), 100) / 100;
+}
+
+function getRateBetween(fromCurrency, toCurrency) {
+  if (!apiRates[fromCurrency] || !apiRates[toCurrency]) return 0;
+  return apiRates[toCurrency] / apiRates[fromCurrency];
+}
+
+function getJpyToCnyRate() {
+  return getRateBetween('JPY', 'CNY');
+}
+
+function getCalculationData() {
+  const meta = COUNTRY_META[currentCountry];
+  const sourceCurrency = meta.currency;
+  const sourceSymbol = meta.symbol;
+  const price = Math.max(parseFloat(document.getElementById('price').value) || 0, 0);
+  const selectedResultCurrency = document.getElementById('resultCurrency').value || 'CNY';
+  const itemName = document.getElementById('itemName').value.trim();
+  const customTaxRate = getCurrentTaxRate();
+  const discounted = price * (1 - currentDiscount / 100);
+  const effectiveTaxRate = customTaxRate;
+  const afterTax = discounted * (1 - effectiveTaxRate);
+  const sourceToResultRate = getRateBetween(sourceCurrency, selectedResultCurrency);
+  const sourceToCnyRate = getRateBetween(sourceCurrency, 'CNY');
+  const finalAmount = afterTax * sourceToResultRate;
+  const finalCny = afterTax * sourceToCnyRate;
+  return {
+    itemName,
+    meta,
+    sourceCurrency,
+    sourceSymbol,
+    price,
+    discounted,
+    customTaxRate,
+    effectiveTaxRate,
+    afterTax,
+    finalAmount,
+    finalCny,
+    selectedResultCurrency,
+    sourceToResultRate,
+    sourceToCnyRate
+  };
 }
 
 function calculate() {
-  const price = parseFloat(document.getElementById('price').value) || 0;
-  const currencyCode = CURRENCY_NAME[currentCountry];
-  const rate = exchangeRates[currencyCode] || 0;
-  const taxRate = TAX_RATES[currentCountry];
-  const symbol = CURRENCY_SYMBOL[currentCountry];
-
-  const discounted = price * (1 - currentDiscount / 100);
-  const afterTax = discounted * (1 - taxRate);
-  const finalCny = afterTax * rate;
-
-  const originalFormatted = `${symbol}${(price).toFixed(2)}`;
-  const discountedFormatted = `${symbol}${(discounted).toFixed(2)}`;
-
-  document.getElementById('originalPrice').textContent = originalFormatted;
-  document.getElementById('discountedPrice').textContent = discountedFormatted;
+  const data = getCalculationData();
+  document.getElementById('originalPrice').textContent = formatCodeAmount(data.price, data.sourceCurrency, data.sourceSymbol);
+  document.getElementById('discountedPrice').textContent = formatCodeAmount(data.discounted, data.sourceCurrency, data.sourceSymbol);
   document.getElementById('discountRow').style.display = currentDiscount > 0 ? 'flex' : 'none';
-  document.getElementById('finalPrice').textContent = `¥${formatNum(Math.round(finalCny))}`;
+  document.getElementById('taxSummary').textContent = isTaxFree ? '免税' : `税率 ${formatPercent(data.customTaxRate)}`;
+  document.getElementById('finalPriceLabel').textContent = `应付金额（${data.selectedResultCurrency}）`;
+  document.getElementById('finalPrice').textContent = formatCodeAmount(
+    data.finalAmount,
+    data.selectedResultCurrency,
+    RESULT_CURRENCIES.find(item => item.code === data.selectedResultCurrency)?.symbol
+  );
+
+  const sourceRateText = data.sourceToCnyRate
+    ? `1${data.sourceCurrency}=${data.sourceToCnyRate.toFixed(4)}CNY`
+    : '汇率待更新';
+  document.getElementById('resultNote').textContent =
+    `${data.meta.name}${data.meta.emoji} · ${sourceRateText} · ${isTaxFree ? '当前税率已清零' : `当前税率 ${formatPercent(data.customTaxRate)}`}`;
+}
+
+function readCache() {
+  const cached = localStorage.getItem(EXCHANGE_CACHE_KEY);
+  if (!cached) return null;
+  try {
+    const parsed = JSON.parse(cached);
+    if (Date.now() - parsed.timestamp > EXCHANGE_CACHE_TTL) return null;
+    return parsed;
+  } catch (error) {
+    console.error('解析汇率缓存失败', error);
+    return null;
+  }
+}
+
+function writeCache(rates, updatedAt) {
+  localStorage.setItem(EXCHANGE_CACHE_KEY, JSON.stringify({
+    rates,
+    updatedAt,
+    timestamp: Date.now()
+  }));
+}
+
+function updateRateStatus(fromCache) {
+  const jpyToCny = getJpyToCnyRate();
+  document.getElementById('jpyCnyRate').textContent = jpyToCny
+    ? `1 JPY = ${jpyToCny.toFixed(4)} CNY`
+    : '汇率获取中...';
+  document.getElementById('rateStatus').textContent = jpyToCny
+    ? '来源:open.er-api.com'
+    : '汇率获取中...';
 }
 
 function getExchangeRates() {
-  const cached = localStorage.getItem(EXCHANGE_CACHE_KEY + '_' + currentCountry);
-  if (cached) {
-    const { rates, updatedAt } = JSON.parse(cached);
-    exchangeRates = rates;
-    rateUpdatedAt = updatedAt;
-    updateRateStatus();
+  const cached = readCache();
+  if (cached?.rates) {
+    apiRates = cached.rates;
+    rateUpdatedAt = cached.updatedAt;
+    updateRateStatus(true);
     calculate();
   }
 
-  fetch(`${EXCHANGE_API_URL}`)
-    .then(r => r.json())
+  fetch(EXCHANGE_API_URL)
+    .then(response => response.json())
     .then(data => {
-      if (data.result === 'success') {
-        exchangeRates = normalizeRates(data.rates);
-        const now = new Date();
-        rateUpdatedAt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        localStorage.setItem(EXCHANGE_CACHE_KEY + '_' + currentCountry, JSON.stringify({ rates: exchangeRates, updatedAt: rateUpdatedAt }));
-        updateRateStatus();
-        calculate();
+      if (data.result !== 'success' || !data.rates) {
+        throw new Error('汇率接口返回异常');
       }
+      apiRates = data.rates;
+      rateUpdatedAt = formatDateTime(new Date());
+      writeCache(apiRates, rateUpdatedAt);
+      updateRateStatus(false);
+      calculate();
     })
-    .catch(err => {
-      console.error('汇率获取失败', err);
-      rateUpdatedAt = '获取失败，使用缓存';
-      updateRateStatus();
-      if (Object.keys(exchangeRates).length > 0) calculate();
+    .catch(error => {
+      console.error('汇率获取失败', error);
+      if (!cached?.rates) {
+        rateUpdatedAt = '获取失败，请稍后重试';
+        updateRateStatus(true);
+      }
+      calculate();
     });
 }
 
-function normalizeRates(apiRates) {
-  const cnyPerUsd = apiRates.CNY;
-  const supportedCurrencies = [...new Set(Object.values(CURRENCY_NAME))];
-  return supportedCurrencies.reduce((result, code) => {
-    if (apiRates[code] && cnyPerUsd) {
-      result[code] = cnyPerUsd / apiRates[code];
-    }
-    return result;
-  }, {});
+function migrateHistoryItem(item) {
+  if (!item) return null;
+  const countryCode = item.country || 'fr';
+  const meta = COUNTRY_META[countryCode] || COUNTRY_META.fr;
+  const sourceCurrency = item.sourceCurrency || meta.currency;
+  const sourceSymbol = item.sourceSymbol || meta.symbol;
+  const savedTime = item.savedAt || item.time || Date.now();
+  const price = Number(item.price ?? item.sourcePrice ?? 0);
+  const discount = Number(item.discount ?? item.discountRate ?? 0);
+  const taxRate = Number(item.taxRate ?? meta.taxRate);
+  const taxModeValue = item.taxMode || 'taxed';
+  const discountedPrice = Number(item.discountedPrice ?? (price * (1 - discount / 100)));
+  const effectiveTaxRate = Number(item.effectiveTaxRate ?? (taxModeValue === 'taxfree' ? 0 : taxRate));
+  const exchangeRateToCny = Number(item.exchangeRateToCny ?? item.exchangeRate ?? 0);
+  const finalCny = Number(item.finalCny ?? ((discountedPrice * (1 - effectiveTaxRate) * exchangeRateToCny) || 0));
+  const resultCurrency = item.resultCurrency || 'CNY';
+  const finalAmount = Number(item.finalAmount ?? item.finalCny ?? 0);
+  const countryName = item.countryName || `${meta.name} ${meta.emoji}`;
+  return {
+    id: item.id || Date.now(),
+    itemName: item.itemName || '未命名商品',
+    country: countryCode,
+    countryName,
+    price,
+    discount,
+    discountedPrice,
+    taxRate,
+    taxMode: taxModeValue,
+    effectiveTaxRate,
+    sourceCurrency,
+    sourceSymbol,
+    exchangeRateToCny,
+    exchangeRateText: item.exchangeRateText || `${exchangeRateToCny.toFixed(4)} CNY/${sourceCurrency}`,
+    feeRate: Number(item.feeRate ?? DEFAULT_FEE_RATE),
+    finalCny,
+    finalAmount,
+    resultCurrency,
+    finalPriceText: item.finalPriceText || formatCodeAmount(finalAmount, resultCurrency, RESULT_CURRENCIES.find(currency => currency.code === resultCurrency)?.symbol),
+    savedAt: savedTime,
+    savedAtText: item.savedAtText || formatDateTime(savedTime)
+  };
 }
 
-function updateRateStatus() {
-  const statusEl = document.getElementById('rateStatus');
-  statusEl.textContent = rateUpdatedAt ? `实时汇率更新时间：${rateUpdatedAt}` : '汇率获取中...';
+function getHistory() {
+  let raw = [];
+  try {
+    raw = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch (error) {
+    console.error('解析历史记录失败', error);
+  }
+  const normalized = raw.map(migrateHistoryItem).filter(Boolean);
+  currentHistory = normalized;
+  return normalized;
+}
+
+function saveHistory(history) {
+  currentHistory = history;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
 
 function saveRecord() {
-  const price = parseFloat(document.getElementById('price').value) || 0;
-  const countryEl = document.getElementById('country');
-  const countryName = countryEl.options[countryEl.selectedIndex].text;
-  const finalPrice = document.getElementById('finalPrice').textContent;
-  const currencyCode = CURRENCY_NAME[currentCountry];
-  const rate = exchangeRates[currencyCode] || 0;
-  const taxRate = TAX_RATES[currentCountry];
-  const discounted = price * (1 - currentDiscount / 100);
-  const afterTax = discounted * (1 - taxRate);
-
+  const data = getCalculationData();
+  const meta = data.meta;
+  const savedAt = Date.now();
+  const resultCurrencyMeta = RESULT_CURRENCIES.find(item => item.code === data.selectedResultCurrency);
   const record = {
-    id: Date.now(),
+    id: savedAt,
+    itemName: data.itemName || '未命名商品',
     country: currentCountry,
-    countryName: countryName,
-    price: price,
+    countryName: `${meta.name} ${meta.emoji}`,
+    price: data.price,
     discount: currentDiscount,
-    taxRate: taxRate,
-    exchangeRate: rate,
-    finalCny: afterTax * rate,
-    finalPriceText: finalPrice,
-    time: new Date().toLocaleString('zh-CN')
+    discountedPrice: data.discounted,
+    taxRate: data.customTaxRate,
+    taxMode: isTaxFree ? 'taxfree' : 'taxed',
+    effectiveTaxRate: data.effectiveTaxRate,
+    sourceCurrency: data.sourceCurrency,
+    sourceSymbol: data.sourceSymbol,
+    exchangeRateToCny: data.sourceToCnyRate,
+    exchangeRateText: `${data.sourceToCnyRate.toFixed(4)} CNY/${data.sourceCurrency}`,
+    feeRate: DEFAULT_FEE_RATE,
+    finalCny: data.finalCny,
+    finalAmount: data.finalAmount,
+    resultCurrency: data.selectedResultCurrency,
+    finalPriceText: formatCodeAmount(data.finalAmount, data.selectedResultCurrency, resultCurrencyMeta?.symbol),
+    savedAt,
+    savedAtText: formatDateTime(savedAt)
   };
 
-  let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+  const history = getHistory();
   history.unshift(record);
-  if (history.length > 50) history = history.slice(0, 50);
-  localStorage.setItem('calcHistory', JSON.stringify(history));
+  saveHistory(history.slice(0, 50));
   renderHistory();
 }
 
 function renderHistory() {
   const list = document.getElementById('historyList');
-  const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
-  if (history.length === 0) {
+  const history = getHistory();
+  if (!history.length) {
     list.innerHTML = '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
     return;
   }
+
   list.innerHTML = history.map(item => `
-    <div class="history-item">
+    <div class="history-item" onclick="openHistoryDetail(${item.id})">
       <div>
-        <div class="history-name">${item.countryName}</div>
-        <div class="history-meta">${item.price} × ${item.discount > 0 ? item.discount + '折' : '无折扣'} · ${item.time}</div>
+        <div class="history-name">${escapeHtml(item.itemName)}</div>
+        <div class="history-meta">${escapeHtml(item.countryName)} · ${escapeHtml(item.sourceCurrency)} · ${escapeHtml(item.savedAtText)}</div>
       </div>
-      <div class="history-price">${item.finalPriceText}</div>
+      <div class="history-price">${escapeHtml(item.finalPriceText)}</div>
     </div>
   `).join('');
 }
 
+function openHistoryDetail(recordId) {
+  const history = currentHistory.length ? currentHistory : getHistory();
+  const record = history.find(item => item.id === recordId);
+  if (!record) return;
+
+  const taxStatusText = record.taxMode === 'taxfree' ? '免税' : formatPercent(record.taxRate);
+  const originalPriceText = `${record.sourceCurrency} ${formatAmount(record.price, record.sourceCurrency, record.sourceSymbol)}`;
+  const finalCnyText = formatCodeAmount(record.finalCny, 'CNY', '¥');
+  const resultCurrencyText = `${record.finalPriceText}（查看币种）`;
+  const detailHtml = [
+    { label: '商品名称', value: record.itemName },
+    { label: '购买地点（目的国家）', value: record.countryName },
+    { label: '保存时间', value: record.savedAtText },
+    { label: '原价币种', value: originalPriceText },
+    { label: '汇率', value: record.exchangeRateText },
+    { label: '手续费 / 汇率损耗', value: formatPercent(record.feeRate) },
+    { label: '税率 / 免税状态', value: taxStatusText },
+    { label: '应付金额（CNY）', value: finalCnyText },
+    { label: `应付金额（${record.resultCurrency}）`, value: resultCurrencyText },
+    { label: '目的国家', value: record.countryName }
+  ].map(item => `
+    <div class="detail-item">
+      <div class="detail-label">${escapeHtml(item.label)}</div>
+      <div class="detail-value">${escapeHtml(item.value)}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('historyModalContent').innerHTML = detailHtml;
+  document.getElementById('historyModal').classList.add('show');
+}
+
+function closeHistoryModal() {
+  document.getElementById('historyModal').classList.remove('show');
+}
+
+function handleModalBackdrop(event) {
+  if (event.target.id === 'historyModal') closeHistoryModal();
+}
+
 function clearHistory() {
-  localStorage.removeItem('calcHistory');
+  if (!window.confirm('确认清除全部历史记录吗？')) return;
+  localStorage.removeItem(HISTORY_KEY);
+  currentHistory = [];
   renderHistory();
+  closeHistoryModal();
 }
 
 document.getElementById('country').addEventListener('change', function() {
   currentCountry = this.value;
-  getExchangeRates();
+  setDefaultTaxRate();
+  calculate();
 });
 
 document.getElementById('price').addEventListener('input', calculate);
+document.getElementById('itemName').addEventListener('input', calculate);
+document.getElementById('taxRateInput').addEventListener('input', event => handleTaxRateInput(event.target.value));
+document.getElementById('taxRateInput').addEventListener('blur', normalizeTaxRateInput);
+document.getElementById('taxFreeToggle').addEventListener('change', event => setTaxFreeState(event.target.checked));
+document.getElementById('resultCurrency').addEventListener('change', calculate);
 
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeHistoryModal();
+});
+
+populateResultCurrencyOptions();
+setDefaultTaxRate();
 getExchangeRates();
 renderHistory();
+calculate();
 </script>
 </body>
 </html>
