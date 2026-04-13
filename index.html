@@ -6,50 +6,132 @@
 <title>旅行购物计算器</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; min-height: 100vh; padding: 16px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F5F5F7;
+    min-height: 100vh;
+    padding: 16px;
+    background-image:
+      radial-gradient(ellipse at 15% 15%, rgba(200, 146, 232, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 85%, rgba(123, 93, 180, 0.12) 0%, transparent 50%);
+  }
+
   .container { max-width: 480px; margin: 0 auto; }
 
-  .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 24px rgba(120, 80, 180, 0.08), 0 1px 4px rgba(0,0,0,0.04);
+  }
 
   .header { text-align: center; margin-bottom: 20px; }
-  .header h1 { font-size: 20px; color: #1a1a2e; margin-bottom: 4px; }
-  .header p { font-size: 12px; color: #888; }
+  .header h1 {
+    font-size: 22px;
+    background: linear-gradient(135deg, #9B6FD4, #C892E8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .header p { font-size: 12px; color: #A090B8; }
 
   label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 500; }
 
-  select, input { width: 100%; padding: 12px 14px; border: 1.5px solid #e8e8e8; border-radius: 10px; font-size: 16px; outline: none; transition: border-color 0.2s; background: #fff; }
-  select:focus, input:focus { border-color: #4a90d9; }
+  select, input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #E8E0F0;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #FAFAFA;
+  }
+  select:focus, input:focus {
+    border-color: #B094E0;
+    box-shadow: 0 0 0 3px rgba(176, 148, 224, 0.15);
+  }
 
   .form-group { margin-bottom: 16px; }
 
   .discount-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-  .discount-btn { flex: 1; min-width: 60px; padding: 10px 4px; border: 1.5px solid #e8e8e8; border-radius: 8px; background: #fff; font-size: 13px; cursor: pointer; text-align: center; transition: all 0.2s; }
-  .discount-btn.active { border-color: #4a90d9; background: #e8f2ff; color: #4a90d9; font-weight: 600; }
+  .discount-btn {
+    flex: 1; min-width: 60px;
+    padding: 12px 4px;
+    border: 1.5px solid #E8E0F0;
+    border-radius: 12px;
+    background: #FAFAFA;
+    font-size: 13px; cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    color: #666;
+  }
+  .discount-btn.active {
+    border-color: #B094E0;
+    background: linear-gradient(135deg, #E8D8F8 0%, #D4B8EE 100%);
+    color: #6B3FA0;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(176, 148, 224, 0.3);
+  }
 
-  .result-card { background: linear-gradient(135deg, #1a1a2e, #2d3a5c); border-radius: 16px; padding: 24px; color: #fff; }
+  .result-card {
+    background: linear-gradient(135deg, #C892E8 0%, #9B6FD4 50%, #7B5DB4 100%);
+    border-radius: 28px;
+    padding: 26px;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(155, 111, 212, 0.3), 0 2px 8px rgba(0,0,0,0.08);
+  }
   .result-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .result-row:last-child { margin-bottom: 0; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.15); }
-  .result-label { font-size: 13px; color: rgba(255,255,255,0.6); }
-  .result-value { font-size: 15px; color: rgba(255,255,255,0.8); text-decoration: line-through; }
-  .result-row:last-child .result-label { font-size: 14px; color: rgba(255,255,255,0.8); }
-  .result-row:last-child .result-value { font-size: 22px; color: #4ade80; font-weight: 700; }
+  .result-row:last-child { margin-bottom: 0; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.2); }
+  .result-label { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .result-value { font-size: 15px; color: rgba(255,255,255,0.85); text-decoration: line-through; }
+  .result-row:last-child .result-label { font-size: 15px; color: rgba(255,255,255,0.9); }
+  .result-row:last-child .result-value { font-size: 26px; color: #A8F5C8; font-weight: 700; }
 
-  .save-btn { width: 100%; padding: 14px; background: #4a90d9; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; }
-  .save-btn:active { background: #3a7bc8; }
+  .save-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #C892E8 0%, #9B6FD4 100%);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    box-shadow: 0 4px 16px rgba(155, 111, 212, 0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .save-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(155, 111, 212, 0.3);
+  }
 
   .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .history-header h3 { font-size: 14px; color: #333; }
-  .history-header span { font-size: 12px; color: #888; cursor: pointer; }
+  .history-header span { font-size: 12px; color: #B094E0; cursor: pointer; }
 
-  .history-item { background: #f8f9fb; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .history-item {
+    background: #FAFAFA;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
   .history-item:last-child { margin-bottom: 0; }
   .history-name { font-size: 14px; color: #333; font-weight: 500; }
   .history-meta { font-size: 11px; color: #999; margin-top: 2px; }
-  .history-price { font-size: 16px; color: #4ade80; font-weight: 600; }
+  .history-price { font-size: 16px; color: #7B5DB4; font-weight: 600; }
 
-  .empty-state { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
+  .empty-state { text-align: center; padding: 24px; color: #C8B8E0; font-size: 13px; }
 
-  .api-status { font-size: 11px; color: #aaa; text-align: center; margin-top: 4px; }
+  .api-status { font-size: 12px; color: #B094E0; text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -123,10 +205,10 @@
   <div class="card">
     <div class="history-header">
       <h3>📋 计算历史</h3>
-      <span onclick="clearHistory()">清空</span>
+      <span onclick="clearHistory()">清除全部</span>
     </div>
     <div id="historyList">
-      <div class="empty-state">暂无记录<br>保存后会在此显示</div>
+      <div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>
     </div>
   </div>
 
@@ -140,12 +222,14 @@ const TAX_RATES = {
   fr: 0.12, it: 0.12, de: 0.12, es: 0.12, nl: 0.12, be: 0.12, at: 0.12, pt: 0.12, ie: 0.12, fi: 0.12,
   jp: 0.10, kr: 0.10, th: 0.07, au: 0.10, uk: 0.20, sg: 0.09, ch: 0.08, us: 0.00
 };
-const CURRENCY = {
+const CURRENCY_SYMBOL = {
   fr: '€', it: '€', de: '€', es: '€', nl: '€', be: '€', at: '€', pt: '€', ie: '€', fi: '€',
-  jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$', ch: 'CHF', us: '$'};
+  jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$', ch: 'CHF', us: '$'
+};
 const CURRENCY_NAME = {
   fr: 'EUR', it: 'EUR', de: 'EUR', es: 'EUR', nl: 'EUR', be: 'EUR', at: 'EUR', pt: 'EUR', ie: 'EUR', fi: 'EUR',
-  jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD', ch: 'CHF', us: 'USD'};
+  jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD', ch: 'CHF', us: 'USD'
+};
 
 let currentDiscount = 0;
 let currentCountry = 'fr';
@@ -155,9 +239,14 @@ let rateUpdatedAt = '';
 function setDiscount(val) {
   currentDiscount = val;
   document.querySelectorAll('.discount-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', (val === 0 && i === 0) || (val === 10 && i === 1) || (val === 20 && i === 2) || (val === 30 && i === 3) || (val === 15 && i === 4));
+    btn.classList.toggle('active', parseInt(btn.getAttribute('onclick').match(/\d+/)[0]) === val);
   });
   calculate();
+}
+
+function formatNum(num) {
+  if (num >= 10000) return (num / 10000).toFixed(1) + '万';
+  return num.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
 }
 
 function calculate() {
@@ -165,36 +254,49 @@ function calculate() {
   const currencyCode = CURRENCY_NAME[currentCountry];
   const rate = exchangeRates[currencyCode] || 0;
   const taxRate = TAX_RATES[currentCountry];
-  const symbol = CURRENCY[currentCountry];
+  const symbol = CURRENCY_SYMBOL[currentCountry];
 
   const discounted = price * (1 - currentDiscount / 100);
   const afterTax = discounted * (1 - taxRate);
   const finalCny = afterTax * rate;
 
-  document.getElementById('originalPrice').textContent = `${symbol}${formatNum(price)}`;
+  const originalFormatted = `${symbol}${(price).toFixed(2)}`;
+  const discountedFormatted = `${symbol}${(discounted).toFixed(2)}`;
+
+  document.getElementById('originalPrice').textContent = originalFormatted;
+  document.getElementById('discountedPrice').textContent = discountedFormatted;
   document.getElementById('discountRow').style.display = currentDiscount > 0 ? 'flex' : 'none';
-  document.getElementById('discountedPrice').textContent = `¥${formatNum(Math.round(discounted))}`;
   document.getElementById('finalPrice').textContent = `¥${formatNum(Math.round(finalCny))}`;
 }
 
-function formatNum(n) {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
+function getExchangeRates() {
+  const cached = localStorage.getItem(EXCHANGE_CACHE_KEY + '_' + currentCountry);
+  if (cached) {
+    const { rates, updatedAt } = JSON.parse(cached);
+    exchangeRates = rates;
+    rateUpdatedAt = updatedAt;
+    updateRateStatus();
+    calculate();
+  }
 
-function formatRateTime(timestamp) {
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return '';
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-}
-
-function updateRateStatus() {
-  const statusEl = document.getElementById('rateStatus');
-  statusEl.textContent = rateUpdatedAt ? `实时汇率更新时间：${rateUpdatedAt}` : '汇率获取中...';
+  fetch(`${EXCHANGE_API_URL}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.result === 'success') {
+        exchangeRates = normalizeRates(data.rates);
+        const now = new Date();
+        rateUpdatedAt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        localStorage.setItem(EXCHANGE_CACHE_KEY + '_' + currentCountry, JSON.stringify({ rates: exchangeRates, updatedAt: rateUpdatedAt }));
+        updateRateStatus();
+        calculate();
+      }
+    })
+    .catch(err => {
+      console.error('汇率获取失败', err);
+      rateUpdatedAt = '获取失败，使用缓存';
+      updateRateStatus();
+      if (Object.keys(exchangeRates).length > 0) calculate();
+    });
 }
 
 function normalizeRates(apiRates) {
@@ -208,76 +310,56 @@ function normalizeRates(apiRates) {
   }, {});
 }
 
-function loadCachedRates() {
-  try {
-    const cached = JSON.parse(sessionStorage.getItem(EXCHANGE_CACHE_KEY) || 'null');
-    if (!cached || !cached.timestamp || !cached.rates) return false;
-    if (Date.now() - cached.timestamp > EXCHANGE_CACHE_TTL) return false;
-    exchangeRates = cached.rates;
-    rateUpdatedAt = formatRateTime(cached.updatedAt || cached.timestamp);
-    updateRateStatus();
-    calculate();
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-
-async function fetchExchangeRates() {
-  updateRateStatus();
-  if (loadCachedRates()) return;
-
-  try {
-    const response = await fetch(EXCHANGE_API_URL);
-    if (!response.ok) throw new Error('fetch_failed');
-    const data = await response.json();
-    if (data.result !== 'success' || !data.rates) throw new Error('invalid_response');
-
-    exchangeRates = normalizeRates(data.rates);
-    const updatedAt = Date.now();
-    rateUpdatedAt = formatRateTime(updatedAt);
-    sessionStorage.setItem(EXCHANGE_CACHE_KEY, JSON.stringify({
-      timestamp: updatedAt,
-      updatedAt,
-      rates: exchangeRates
-    }));
-    updateRateStatus();
-    calculate();
-  } catch (err) {
-    updateRateStatus();
-  }
+function updateRateStatus() {
+  const statusEl = document.getElementById('rateStatus');
+  statusEl.textContent = rateUpdatedAt ? `实时汇率更新时间：${rateUpdatedAt}` : '汇率获取中...';
 }
 
 function saveRecord() {
   const price = parseFloat(document.getElementById('price').value) || 0;
-  const finalCny = document.getElementById('finalPrice').textContent;
-  const now = new Date();
-  const time = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const countryName = document.getElementById('country').selectedOptions[0].text.split('（')[0];
-  const symbol = CURRENCY[currentCountry];
+  const countryEl = document.getElementById('country');
+  const countryName = countryEl.options[countryEl.selectedIndex].text;
+  const finalPrice = document.getElementById('finalPrice').textContent;
+  const currencyCode = CURRENCY_NAME[currentCountry];
+  const rate = exchangeRates[currencyCode] || 0;
+  const taxRate = TAX_RATES[currentCountry];
+  const discounted = price * (1 - currentDiscount / 100);
+  const afterTax = discounted * (1 - taxRate);
 
-  const item = { name: countryName, price, final: finalCny, time, discount: currentDiscount, symbol };
+  const record = {
+    id: Date.now(),
+    country: currentCountry,
+    countryName: countryName,
+    price: price,
+    discount: currentDiscount,
+    taxRate: taxRate,
+    exchangeRate: rate,
+    finalCny: afterTax * rate,
+    finalPriceText: finalPrice,
+    time: new Date().toLocaleString('zh-CN')
+  };
+
   let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
-  history.unshift(item);
-  if (history.length > 20) history = history.slice(0, 20);
+  history.unshift(record);
+  if (history.length > 50) history = history.slice(0, 50);
   localStorage.setItem('calcHistory', JSON.stringify(history));
   renderHistory();
 }
 
 function renderHistory() {
+  const list = document.getElementById('historyList');
   const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
-  const el = document.getElementById('historyList');
   if (history.length === 0) {
-    el.innerHTML = '<div class="empty-state">暂无记录<br>保存后会在此显示</div>';
+    list.innerHTML = '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
     return;
   }
-  el.innerHTML = history.map(item => `
+  list.innerHTML = history.map(item => `
     <div class="history-item">
       <div>
-        <div class="history-name">${item.name}${item.discount > 0 ? ' ' + (100-item.discount) + '折' : ''}</div>
-        <div class="history-meta">${item.time} · ${(item.symbol || '€')}${formatNum(item.price)}</div>
+        <div class="history-name">${item.countryName}</div>
+        <div class="history-meta">${item.price} × ${item.discount > 0 ? item.discount + '折' : '无折扣'} · ${item.time}</div>
       </div>
-      <div class="history-price">${item.final}</div>
+      <div class="history-price">${item.finalPriceText}</div>
     </div>
   `).join('');
 }
@@ -287,13 +369,15 @@ function clearHistory() {
   renderHistory();
 }
 
-document.getElementById('country').addEventListener('change', e => { currentCountry = e.target.value; calculate(); });
+document.getElementById('country').addEventListener('change', function() {
+  currentCountry = this.value;
+  getExchangeRates();
+});
+
 document.getElementById('price').addEventListener('input', calculate);
 
-calculate();
+getExchangeRates();
 renderHistory();
-fetchExchangeRates();
 </script>
 </body>
 </html>
-
