@@ -65,13 +65,24 @@
       <label>目的国家</label>
       <select id="country">
         <option value="fr">法国 🇫🇷（退12%）</option>
-        <option value="it">意大利 🇮🇹（退10-15%）</option>
-        <option value="jp">日本 🇯🇵（退8-10%）</option>
+        <option value="it">意大利 🇮🇹（退12%）</option>
+        <option value="de">德国 🇩🇪（退12%）</option>
+        <option value="es">西班牙 🇪🇸（退12%）</option>
+        <option value="nl">荷兰 🇳🇱（退12%）</option>
+        <option value="be">比利时 🇧🇪（退12%）</option>
+        <option value="at">奥地利 🇦🇹（退12%）</option>
+        <option value="pt">葡萄牙 🇵🇹（退12%）</option>
+        <option value="ie">爱尔兰 🇮🇪（退12%）</option>
+        <option value="fi">芬兰 🇫🇮（退12%）</option>
+        <option value="jp">日本 🇯🇵（退10%）</option>
         <option value="th">泰国 🇹🇭（退7%）</option>
         <option value="kr">韩国 🇰🇷（退10%）</option>
         <option value="au">澳大利亚 🇦🇺（退10%）</option>
         <option value="uk">英国 🇬🇧（退20%）</option>
         <option value="sg">新加坡 🇸🇬（退9%）</option>
+        <option value="ch">瑞士 🇨🇭（退8%）</option>
+        <option value="us">美国 🇺🇸（退0%）</option>
+        <option value="ae">阿联酋 🇦🇪（退5%）</option>
       </select>
     </div>
 
@@ -107,7 +118,7 @@
     </div>
 
     <button class="save-btn" onclick="saveRecord()">💾 保存到历史</button>
-    <p class="api-status">汇率来源：exchangerate-api.com</p>
+    <p class="api-status" id="rateStatus">汇率获取中...</p>
   </div>
 
   <div class="card">
@@ -123,13 +134,26 @@
 </div>
 
 <script>
-const EXCHANGE_RATES = { usd: 7.24, eur: 7.80, jpy: 0.048, gbp: 9.10, thb: 0.21, krw: 0.0054, aud: 4.71, sgd: 5.38 };
-const TAX_RATES = { fr: 0.12, it: 0.12, jp: 0.10, th: 0.07, kr: 0.10, au: 0.10, uk: 0.20, sg: 0.09 };
-const CURRENCY = { fr: '€', it: '€', jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$' };
-const CURRENCY_NAME = { fr: 'EUR', it: 'EUR', jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD' };
+const EXCHANGE_API_URL = 'https://open.er-api.com/v6/latest/USD';
+const EXCHANGE_CACHE_KEY = 'exchangeRatesCacheV2';
+const EXCHANGE_CACHE_TTL = 60 * 60 * 1000;
+const TAX_RATES = {
+  fr: 0.12, it: 0.12, de: 0.12, es: 0.12, nl: 0.12, be: 0.12, at: 0.12, pt: 0.12, ie: 0.12, fi: 0.12,
+  jp: 0.10, kr: 0.10, th: 0.07, au: 0.10, uk: 0.20, sg: 0.09, ch: 0.08, us: 0.00, ae: 0.05
+};
+const CURRENCY = {
+  fr: '€', it: '€', de: '€', es: '€', nl: '€', be: '€', at: '€', pt: '€', ie: '€', fi: '€',
+  jp: '¥', th: '฿', kr: '₩', au: 'A$', uk: '£', sg: 'S$', ch: 'CHF', us: '$', ae: 'AED'
+};
+const CURRENCY_NAME = {
+  fr: 'EUR', it: 'EUR', de: 'EUR', es: 'EUR', nl: 'EUR', be: 'EUR', at: 'EUR', pt: 'EUR', ie: 'EUR', fi: 'EUR',
+  jp: 'JPY', th: 'THB', kr: 'KRW', au: 'AUD', uk: 'GBP', sg: 'SGD', ch: 'CHF', us: 'USD', ae: 'AED'
+};
 
 let currentDiscount = 0;
 let currentCountry = 'fr';
+let exchangeRates = {};
+let rateUpdatedAt = '';
 
 function setDiscount(val) {
   currentDiscount = val;
@@ -141,7 +165,8 @@ function setDiscount(val) {
 
 function calculate() {
   const price = parseFloat(document.getElementById('price').value) || 0;
-  const rate = EXCHANGE_RATES[CURRENCY_NAME[currentCountry].toLowerCase()] || 7.8;
+  const currencyCode = CURRENCY_NAME[currentCountry];
+  const rate = exchangeRates[currencyCode] || 0;
   const taxRate = TAX_RATES[currentCountry];
   const symbol = CURRENCY[currentCountry];
 
@@ -159,14 +184,82 @@ function formatNum(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+function formatRateTime(timestamp) {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+function updateRateStatus() {
+  const statusEl = document.getElementById('rateStatus');
+  statusEl.textContent = rateUpdatedAt ? `实时汇率更新时间：${rateUpdatedAt}` : '汇率获取中...';
+}
+
+function normalizeRates(apiRates) {
+  const cnyPerUsd = apiRates.CNY;
+  const supportedCurrencies = [...new Set(Object.values(CURRENCY_NAME))];
+  return supportedCurrencies.reduce((result, code) => {
+    if (apiRates[code] && cnyPerUsd) {
+      result[code] = cnyPerUsd / apiRates[code];
+    }
+    return result;
+  }, {});
+}
+
+function loadCachedRates() {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(EXCHANGE_CACHE_KEY) || 'null');
+    if (!cached || !cached.timestamp || !cached.rates) return false;
+    if (Date.now() - cached.timestamp > EXCHANGE_CACHE_TTL) return false;
+    exchangeRates = cached.rates;
+    rateUpdatedAt = formatRateTime(cached.updatedAt || cached.timestamp);
+    updateRateStatus();
+    calculate();
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function fetchExchangeRates() {
+  updateRateStatus();
+  if (loadCachedRates()) return;
+
+  try {
+    const response = await fetch(EXCHANGE_API_URL);
+    if (!response.ok) throw new Error('fetch_failed');
+    const data = await response.json();
+    if (data.result !== 'success' || !data.rates) throw new Error('invalid_response');
+
+    exchangeRates = normalizeRates(data.rates);
+    const updatedAt = Date.now();
+    rateUpdatedAt = formatRateTime(updatedAt);
+    sessionStorage.setItem(EXCHANGE_CACHE_KEY, JSON.stringify({
+      timestamp: updatedAt,
+      updatedAt,
+      rates: exchangeRates
+    }));
+    updateRateStatus();
+    calculate();
+  } catch (err) {
+    updateRateStatus();
+  }
+}
+
 function saveRecord() {
   const price = parseFloat(document.getElementById('price').value) || 0;
   const finalCny = document.getElementById('finalPrice').textContent;
   const now = new Date();
   const time = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
   const countryName = document.getElementById('country').selectedOptions[0].text.split('（')[0];
+  const symbol = CURRENCY[currentCountry];
 
-  const item = { name: countryName, price, final: finalCny, time, discount: currentDiscount };
+  const item = { name: countryName, price, final: finalCny, time, discount: currentDiscount, symbol };
   let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
   history.unshift(item);
   if (history.length > 20) history = history.slice(0, 20);
@@ -185,7 +278,7 @@ function renderHistory() {
     <div class="history-item">
       <div>
         <div class="history-name">${item.name}${item.discount > 0 ? ' ' + (100-item.discount) + '折' : ''}</div>
-        <div class="history-meta">${item.time} · €${formatNum(item.price)}</div>
+        <div class="history-meta">${item.time} · ${(item.symbol || '€')}${formatNum(item.price)}</div>
       </div>
       <div class="history-price">${item.final}</div>
     </div>
@@ -202,6 +295,7 @@ document.getElementById('price').addEventListener('input', calculate);
 
 calculate();
 renderHistory();
+fetchExchangeRates();
 </script>
 </body>
 </html>
