@@ -38,7 +38,12 @@
     margin-bottom: 16px;
     box-shadow: 0 4px 16px rgba(107, 82, 239, 0.25);
   }
-  .rate-hero-icon { font-size: 22px; }
+  .rate-hero-icon {
+    width: 22px;
+    height: 22px;
+    color: #FFFFFF;
+    flex-shrink: 0;
+  }
   .rate-hero-content { flex: 1; }
   .rate-hero-pair { font-size: 15px; color: #fff; }
   .rate-hero-pair strong { font-size: 18px; font-weight: 700; }
@@ -96,6 +101,23 @@
   }
 
   .form-group { margin-bottom: 14px; }
+  .exchange-banner {
+    background: linear-gradient(135deg, #EEE8FA, #F5F0FF);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #615BB0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+  .exchange-banner .rate-from { color: #7B6BC0; font-weight: 600; }
+  .exchange-banner .rate-to { color: #615BB0; font-weight: 600; }
+  .exchange-banner .rate-val { color: #4F4899; font-size: 14px; font-weight: 700; }
+  .exchange-banner .rate-icon { width: 16px; height: 16px; color: #8B7FCC; flex-shrink: 0; }
+  .exchange-banner.updating { opacity: 0.7; }
   .rate-banner {
     background: linear-gradient(135deg, #F5F0FF, #EEE8FA);
     border-radius: 12px;
@@ -315,6 +337,10 @@
     box-shadow: 0 4px 20px rgba(107, 82, 239, 0.35);
     transition: all 0.2s ease;
     letter-spacing: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   .save-btn:active {
     transform: scale(0.97);
@@ -439,12 +465,12 @@
 
   <div class="card">
     <div class="header">
-      <h1>🧮 境外算价</h1>
+      <h1><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-3px;margin-right:6px;"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/></svg> 境外算价</h1>
       <p>先算再买，不花冤枉钱</p>
     </div>
 
     <div class="rate-hero">
-      <div class="rate-hero-icon">💱</div>
+      <svg class="rate-hero-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
       <div class="rate-hero-content">
         <div class="rate-hero-pair" id="heroRatePair">加载中...</div>
         <div class="rate-hero-source" id="heroRateSource">汇率更新时间 — · open.er-api.com</div>
@@ -474,6 +500,15 @@
         <option value="ch">🇨🇭 瑞士（CHF 退8%）</option>
         <option value="us">🇺🇸 美国（$ 退0%）</option>
       </select>
+    </div>
+
+    <div class="exchange-banner" id="exchangeBanner" style="display:none;">
+      <svg class="rate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+      <span>1</span>
+      <span class="rate-from" id="bannerFromCurrency">EUR</span>
+      <span>=</span>
+      <span class="rate-val" id="bannerRateValue">—</span>
+      <span class="rate-to">CNY</span>
     </div>
 
     <div class="rate-banner" id="rateBanner">
@@ -550,13 +585,14 @@
     </div>
 
     <button class="save-btn" onclick="saveRecord()">
-      <span>💾</span> 保存到历史
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <span>保存到历史</span>
     </button>
   </div>
 
   <div class="card">
     <div class="history-header">
-      <h3>📋 计算历史</h3>
+      <h3><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-2px;margin-right:5px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>计算历史</h3>
       <span onclick="clearHistory()">清除全部</span>
     </div>
     <div id="historyList">
@@ -569,7 +605,7 @@
   <div class="modal-sheet" role="dialog" aria-modal="true">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <div class="modal-title">📋 历史详情</div>
+      <div class="modal-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-2px;margin-right:5px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>历史详情</div>
       <button class="modal-close" type="button" onclick="closeHistoryModal()">×</button>
     </div>
     <div class="detail-grid" id="historyModalContent"></div>
@@ -666,6 +702,7 @@ function setTaxFreeState(nextValue) {
   document.getElementById('taxFreeToggle').checked = isTaxFree;
   updateTaxRateInputDisplay();
   calculate();
+  updateExchangeBanner();
 }
 
 function handleTaxRateInput(value) {
@@ -759,6 +796,19 @@ function getSourceToCnyRate(currencyCode) {
   return getRateBetween(currencyCode, 'USD') / getRateBetween('CNY', 'USD');
 }
 
+function updateExchangeBanner() {
+  const banner = document.getElementById('exchangeBanner');
+  const meta = COUNTRY_META[currentCountry];
+  if (!meta || !apiRates[meta.currency] || !apiRates.CNY || !apiRates.USD) {
+    banner.style.display = 'none';
+    return;
+  }
+  const rate = getSourceToCnyRate(meta.currency);
+  document.getElementById('bannerFromCurrency').textContent = meta.currency;
+  document.getElementById('bannerRateValue').textContent = rate.toFixed(4);
+  banner.style.display = 'flex';
+}
+
 function getCalculationData() {
   const meta = COUNTRY_META[currentCountry];
   const sourceCurrency = meta.currency;
@@ -818,6 +868,7 @@ function getExchangeRates() {
     apiRates = cached.rates;
     rateUpdatedAt = cached.updatedAt;
     calculate();
+    updateExchangeBanner();
     updateHeroRate();
     updateRateBanner();
   }
@@ -830,12 +881,14 @@ function getExchangeRates() {
       rateUpdatedAt = formatDateTime(new Date());
       writeCache(apiRates, rateUpdatedAt);
       calculate();
+      updateExchangeBanner();
       updateHeroRate();
       updateRateBanner();
     })
     .catch(() => {
       apiRates = { CNY: 1, USD: 7.25, EUR: 0.127, GBP: 0.114, JPY: 15.5, KRW: 135, AUD: 1.53, SGD: 1.35, CHF: 0.91, THB: 36 };
       calculate();
+      updateExchangeBanner();
       updateHeroRate();
       updateRateBanner();
     });
@@ -1004,6 +1057,7 @@ document.getElementById('country').addEventListener('change', function() {
   lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
   updateTaxRateInputDisplay();
   calculate();
+  updateExchangeBanner();
   updateHeroRate();
   updateRateBanner();
 });
