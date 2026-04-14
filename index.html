@@ -7,14 +7,7 @@
 <style>
   :root {
   --lucide-color: #7C3AED;
-}
-svg {
-  color: inherit;
-  fill: none;
-  stroke: currentColor;
-}
-
-    --purple-900: #5f33b8;
+  --purple-900: #5f33b8;
     --purple-800: #6D28D9;
     --purple-700: #7C3AED;
     --purple-600: #8B5CF6;
@@ -37,6 +30,13 @@ svg {
     --surface-muted: #FDF9FF;
     --border: #E9D5FF;
     --glass-stroke: rgba(212, 184, 232, 0.45);
+  }
+
+  /* Lucide icon SVGs - inherit color from parent */
+  svg[data-lucide] {
+    color: inherit;
+    fill: none;
+    stroke: currentColor;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.2s ease; }
@@ -1302,16 +1302,16 @@ svg {
           </select>
           <select id="historyCurrencyFilter" style="flex:1;">
             <option value="all">全部币种</option>
-            <option value="JPY">JPY</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="CNY">CNY</option>
-            <option value="GBP">GBP</option>
-            <option value="KRW">KRW</option>
-            <option value="THB">THB</option>
-            <option value="AUD">AUD</option>
-            <option value="SGD">SGD</option>
-            <option value="CHF">CHF</option>
+            <option value="JPY">日元</option>
+            <option value="USD">美元</option>
+            <option value="EUR">欧元</option>
+            <option value="CNY">人民币</option>
+            <option value="GBP">英镑</option>
+            <option value="KRW">韩元</option>
+            <option value="THB">泰铢</option>
+            <option value="AUD">澳元</option>
+            <option value="SGD">新加坡元</option>
+            <option value="CHF">瑞士法郎</option>
           </select>
         </div>
       </div>
