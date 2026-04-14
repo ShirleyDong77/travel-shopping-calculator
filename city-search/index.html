@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>城市ID查询</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+    background: linear-gradient(160deg, #f8f4ff 0%, #fff5f8 50%, #f0f4ff 100%);
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+  }
+  .container { max-width: 480px; margin: 0 auto; }
+
+  /* 头部 */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #7B6AFF, #A29BFE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #9B8FB8;
+    font-weight: 500;
+  }
+
+  /* 搜索框 */
+  .search-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 20px 20px;
+    box-shadow: 0 4px 24px rgba(108,92,231,0.10), 0 1px 3px rgba(108,92,231,0.06);
+    border: 1px solid rgba(155,143,251,0.15);
+    margin-bottom: 20px;
+  }
+  .search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FAFAFA;
+    border: 1.5px solid #E8E2F4;
+    border-radius: 16px;
+    padding: 0 16px;
+    transition: all 0.2s;
+  }
+  .search-wrapper:focus-within {
+    border-color: #9B8FFB;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(155,143,251,0.12);
+  }
+  .search-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+  .search-input {
+    flex: 1;
+    height: 52px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2D2045;
+    outline: none;
+    padding: 0;
+  }
+  .search-input::placeholder { color: #D0C4E8; font-weight: 500; }
+  .clear-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #E8E2F4;
+    border: none;
+    color: #9B8FB8;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    opacity: 0;
+  }
+  .clear-btn.show { opacity: 1; }
+  .clear-btn:hover { background: #D0C4E8; }
+
+  /* 结果统计 */
+  .result-meta {
+    font-size: 12px;
+    color: #9B8FB8;
+    margin-top: 10px;
+    padding: 0 4px;
+    font-weight: 600;
+  }
+
+  /* 结果列表 */
+  .result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .result-item {
+    background: rgba(255,255,255,0.80);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 16px 18px;
+    border: 1px solid rgba(155,143,251,0.10);
+    box-shadow: 0 2px 12px rgba(108,92,231,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+  .result-item:hover {
+    background: rgba(255,255,255,0.95);
+    border-color: rgba(155,143,251,0.25);
+    box-shadow: 0 4px 16px rgba(108,92,231,0.12);
+    transform: translateY(-1px);
+  }
+  .result-city {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2D2045;
+    letter-spacing: 0.3px;
+  }
+  .result-city .highlight {
+    color: #7B6AFF;
+    font-weight: 800;
+  }
+  .result-id {
+    font-size: 15px;
+    font-weight: 800;
+    color: #6C5CE7;
+    background: linear-gradient(135deg, #F0EDFF, #F8F5FF);
+    padding: 5px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #D8D0FF;
+    letter-spacing: 0.5px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+  }
+
+  /* 空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #C4B8E0;
+    font-size: 14px;
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* 全量列表标题 */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #9B8FB8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+  }
+
+  /* 全量城市列表 */
+  .all-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 0;
+  }
+  .city-tag {
+    background: rgba(255,255,255,0.70);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(155,143,251,0.10);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6C5CE7;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .city-tag:hover {
+    background: #F0EDFF;
+    border-color: #C4B0F8;
+    transform: translateY(-1px);
+  }
+  .city-tag .cid { color: #9B8FB8; font-weight: 700; margin-left: 4px; font-size: 12px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: linear-gradient(135deg, #7B6AFF, #A29BFE);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.25s;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(108,92,231,0.3);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* copy hint */
+  .copy-hint {
+    font-size: 11px;
+    color: #C4B8E0;
+    text-align: center;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>城市ID查询</h1>
+    <div class="subtitle">输入城市名，查找对应的 city_id</div>
+  </div>
+
+  <div class="search-card">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索城市名，如：杭州、广州、北京…" autofocus>
+      <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="result-meta" id="resultMeta"></div>
+  </div>
+
+  <div id="resultArea"></div>
+  <div class="copy-hint" id="copyHint"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let cityData = {};
+let allCities = [];
+
+// Load city data
+async function loadData() {
+  try {
+    const res = await fetch('city-id-map.json');
+    cityData = await res.json();
+    allCities = Object.entries(cityData).map(([name, id]) => ({ name, id }));
+    renderAllCities();
+  } catch (e) {
+    document.getElementById('resultArea').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>数据加载失败，请刷新重试</div>';
+  }
+}
+
+// Fuzzy search using simple substring + pinyin prefix matching
+function fuzzyMatch(query, cityName) {
+  query = query.toLowerCase();
+  const pinyinMap = {
+    '北':'b','上':'s','广':'g','深':'sh','杭':'h','成':'c','重':'zh','天':'t',
+    '南':'n','武':'w','西':'x','福':'f','长':'ch','济':'j','青':'q','哈':'ha',
+    '南':'n','郑':'zh','合':'he','长':'ch','沈':'sh','石':'sh','长':'ch',
+    '大':'d','南':'n','东':'d','无':'w','苏':'s','宁':'n','厦':'x',
+    '佛':'f','合':'he','济':'j','东':'d','佛':'f','佛':'f','佛':'f'
+  };
+  // Direct substring match
+  if (cityName.includes(query)) return true;
+  // First char pinyin match
+  const firstChar = cityName[0];
+  const firstPinyin = pinyinMap[firstChar] || '';
+  if (firstPinyin && firstPinyin.startsWith(query)) return true;
+  return false;
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const idx = text.indexOf(query);
+  if (idx === -1) return text;
+  return text.slice(0, idx) + '<span class="highlight">' + text.slice(idx, idx+query.length) + '</span>' + text.slice(idx+query.length);
+}
+
+function search() {
+  const query = document.getElementById('searchInput').value.trim();
+  const clearBtn = document.getElementById('clearBtn');
+  const resultMeta = document.getElementById('resultMeta');
+  const resultArea = document.getElementById('resultArea');
+  const copyHint = document.getElementById('copyHint');
+  const allListSection = document.getElementById('allListSection');
+
+  clearBtn.classList.toggle('show', query.length > 0);
+
+  if (!query) {
+    resultMeta.textContent = '';
+    resultArea.innerHTML = '';
+    copyHint.textContent = '';
+    if (allListSection) allListSection.style.display = '';
+    return;
+  }
+
+  if (allListSection) allListSection.style.display = 'none';
+
+  const results = allCities.filter(([name]) => fuzzyMatch(query, name)).slice(0, 20);
+  const total = results.length;
+
+  resultMeta.textContent = total > 0 ? `找到 ${total} 个匹配结果` : '';
+
+  if (results.length === 0) {
+    resultArea.innerHTML = '<div class="empty-state"><div class="icon">🔍</div>没有找到匹配的城市<br><span style="font-size:12px;color:#C4B8E0;margin-top:8px;display:block;">试试其他关键词，如：杭、北、上、广</span></div>';
+    copyHint.textContent = '';
+    return;
+  }
+
+  let html = '<div class="result-list">';
+  results.forEach(([name, id]) => {
+    html += `<div class="result-item" onclick="copyId('${id}','${name}')">
+      <span class="result-city">${highlight(name, query)}</span>
+      <span class="result-id">${id}</span>
+    </div>`;
+  });
+  html += '</div>';
+  resultArea.innerHTML = html;
+  copyHint.textContent = '👆 点击任意结果可复制 city_id';
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  search();
+  document.getElementById('searchInput').focus();
+}
+
+function copyId(id, name) {
+  navigator.clipboard.writeText(id).then(() => {
+    showToast(`${name} → ${id} 已复制`);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = id;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(`${name} → ${id} 已复制`);
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function renderAllCities() {
+  const resultArea = document.getElementById('resultArea');
+  const total = allCities.length;
+  let html = `<div id="allListSection"><div class="section-title">全部 ${total} 个城市</div><div class="all-list">`;
+  allCities.forEach(({ name, id }) => {
+    html += `<div class="city-tag" onclick="copyId('${id}','${name}')">${name}<span class="cid">${id}</span></div>`;
+  });
+  html += '</div></div>';
+  resultArea.innerHTML = html;
+}
+
+document.getElementById('searchInput').addEventListener('input', search);
+loadData();
+</script>
+</body>
+</html>
