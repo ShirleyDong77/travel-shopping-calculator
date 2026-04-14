@@ -1215,9 +1215,9 @@
         <div class="profile-hero">
           <img class="profile-avatar" id="profileAvatarPreview" alt="用户头像">
           <div class="profile-hero-copy">
-            <div class="profile-title">我的</div>
             <div class="profile-subtitle" id="profileHeroName">旅行买手</div>
             <div class="profile-copy" id="profileHeroMeta">未设置国籍，先完善信息吧。</div>
+            <div id="profileBadges" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;"></div>
           </div>
         </div>
       </div>
@@ -1333,7 +1333,8 @@ const COUNTRY_META = {
   uk: { name: '英国', emoji: '🇬🇧', taxRate: 0.20, currency: 'GBP', symbol: '£' },
   sg: { name: '新加坡', emoji: '🇸🇬', taxRate: 0.09, currency: 'SGD', symbol: 'S$' },
   ch: { name: '瑞士', emoji: '🇨🇭', taxRate: 0.08, currency: 'CHF', symbol: 'CHF ' },
-  us: { name: '美国', emoji: '🇺🇸', taxRate: 0.00, currency: 'USD', symbol: '$' }
+  us: { name: '美国', emoji: '🇺🇸', taxRate: 0.00, currency: 'USD', symbol: '$' },
+  cn: { name: '中国', emoji: '🇨🇳', taxRate: 0.00, currency: 'CNY', symbol: '¥' }
 };
 
 let currentDiscount = 0;
@@ -1735,6 +1736,23 @@ function buildNationalityOptions() {
   select.value = currentValue;
 }
 
+const BADGES = [
+  { id: '精致女孩', emoji: '💄', condition: (h) => h.filter(i => getCategory(i.itemName) === '美妆').length >= 3 },
+  { id: '时尚达人', emoji: '🛍️', condition: (h) => h.filter(i => ['鞋包','服饰'].includes(getCategory(i.itemName))).length >= 3 },
+  { id: '数码达人', emoji: '📱', condition: (h) => h.filter(i => getCategory(i.itemName) === '电子').length >= 3 },
+  { id: '买遍全球', emoji: '🌍', condition: (h) => new Set(h.map(i => i.country)).size >= 5 },
+  { id: '记账高手', emoji: '📒', condition: (h) => h.length >= 10 },
+  { id: '初来乍到', emoji: '🌱', condition: (h) => h.length >= 1 && h.length <= 2 }
+];
+function computeBadges(history = getHistory()) {
+  return BADGES.filter(b => b.condition(history));
+}
+function renderProfileBadges(history = getHistory()) {
+  const el = document.getElementById('profileBadges');
+  if (!el) return;
+  const earned = computeBadges(history);
+  el.innerHTML = earned.map(b => `<span title="${b.id}" style="font-size:22px;cursor:default;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${b.emoji}</span>`).join('');
+}
 function getProfileStats(history = getHistory()) {
   const countryMap = new Map();
   history.forEach(item => {
@@ -1801,6 +1819,7 @@ function renderProfile(history = getHistory()) {
       `).join('')
       : '<div class="profile-empty">暂无历史记录，保存几笔后这里会自动统计。</div>';
   }
+  renderProfileBadges(history);
 }
 
 function handleProfileAvatarUpload(file) {
