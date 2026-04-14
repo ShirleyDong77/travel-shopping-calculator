@@ -517,7 +517,8 @@
   .confirm-dialog-btn.cancel { background: rgba(255,255,255,0.18); color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
   .confirm-dialog-btn.danger { background: #EF4444; color: #fff; box-shadow: 0 8px 24px rgba(239,68,68,0.4); }
   .history-price { font-size: 18px; color: var(--purple-700); font-weight: 800; text-align: right; flex-shrink: 0; margin-left: 12px; }
-  .history-cny { font-size: 18px; font-weight: 800; color: var(--purple-700); }
+  .history-final { font-size: 18px; font-weight: 800; color: var(--purple-700); white-space: nowrap; }
+  .history-orig { color: var(--text-500); font-size: 12px; }
   .history-orig { font-size: 11px; color: var(--text-500); margin-top: 3px; }
   .history-page-layout {
     display: flex;
@@ -528,17 +529,21 @@
     padding: 16px;
   }
   .history-page-header {
+    margin-bottom: 10px;
+  }
+  .history-title-row {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 14px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
   }
   .history-page-title {
     font-size: 22px;
     font-weight: 800;
     color: var(--ink-900);
     letter-spacing: -0.03em;
+    white-space: nowrap;
   }
   .history-page-copy {
     margin-top: 4px;
@@ -573,13 +578,26 @@
     cursor: not-allowed;
     box-shadow: none;
   }
-  .history-filter-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+  .history-filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
   }
-  .history-filter-grid .form-group:last-child {
-    grid-column: 1 / -1;
+  .history-filter-row select {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text-900);
+    appearance: auto;
+  }
+  .history-list-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    justify-content: flex-end;
   }
   .history-selection-bar {
     display: none;
@@ -1262,51 +1280,11 @@
     <div class="history-page-layout">
       <div class="card history-filter-card">
         <div class="history-page-header">
-          <div>
-            <div class="history-page-title">历史记录</div>
-            <div class="history-page-copy">按时间、币种和商品快速筛选</div>
-          </div>
-          <div class="history-page-actions">
-            <button class="history-action-btn secondary" type="button" id="historyMultiSelectBtn" onclick="enterHistoryMultiSelect()">多选</button>
-            <button class="history-action-btn secondary" type="button" id="historyCancelBtn" onclick="exitHistoryMultiSelect()" style="display:none;">取消</button>
-            <button class="history-action-btn danger" type="button" id="historyDeleteBtn" onclick="deleteSelectedHistory()" style="display:none;">删除(已选0)</button>
-          </div>
-        </div>
-        <div class="history-filter-grid">
-          <div class="form-group">
-            <label for="historyDateFilter">日期筛选</label>
-            <select id="historyDateFilter">
-              <option value="all">全部</option>
-              <option value="today">今天</option>
-              <option value="yesterday">昨天</option>
-              <option value="week">本周</option>
-              <option value="month">本月</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="historyCurrencyFilter">币种筛选</label>
-            <select id="historyCurrencyFilter">
-              <option value="all">全部</option>
-              <option value="JPY">JPY</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="CNY">CNY</option>
-              <option value="GBP">GBP</option>
-              <option value="KRW">KRW</option>
-              <option value="THB">THB</option>
-              <option value="AUD">AUD</option>
-              <option value="SGD">SGD</option>
-              <option value="CHF">CHF</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="historySearchInput">商品搜索</label>
-            <input id="historySearchInput" type="text" placeholder="搜索商品名称">
-          </div>
-          <div class="form-group">
-            <label for="historyCategoryFilter">分类筛选</label>
-            <select id="historyCategoryFilter">
-              <option value="all">全部</option>
+          <div class="history-title-row">
+            <span class="history-page-title">历史记录</span>
+            <input id="historySearchInput" type="text" placeholder="🔍 搜索商品" style="flex:1;min-width:0;">
+            <select id="historyCategoryFilter" style="width:auto;min-width:0;">
+              <option value="all">全部分类</option>
               <option value="鞋包">鞋包</option>
               <option value="美妆">美妆</option>
               <option value="服饰">服饰</option>
@@ -1322,12 +1300,38 @@
             </select>
           </div>
         </div>
+        <div class="history-filter-row">
+          <select id="historyDateFilter" style="flex:1;">
+            <option value="all">全部日期</option>
+            <option value="today">今天</option>
+            <option value="yesterday">昨天</option>
+            <option value="week">本周</option>
+            <option value="month">本月</option>
+          </select>
+          <select id="historyCurrencyFilter" style="flex:1;">
+            <option value="all">全部币种</option>
+            <option value="JPY">JPY</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="CNY">CNY</option>
+            <option value="GBP">GBP</option>
+            <option value="KRW">KRW</option>
+            <option value="THB">THB</option>
+            <option value="AUD">AUD</option>
+            <option value="SGD">SGD</option>
+            <option value="CHF">CHF</option>
+          </select>
+        </div>
       </div>
 
       <div class="card history-list-card">
-        <div class="history-selection-bar" id="historySelectionBar">
+        <div class="history-list-header">
+          <button class="history-action-btn secondary" type="button" id="historyMultiSelectBtn" onclick="enterHistoryMultiSelect()">多选</button>
+          <button class="history-action-btn secondary" type="button" id="historyCancelBtn" onclick="exitHistoryMultiSelect()" style="display:none;">取消</button>
+          <button class="history-action-btn danger" type="button" id="historyDeleteBtn" onclick="deleteSelectedHistory()" style="display:none;">删除(<span id="historySelectedCount">0</span>)</button>
+        </div>
+        <div class="history-selection-bar" id="historySelectionBar" style="display:none;">
           <span id="historySelectionCount">已选0条</span>
-          <span class="history-selection-copy">点击记录可多选，删除后会同步更新本地历史</span>
         </div>
         <div class="history-list-container" id="historyPageList">
           <div class="empty-state">暂无历史记录，开始算一笔吧～</div>
@@ -1366,31 +1370,7 @@
         </div>
       </div>
 
-      <div class="card profile-card">
-        <div class="profile-section-title">用户设置</div>
-        <div class="profile-avatar-row">
-          <img class="profile-avatar" id="profileAvatarSetting" alt="头像预览">
-          <div class="profile-avatar-meta">
-            <label class="profile-upload-btn" for="profileAvatarInput">上传头像</label>
-            <input class="profile-upload-input" id="profileAvatarInput" type="file" accept="image/*">
-            <div class="profile-avatar-hint">支持本地图片，保存在当前浏览器。</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="profileNickname">昵称</label>
-          <input id="profileNickname" type="text" placeholder="输入你的昵称" maxlength="20" onfocus="this.select()">
-        </div>
-
-        <div class="form-group">
-          <label for="profileNationality">国籍</label>
-          <select id="profileNationality">
-            <option value="">请选择国籍</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card profile-card">
+      
         <div class="profile-section-title">数据统计</div>
         <div class="profile-stat-grid">
           <div class="profile-stat-item">
@@ -1401,9 +1381,6 @@
             <div class="profile-stat-label">覆盖国家数</div>
             <div class="profile-stat-value" id="profileCountryCount">0</div>
           </div>
-        </div>
-        <div class="profile-country-list" id="profileCountryStats">
-          <div class="profile-empty">暂无历史记录，保存几笔后这里会自动统计。</div>
         </div>
         <div class="profile-chart-section" id="profileChartSection"></div>
       </div>
@@ -1433,7 +1410,8 @@
         </div>
         <div class="form-group">
           <label for="profileEditNationality">国籍</label>
-          <select id="profileEditNationality"></select>
+          <select id="profileEditNationality" onchange="onNationalityChanged()"></select>
+          <div id="nationalityWarning" style="display:none;font-size:11px;color:#EF4444;margin-top:4px;">⚠️ 修改后不能再变更了，请确认</div>
         </div>
         <button class="save-btn" style="margin-top:8px;" onclick="saveProfileEdit()">保存修改</button>
         <button class="clear-btn" style="margin-top:8px;width:100%;" type="button" onclick="closeProfileEdit()">取消</button>
@@ -1764,6 +1742,22 @@ function getRateBetween(fromCurrency, toCurrency) {
   if (apiRates[toCurrency]?.[fromCurrency]) return 1 / apiRates[toCurrency][fromCurrency];
   return 0;
 }
+function getUserDisplayCurrency() {
+  const settings = getProfileSettings();
+  const nationality = settings.nationality || '';
+  return nationality && COUNTRY_META[nationality] ? COUNTRY_META[nationality] : null;
+}
+function convertCnyToUserCurrency(cnyAmount) {
+  const meta = getUserDisplayCurrency();
+  if (!meta) return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
+  if (meta.currency === 'CNY') return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
+  const rate = getSourceToCnyRate(meta.currency);
+  if (rate > 0) {
+    const userAmount = cnyAmount / rate;
+    return { amount: userAmount, symbol: meta.symbol, currency: meta.currency, formatted: formatAmount(userAmount, meta.currency, meta.symbol) };
+  }
+  return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
+}
 
 function getSourceToCnyRate(currencyCode) {
   if (currencyCode === 'CNY') return 1;
@@ -1968,6 +1962,14 @@ function saveProfileEdit() {
   const avatar = document.getElementById('profileEditAvatarPreview').src;
   saveProfileSettings({ nickname, nationality, avatar });
   closeProfileEdit();
+  renderProfile();
+}
+function onNationalityChanged() {
+  const select = document.getElementById('profileEditNationality');
+  const warning = document.getElementById('nationalityWarning');
+  if (!select || !warning) return;
+  // Show warning when user tries to change nationality
+  warning.style.display = 'block';
 }
 function handleProfileAvatarUpload(file, previewId) {
   if (!file) return;
@@ -2430,11 +2432,11 @@ function buildHistoryMarkup(history) {
                 <div class="history-name">${escapeHtml(item.itemName)}</div>
                 <div class="history-meta">
                   <span class="category-badge ${cat}">${cat}</span>
-                  <span>${origAmt} ${item.countryName}</span>
+                  <span class="history-orig">${origAmt} ${item.countryName}</span>
                   <span class="history-badge time">${item.savedAtTime}</span>
                 </div>
               </div>
-              <div class="history-cny">¥${cnyAmt}</div>
+              <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item)).formatted}</div>
             </div>
           </div>
           <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
@@ -2459,10 +2461,10 @@ function buildCompactHistoryMarkup(history) {
         <div class="history-name">${escapeHtml(item.itemName)}</div>
         <div class="history-meta">
           <span class="category-badge ${cat}">${cat}</span>
-          <span>${origAmt} ${item.countryName}</span>
+          <span class="history-orig">${origAmt} ${item.countryName}</span>
         </div>
       </div>
-      <div class="history-cny">¥${cnyAmt}</div>
+      <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item)).formatted}</div>
     </div>`;
   }).join('');
 }
@@ -2554,7 +2556,8 @@ function updateHistorySelectionUI() {
   if (selectionBar) selectionBar.classList.toggle('show', historyMultiSelectMode);
   if (deleteBtn) {
     deleteBtn.style.display = historyMultiSelectMode ? 'inline-flex' : 'none';
-    deleteBtn.textContent = `删除(已选${count})`;
+    const countSpan = deleteBtn.querySelector('#historySelectedCount');
+    if (countSpan) countSpan.textContent = count;
     deleteBtn.disabled = count === 0;
   }
   if (multiBtn) multiBtn.style.display = historyMultiSelectMode ? 'none' : 'inline-flex';
@@ -2639,18 +2642,10 @@ function handleHistoryItemClick(timestamp) {
 
 function deleteSelectedHistory() {
   if (!historyCheckedIds.size) return;
-  showConfirmDialog({
-    title: '确认删除？',
-    desc: `删除 ${historyCheckedIds.size} 条历史记录`,
-    confirmText: '删除',
-    danger: true,
-    onConfirm: () => {
-      const nextHistory = getHistory().filter(item => !historyCheckedIds.has(item.timestamp));
-      saveHistory(nextHistory);
-      exitHistoryMultiSelect();
-      renderHistory();
-    }
-  });
+  const nextHistory = getHistory().filter(item => !historyCheckedIds.has(item.timestamp));
+  saveHistory(nextHistory);
+  exitHistoryMultiSelect();
+  renderHistory();
 }
 
 function renderHistory() {
