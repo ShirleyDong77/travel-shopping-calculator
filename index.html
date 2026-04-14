@@ -513,50 +513,93 @@
   .bottom-tabbar {
     position: fixed;
     left: 50%;
-    bottom: 0;
+    bottom: calc(12px + env(safe-area-inset-bottom));
     transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
+    width: calc(100% - 24px);
+    max-width: 456px;
     z-index: 100;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    height: 56px;
-    padding: 0 8px env(safe-area-inset-bottom);
-    background: rgba(255, 255, 255, 0.85);
-    border-top: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 -8px 30px rgba(139, 92, 246, 0.10);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 10px;
+    border-radius: 28px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(250,244,255,0.72) 100%);
+    border: 1px solid rgba(255,255,255,0.72);
+    box-shadow:
+      0 18px 40px rgba(104, 66, 171, 0.18),
+      inset 0 1px 0 rgba(255,255,255,0.72);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+  }
+  .bottom-tabbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0));
+    pointer-events: none;
   }
   .tab-btn {
+    position: relative;
+    z-index: 1;
     border: none;
-    border-radius: 16px;
+    border-radius: 20px;
     background: transparent;
-    height: 56px;
-    padding: 8px 10px;
+    min-height: 68px;
+    padding: 8px 6px 7px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    color: var(--text-600);
+    gap: 5px;
+    color: rgba(79, 45, 140, 0.56);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .tab-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0);
+    box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0);
   }
   .tab-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.15;
   }
-  .tab-emoji {
-    font-size: 18px;
+  .tab-label {
     line-height: 1;
+    font-size: 11px;
   }
   .tab-btn.active {
-    color: var(--purple-600);
-    background: rgba(139, 92, 246, 0.10);
-    box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.12);
+    color: var(--purple-700);
+    background: linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.12) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.62),
+      inset 0 0 0 1px rgba(139, 92, 246, 0.12);
+  }
+  .tab-btn.active .tab-icon-wrap {
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.18) 0%, rgba(124, 58, 237, 0.12) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.62),
+      0 8px 18px rgba(124, 58, 237, 0.16),
+      inset 0 0 0 1px rgba(139, 92, 246, 0.18);
+  }
+  .tab-btn.active .tab-label {
+    color: var(--purple-700);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .bottom-tabbar {
+      background: rgba(255, 255, 255, 0.96);
+    }
   }
 
   /* Bottom Sheet Modal */
@@ -807,16 +850,22 @@
 
 <nav class="bottom-tabbar" aria-label="底部导航">
   <button class="tab-btn active" type="button" data-tab="calc" onclick="goToTab('calc')">
-    <span class="tab-emoji" aria-hidden="true">🧮</span>
-    <span>计算</span>
+    <span class="tab-icon-wrap" aria-hidden="true">
+      <i data-lucide="calculator" aria-hidden="true"></i>
+    </span>
+    <span class="tab-label">计算</span>
   </button>
   <button class="tab-btn" type="button" data-tab="history" onclick="goToTab('history')">
-    <span class="tab-emoji" aria-hidden="true">📋</span>
-    <span>历史</span>
+    <span class="tab-icon-wrap" aria-hidden="true">
+      <i data-lucide="clipboard-list" aria-hidden="true"></i>
+    </span>
+    <span class="tab-label">历史</span>
   </button>
   <button class="tab-btn" type="button" data-tab="profile" onclick="goToTab('profile')">
-    <span class="tab-emoji" aria-hidden="true">👤</span>
-    <span>我的</span>
+    <span class="tab-icon-wrap" aria-hidden="true">
+      <i data-lucide="user-round" aria-hidden="true"></i>
+    </span>
+    <span class="tab-label">我的</span>
   </button>
 </nav>
 </div>
