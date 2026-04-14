@@ -2526,8 +2526,9 @@ function updateHistoryCurrencyFilterOptions(history = getHistory()) {
     .filter(Boolean);
   const optionValues = ['all', ...Array.from(new Set([...baseCurrencies, ...historyCurrencies])).sort()];
 
+  const CURRENCY_NAMES = { JPY:'日元', USD:'美元', EUR:'欧元', CNY:'人民币', GBP:'英镑', KRW:'韩元', THB:'泰铢', AUD:'澳元', SGD:'新加坡元', CHF:'瑞士法郎' };
   filter.innerHTML = optionValues.map(value => {
-    const label = value === 'all' ? '全部' : value;
+    const label = value === 'all' ? '全部' : (CURRENCY_NAMES[value] || value);
     return `<option value="${value}">${label}</option>`;
   }).join('');
   filter.value = optionValues.includes(currentValue) ? currentValue : 'all';
