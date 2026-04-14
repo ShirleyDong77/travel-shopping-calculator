@@ -1940,9 +1940,12 @@ function openProfileEdit() {
   select.innerHTML = Object.entries(COUNTRY_META).map(([code, meta]) =>
     `<option value="${code}">${meta.emoji} ${meta.name}</option>`).join('');
   select.value = nationality;
-  document.getElementById('profileEditAvatarInput').addEventListener('change', function(e) {
-    handleProfileAvatarUpload(e.target.files?.[0], 'profileEditAvatarPreview');
-  }, { once: true });
+  var fileInput = document.getElementById('profileEditAvatarInput');
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      handleProfileAvatarUpload(e.target.files?.[0], 'profileEditAvatarPreview');
+    });
+  }
   document.getElementById('profileEditOverlay').classList.add('show');
 }
 function closeProfileEdit() {
