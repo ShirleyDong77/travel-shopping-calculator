@@ -77,6 +77,13 @@ describe('旅行购物计算器 - 代码结构测试', () => {
     expect(html).toContain('function getHistory()');
   });
 
+  test('保存按钮下方显示动态汇率注释并支持中英文', () => {
+    expect(html).toContain('id="saveExchangeNote"');
+    expect(html).toContain('function updateSaveExchangeNote()');
+    expect(html).toContain('1 CNY =');
+    expect(html).toContain('Calculated using reference exchange rate');
+  });
+
   test('包含COUNTRY_META配置', () => {
     expect(html).toContain('COUNTRY_META');
     expect(html).toContain("fr:");
