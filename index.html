@@ -678,41 +678,154 @@
   .profile-card {
     padding: 18px;
   }
-  .profile-hero {
+  /* 小红书风格头像区 */
+  .profile-hero-card {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(124,58,237,0.3);
+  }
+  .profile-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -30px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .profile-hero-main {
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-bottom: 16px;
   }
-  .profile-avatar {
-    width: 76px;
-    height: 76px;
-    border-radius: 24px;
+  .profile-hero-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
     object-fit: cover;
-    border: 2px solid rgba(139, 92, 246, 0.14);
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(233, 213, 255, 0.82));
-    box-shadow: 0 16px 28px rgba(139, 92, 246, 0.12);
+    border: 3px solid rgba(255,255,255,0.4);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     flex-shrink: 0;
   }
-  .profile-hero-copy {
-    min-width: 0;
+  .profile-hero-info { flex: 1; min-width: 0; }
+  .profile-hero-name {
+    font-size: 24px; font-weight: 800; color: #fff;
+    line-height: 1.2;
   }
-  .profile-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--ink-900);
-  }
-  .profile-subtitle {
+  .profile-hero-meta {
+    font-size: 13px; color: rgba(255,255,255,0.8);
     margin-top: 4px;
-    font-size: 14px;
-    font-weight: 700;
+  }
+  .profile-hero-edit-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(8px);
+  }
+  .profile-hero-stats {
+    display: flex;
+    gap: 0;
+    background: rgba(255,255,255,0.12);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .profile-hero-stat {
+    flex: 1;
+    text-align: center;
+    padding: 10px 8px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  .profile-hero-stat:last-child { border-right: none; }
+  .profile-hero-stat-value {
+    font-size: 20px; font-weight: 800; color: #fff;
+  }
+  .profile-hero-stat-label {
+    font-size: 11px; color: rgba(255,255,255,0.65);
+    margin-top: 2px;
+  }
+  .profile-edit-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.55);
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 9999; padding: 0;
+    backdrop-filter: blur(4px);
+  }
+  .profile-edit-overlay.show { display: flex; }
+  .profile-edit-sheet {
+    width: 100%; max-width: 480px;
+    max-height: 88vh;
+    background: #fff;
+    border-radius: 28px 28px 0 0;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  .profile-edit-overlay.show .profile-edit-sheet { transform: translateY(0); }
+  .profile-edit-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #F3E8FF;
+  }
+  .profile-edit-title { font-size: 17px; font-weight: 700; color: var(--text-900); }
+  .profile-edit-close {
+    width: 32px; height: 32px;
+    border-radius: 50%; background: #F5F3FF;
+    border: none; color: var(--purple-600);
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .profile-edit-body {
+    padding: 16px 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .profile-edit-avatar-row {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .profile-edit-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(139,92,246,0.2);
+  }
+  .profile-edit-upload {
+    display: inline-flex; align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #F5F3FF;
     color: var(--ink-700);
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    border: 1px solid rgba(139,92,246,0.1);
   }
-  .profile-copy {
-    margin-top: 6px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--text-600);
-  }
+  .profile-edit-upload input { display: none; }
+  .profile-edit-hint { font-size: 12px; color: var(--text-500); margin-top: 6px; }
+
+  /* SVG 饼图 */
+  .profile-chart-section { margin-top: 16px; }
+  .profile-chart-title { font-size: 15px; font-weight: 700; color: var(--text-900); margin-bottom: 12px; }
+  .profile-pie-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .profile-pie-svg { flex-shrink: 0; }
+  .profile-pie-legend { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 6px; }
+  .profile-pie-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-600); }
+  .profile-pie-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .profile-pie-bar { flex: 1; min-width: 0; }
+  .profile-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .profile-bar-label { font-size: 12px; color: var(--text-600); width: 40px; flex-shrink: 0; }
+  .profile-bar-track { flex: 1; height: 8px; background: #F3E8FF; border-radius: 999px; overflow: hidden; }
+  .profile-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #8B5CF6, #A78BFA); transition: width 0.4s ease; }
+  .profile-bar-count { font-size: 11px; color: var(--text-500); width: 28px; text-align: right; flex-shrink: 0; }
   .profile-section-title {
     font-size: 17px;
     font-weight: 800;
@@ -1226,13 +1339,30 @@
   <div class="page" id="profile-page" data-route="profile">
     <div class="profile-layout">
       <div class="card profile-card">
-        <div class="profile-hero">
-          <img class="profile-avatar" id="profileAvatarPreview" alt="用户头像">
-          <div class="profile-hero-copy">
-            <div class="profile-subtitle" id="profileHeroName">旅行买手</div>
-            <div class="profile-copy" id="profileHeroMeta">未设置国籍，先完善信息吧。</div>
-            <div id="profileBadges" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+        <div class="profile-hero-card" id="profileHeroCard">
+          <div class="profile-hero-main">
+            <img class="profile-hero-avatar" id="profileAvatarPreview" alt="头像">
+            <div class="profile-hero-info">
+              <div class="profile-hero-name" id="profileHeroName">旅行买手</div>
+              <div class="profile-hero-meta" id="profileHeroMeta">设置国籍，获得专属体验</div>
+            </div>
+            <button class="profile-hero-edit-btn" onclick="openProfileEdit()" title="编辑资料">✎</button>
           </div>
+          <div class="profile-hero-stats" id="profileHeroStats">
+            <div class="profile-hero-stat">
+              <div class="profile-hero-stat-value" id="profileStatTotal">0</div>
+              <div class="profile-hero-stat-label">总记录</div>
+            </div>
+            <div class="profile-hero-stat">
+              <div class="profile-hero-stat-value" id="profileStatCountries">0</div>
+              <div class="profile-hero-stat-label">国家</div>
+            </div>
+            <div class="profile-hero-stat">
+              <div class="profile-hero-stat-value" id="profileStatMonth">0</div>
+              <div class="profile-hero-stat-label">本月</div>
+            </div>
+          </div>
+          <div id="profileBadges" style="margin-top:12px;"></div>
         </div>
       </div>
 
@@ -1275,6 +1405,38 @@
         <div class="profile-country-list" id="profileCountryStats">
           <div class="profile-empty">暂无历史记录，保存几笔后这里会自动统计。</div>
         </div>
+        <div class="profile-chart-section" id="profileChartSection"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑资料面板 -->
+  <div class="profile-edit-overlay" id="profileEditOverlay">
+    <div class="profile-edit-sheet">
+      <div class="profile-edit-header">
+        <div class="profile-edit-title">编辑资料</div>
+        <button class="profile-edit-close" onclick="closeProfileEdit()">×</button>
+      </div>
+      <div class="profile-edit-body">
+        <div class="profile-edit-avatar-row">
+          <img class="profile-edit-avatar" id="profileEditAvatarPreview" alt="头像">
+          <div>
+            <label class="profile-edit-upload" for="profileEditAvatarInput">更换头像
+              <input class="profile-edit-upload-input" id="profileEditAvatarInput" type="file" accept="image/*">
+            </label>
+            <div class="profile-edit-hint">支持本地图片</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="profileEditNickname">昵称</label>
+          <input id="profileEditNickname" type="text" placeholder="输入你的昵称" maxlength="20" onfocus="this.select()">
+        </div>
+        <div class="form-group">
+          <label for="profileEditNationality">国籍</label>
+          <select id="profileEditNationality"></select>
+        </div>
+        <button class="save-btn" style="margin-top:8px;" onclick="saveProfileEdit()">保存修改</button>
+        <button class="clear-btn" style="margin-top:8px;width:100%;" type="button" onclick="closeProfileEdit()">取消</button>
       </div>
     </div>
   </div>
@@ -1779,8 +1941,103 @@ function renderProfileBadges(history = getHistory()) {
   if (!el) return;
   const earned = computeBadges(history);
   if (!earned.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">' +
-    earned.map(b => `<div title="${b.id}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#F3E8FF,#EDE9FE);border:1px solid #DDD6FE;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--purple-700);cursor:default;white-space:nowrap;"><span style="font-size:13px;">${b.emoji}</span>${b.id}</div>`).join('') + '</div>';
+  el.innerHTML = earned.map(b => `<div title="${b.id}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#F3E8FF,#EDE9FE);border:1px solid #DDD6FE;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--purple-700);cursor:default;white-space:nowrap;"><span style="font-size:13px;">${b.emoji}</span>${b.id}</div>`).join('');
+}
+function openProfileEdit() {
+  const settings = getProfileSettings();
+  const nickname = settings.nickname || '';
+  const nationality = settings.nationality || '';
+  document.getElementById('profileEditNickname').value = nickname;
+  document.getElementById('profileEditAvatarPreview').src = settings.avatar || DEFAULT_PROFILE_AVATAR;
+  // Build nationality options
+  const select = document.getElementById('profileEditNationality');
+  select.innerHTML = Object.entries(COUNTRY_META).map(([code, meta]) =>
+    `<option value="${code}">${meta.emoji} ${meta.name}</option>`).join('');
+  select.value = nationality;
+  document.getElementById('profileEditAvatarInput').addEventListener('change', function(e) {
+    handleProfileAvatarUpload(e.target.files?.[0], 'profileEditAvatarPreview');
+  }, { once: true });
+  document.getElementById('profileEditOverlay').classList.add('show');
+}
+function closeProfileEdit() {
+  document.getElementById('profileEditOverlay').classList.remove('show');
+}
+function saveProfileEdit() {
+  const nickname = document.getElementById('profileEditNickname').value.trim() || '旅行买手';
+  const nationality = document.getElementById('profileEditNationality').value;
+  const avatar = document.getElementById('profileEditAvatarPreview').src;
+  saveProfileSettings({ nickname, nationality, avatar });
+  closeProfileEdit();
+}
+function handleProfileAvatarUpload(file, previewId) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const preview = document.getElementById(previewId || 'profileEditAvatarPreview');
+    if (preview) preview.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function renderProfileHeroStats(history = getHistory()) {
+  const total = history.length;
+  const countries = new Set(history.map(i => i.country)).size;
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const monthCount = history.filter(i => i.timestamp >= monthStart).length;
+  const statTotal = document.getElementById('profileStatTotal');
+  const statCountries = document.getElementById('profileStatCountries');
+  const statMonth = document.getElementById('profileStatMonth');
+  if (statTotal) statTotal.textContent = total;
+  if (statCountries) statCountries.textContent = countries;
+  if (statMonth) statMonth.textContent = monthCount;
+}
+function renderProfileChart(history = getHistory()) {
+  const section = document.getElementById('profileChartSection');
+  if (!section) return;
+  if (!history.length) { section.innerHTML = ''; return; }
+  // Category distribution (pie chart)
+  const catMap = {};
+  history.forEach(i => { const c = getCategory(i.itemName); catMap[c] = (catMap[c]||0)+1; });
+  const entries = Object.entries(catMap).sort((a,b) => b[1]-a[1]);
+  const total = history.length;
+  const colors = ['#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#EF4444','#6366F1','#14B8A6','#F97316','#84CC16'];
+  let startAngle = 0;
+  let paths = '';
+  let legendItems = '';
+  entries.forEach(([cat, count], i) => {
+    const pct = count / total;
+    const angle = pct * 360;
+    const endAngle = startAngle + angle;
+    const large = angle > 180 ? 1 : 0;
+    const x1 = 50 + 40 * Math.sin(startAngle * Math.PI / 180);
+    const y1 = 50 - 40 * Math.cos(startAngle * Math.PI / 180);
+    const x2 = 50 + 40 * Math.sin(endAngle * Math.PI / 180);
+    const y2 = 50 - 40 * Math.cos(endAngle * Math.PI / 180);
+    if (angle === 360) {
+      paths += `<circle cx="50" cy="50" r="40" fill="${colors[i%colors.length]}" opacity="0.9"/>`;
+    } else {
+      paths += `<path d="M50,50 L${x1},${y1} A40,40 0,${large},1 ${x2},${y2} Z" fill="${colors[i%colors.length]}" opacity="0.9"/>`;
+    }
+    const pctStr = (pct*100).toFixed(0);
+    legendItems += `<div class="profile-pie-legend-item"><span class="profile-pie-dot" style="background:${colors[i%colors.length]}"></span>${cat} ${count}次(${pctStr}%)</div>`;
+    startAngle = endAngle;
+  });
+  // Bar chart (countries)
+  const countryMap = {};
+  history.forEach(i => { const c = COUNTRY_META[i.country]?.name || i.countryName || '未知'; countryMap[c] = (countryMap[c]||0)+1; });
+  const topCountries = Object.entries(countryMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxCount = topCountries[0]?.[1]||1;
+  let barRows = topCountries.map(([name, count]) => {
+    const pct = (count/maxCount*100).toFixed(0);
+    return `<div class="profile-bar-row"><span class="profile-bar-label">${name}</span><div class="profile-bar-track"><div class="profile-bar-fill" style="width:${pct}%"></div></div><span class="profile-bar-count">${count}</span></div>`;
+  }).join('');
+  section.innerHTML = `
+    <div class="profile-chart-title">📊 消费分布</div>
+    <div class="profile-pie-wrap">
+      <svg class="profile-pie-svg" width="100" height="100" viewBox="0 0 100 100">${paths}</svg>
+      <div class="profile-pie-legend">${legendItems}</div>
+    </div>
+    ${topCountries.length ? `<div class="profile-chart-title" style="margin-top:16px;">🌍 国家排行</div><div class="profile-pie-bar">${barRows}</div>` : ''}`;
 }
 function getProfileStats(history = getHistory()) {
   const countryMap = new Map();
@@ -1835,7 +2092,11 @@ function renderProfile(history = getHistory()) {
   if (nicknameInput && nicknameInput.value !== (settings.nickname || '')) {
     nicknameInput.value = settings.nickname || '';
   }
-  if (nationalitySelect) nationalitySelect.value = settings.nationality || '';
+  if (nationalitySelect) {
+    nationalitySelect.innerHTML = Object.entries(COUNTRY_META)
+      .map(([code, meta]) => `<option value="${code}">${meta.emoji} ${meta.name}</option>`).join('');
+    nationalitySelect.value = settings.nationality || '';
+  }
   if (totalRecordsEl) totalRecordsEl.textContent = String(stats.totalRecords);
   if (totalCountriesEl) totalCountriesEl.textContent = String(stats.totalCountries);
   if (countryStatsEl) {
@@ -1849,6 +2110,8 @@ function renderProfile(history = getHistory()) {
       : '<div class="profile-empty">暂无历史记录，保存几笔后这里会自动统计。</div>';
   }
   renderProfileBadges(history);
+  renderProfileHeroStats(history);
+  renderProfileChart(history);
 }
 
 function handleProfileAvatarUpload(file) {
@@ -2525,8 +2788,11 @@ const router = VueRouter.createRouter({
 
 router.afterEach(to => {
   updateActivePage(to.path);
-  if (getActiveTabFromPath(to.path) === 'history') {
+  const tab = getActiveTabFromPath(to.path);
+  if (tab === 'history') {
     renderHistoryPage(applyHistoryFilter());
+  } else if (tab === 'profile') {
+    renderProfile();
   }
 });
 
