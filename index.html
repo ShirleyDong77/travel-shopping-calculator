@@ -387,6 +387,8 @@
     cursor: pointer;
     font-weight: 600;
   }
+  .history-date-group { margin-bottom: 8px; }
+  .history-date-label { font-size: 11px; color: var(--text-500); padding: 8px 0 4px 0; font-weight: 600; }
 
   .history-item {
     background: #fff;
@@ -549,9 +551,9 @@
       <div class="exchange-banner-copy">
         <span class="exchange-banner-label">实时汇率</span>
         <div class="exchange-banner-rate" id="heroRatePair">1 JPY = <strong>0.0000 CNY</strong></div>
-        <div class="exchange-banner-meta" id="heroRateSource">汇率更新时间 — · exchangerate-api.com</div>
+        <div class="exchange-banner-meta" id="heroRateSource">汇率更新时间 —</div>
       </div>
-      <div class="exchange-badge" id="exchangeBadge">Live</div>
+      <div class="exchange-badge" id="exchangeBadge">实时</div>
     </div>
 
     <div class="form-group">
@@ -810,6 +812,18 @@ function formatHistoryTime(dateValue) {
   return `${h}:${min}`;
 }
 
+function formatHistoryDateLabel(dateValue) {
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  const today = new Date();
+  const startOfTarget = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diffDays = Math.round((startOfToday - startOfTarget) / 86400000);
+
+  if (diffDays === 0) return '今天';
+  if (diffDays === 1) return '昨天';
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
 function normalizeHistory(history) {
   return history
     .map(item => {
@@ -878,7 +892,7 @@ function updateExchangeBanner() {
 
   if (status === 'loading') {
     heroEl.innerHTML = `1 ${meta.currency} = <strong>获取中...</strong>`;
-    sourceEl.textContent = '正在请求 exchangerate-api.com';
+    sourceEl.textContent = '汇率更新时间 —';
     badgeEl.textContent = 'Loading';
     banner.style.display = 'flex';
     return;
@@ -894,9 +908,9 @@ function updateExchangeBanner() {
 
   heroEl.innerHTML = `1 ${meta.currency} = <strong>${formatExchangeRate(rate)} CNY</strong>`;
   sourceEl.textContent = rateUpdatedAtMap[meta.currency]
-    ? `汇率更新时间 ${rateUpdatedAtMap[meta.currency]} · exchangerate-api.com`
-    : '汇率来源 exchangerate-api.com';
-  badgeEl.textContent = status === 'cached' ? 'Cached' : status === 'offline' ? 'Offline' : 'Live';
+    ? `汇率更新时间 ${rateUpdatedAtMap[meta.currency]}`
+    : '汇率更新时间 —';
+  badgeEl.textContent = status === 'cached' ? '缓存' : status === 'offline' ? '离线' : '实时';
   banner.style.display = 'flex';
 }
 
@@ -1076,17 +1090,35 @@ function renderHistory() {
     list.innerHTML = '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
     return;
   }
-  list.innerHTML = history.map(item => `
-    <div class="history-item" onclick="openHistoryDetail(${item.id})">
-      <div class="history-left">
-        <div class="history-name">${escapeHtml(item.itemName)}</div>
-        <div class="history-meta">
-          <span class="history-badge currency">${item.sourceCurrency}</span>
-          <span>${item.countryName}</span>
-          <span class="history-badge time">${item.savedAtTime}</span>
+  const groups = history.reduce((acc, item) => {
+    const date = new Date(item.savedAt);
+    const groupKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    if (!acc[groupKey]) {
+      acc[groupKey] = {
+        label: formatHistoryDateLabel(item.savedAt),
+        items: []
+      };
+    }
+    acc[groupKey].items.push(item);
+    return acc;
+  }, {});
+
+  list.innerHTML = Object.values(groups).map(group => `
+    <div class="history-date-group">
+      <div class="history-date-label">${group.label}</div>
+      ${group.items.map(item => `
+        <div class="history-item" onclick="openHistoryDetail(${item.id})">
+          <div class="history-left">
+            <div class="history-name">${escapeHtml(item.itemName)}</div>
+            <div class="history-meta">
+              <span class="history-badge currency">${item.sourceCurrency}</span>
+              <span>${item.countryName}</span>
+              <span class="history-badge time">${item.savedAtTime}</span>
+            </div>
+          </div>
+          <div class="history-price">${formatCny(item.finalCny)}</div>
         </div>
-      </div>
-      <div class="history-price">${formatCny(item.finalCny)}</div>
+      `).join('')}
     </div>
   `).join('');
   list.querySelectorAll('.history-item').forEach((item, index) => {
