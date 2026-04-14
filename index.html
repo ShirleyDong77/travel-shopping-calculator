@@ -42,9 +42,22 @@
     min-height: 100vh;
     padding: 20px 16px 120px;
     color: var(--text-900);
+    overflow-x: hidden;
   }
 
   .container { max-width: 480px; margin: 0 auto; }
+  .app-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    touch-action: pan-y;
+  }
+  .page {
+    display: none;
+    min-height: calc(100vh - 196px);
+  }
+  .page.active {
+    display: block;
+  }
 
   .card {
     background:
@@ -379,6 +392,11 @@
 
   .history-card { background: var(--surface-muted); }
   .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .history-header-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   .history-title {
     display: inline-flex;
     align-items: center;
@@ -393,6 +411,10 @@
     color: var(--ink-500);
     cursor: pointer;
     font-weight: 600;
+  }
+  .history-subtitle {
+    font-size: 12px;
+    color: var(--text-500);
   }
   .history-date-group { margin-bottom: 8px; }
   .history-date-label { font-size: 11px; color: var(--text-500); padding: 8px 0 4px 0; font-weight: 600; }
@@ -414,6 +436,14 @@
     transform: scale(0.985);
   }
   .history-item:last-child { margin-bottom: 0; }
+  .history-item.compact {
+    padding: 14px 16px;
+    align-items: flex-start;
+  }
+  .history-item.compact .history-meta {
+    margin-top: 4px;
+    gap: 8px;
+  }
   .history-left { flex: 1; min-width: 0; }
   .history-name { font-size: 15px; color: var(--text-900); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .history-meta { font-size: 11px; color: var(--text-600); margin-top: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -430,6 +460,104 @@
   .history-price { font-size: 16px; color: var(--ink-700); font-weight: 800; text-align: right; flex-shrink: 0; margin-left: 12px; }
 
   .empty-state { text-align: center; padding: 28px; color: var(--text-500); font-size: 13px; }
+  .history-more {
+    width: 100%;
+    margin-top: 14px;
+    border: none;
+    background: rgba(255,255,255,0.72);
+    border-radius: 18px;
+    padding: 14px 16px;
+    color: var(--ink-700);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid rgba(212, 184, 232, 0.32);
+  }
+  .history-more:active {
+    transform: scale(0.985);
+  }
+
+  .profile-card {
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+  }
+  .profile-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.14), rgba(212, 184, 232, 0.32));
+    color: var(--purple-600);
+  }
+  .profile-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+  .profile-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink-900);
+  }
+  .profile-copy {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-600);
+  }
+
+  .bottom-tabbar {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 100;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    height: 56px;
+    padding: 0 8px env(safe-area-inset-bottom);
+    background: rgba(255, 255, 255, 0.85);
+    border-top: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 -8px 30px rgba(139, 92, 246, 0.10);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .tab-btn {
+    border: none;
+    border-radius: 16px;
+    background: transparent;
+    height: 56px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--text-600);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .tab-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .tab-emoji {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .tab-btn.active {
+    color: var(--purple-600);
+    background: rgba(139, 92, 246, 0.10);
+    box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.12);
+  }
 
   /* Bottom Sheet Modal */
   .modal-overlay {
@@ -521,8 +649,10 @@
 </style>
 </head>
 <body>
+<div id="appShell" class="app-shell">
 <div class="container">
 
+  <div class="page active" id="calc-page" data-route="calc">
   <div class="card">
     <div class="header">
       <h1>境外算价</h1>
@@ -639,17 +769,58 @@
 
   <div class="card history-card">
     <div class="history-header">
-      <div class="history-title">
-        <i data-lucide="clipboard-list" aria-hidden="true"></i>
-        <span>计算历史</span>
+      <div class="history-header-main">
+        <div class="history-title">
+          <i data-lucide="clipboard-list" aria-hidden="true"></i>
+          <span>最近记录</span>
+        </div>
+        <span class="history-subtitle">仅显示最新 5 条</span>
       </div>
-      <span class="history-clear" onclick="clearHistory()">清除全部</span>
     </div>
-    <div id="historyList">
+    <div id="calcHistoryList">
       <div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>
+    </div>
+    <button class="history-more" type="button" onclick="goToTab('history')">查看全部 →</button>
+  </div>
+  </div>
+
+  <div class="page" id="history-page" data-route="history">
+    <div class="card profile-card">
+      <div class="profile-icon">
+        <i data-lucide="clipboard-list" aria-hidden="true"></i>
+      </div>
+      <div class="profile-title">历史</div>
+      <div class="profile-copy">历史记录页（开发中）</div>
+    </div>
+  </div>
+
+  <div class="page" id="profile-page" data-route="profile">
+    <div class="card profile-card">
+      <div class="profile-icon">
+        <i data-lucide="user-round" aria-hidden="true"></i>
+      </div>
+      <div class="profile-title">我的</div>
+      <div class="profile-copy">个人中心（开发中）</div>
     </div>
   </div>
 </div>
+
+<nav class="bottom-tabbar" aria-label="底部导航">
+  <button class="tab-btn active" type="button" data-tab="calc" onclick="goToTab('calc')">
+    <span class="tab-emoji" aria-hidden="true">🧮</span>
+    <span>计算</span>
+  </button>
+  <button class="tab-btn" type="button" data-tab="history" onclick="goToTab('history')">
+    <span class="tab-emoji" aria-hidden="true">📋</span>
+    <span>历史</span>
+  </button>
+  <button class="tab-btn" type="button" data-tab="profile" onclick="goToTab('profile')">
+    <span class="tab-emoji" aria-hidden="true">👤</span>
+    <span>我的</span>
+  </button>
+</nav>
+</div>
+<div id="routerMount" style="display:none;"></div>
 
 <div class="modal-overlay" id="historyModal" onclick="handleModalBackdrop(event)">
   <div class="modal-sheet" role="dialog" aria-modal="true">
@@ -665,6 +836,8 @@
   </div>
 </div>
 
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js"></script>
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <script>
 const EXCHANGE_API_BASE_URL = 'https://open.er-api.com/v6/latest/';
@@ -704,10 +877,19 @@ let currentHistory = [];
 let lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
 let isCustomDiscountActive = false;
 let activeRateRequestCurrency = '';
+let appRouter = null;
+let touchStartX = 0;
+let touchStartY = 0;
 const UI_LANGUAGE = document.documentElement.lang?.toLowerCase().startsWith('en')
   || navigator.language?.toLowerCase().startsWith('en')
   ? 'en'
   : 'zh';
+const TAB_ROUTE_MAP = {
+  calc: '/calc',
+  history: '/history',
+  profile: '/profile'
+};
+const TAB_SEQUENCE = ['calc', 'history', 'profile'];
 
 function setDiscount(val) {
   currentDiscount = val;
@@ -906,6 +1088,33 @@ function renderLucideIcons() {
   if (window.lucide?.createIcons) {
     window.lucide.createIcons();
   }
+}
+
+function getActiveTabFromPath(path) {
+  return Object.entries(TAB_ROUTE_MAP).find(([, routePath]) => routePath === path)?.[0] || 'calc';
+}
+
+function updateActivePage(routePath) {
+  const activeTab = getActiveTabFromPath(routePath);
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.toggle('active', page.dataset.route === activeTab);
+  });
+  document.querySelectorAll('.tab-btn').forEach(button => {
+    button.classList.toggle('active', button.dataset.tab === activeTab);
+  });
+}
+
+function goToTab(tabName) {
+  const targetPath = TAB_ROUTE_MAP[tabName] || TAB_ROUTE_MAP.calc;
+  if (!appRouter) {
+    updateActivePage(targetPath);
+    return;
+  }
+  if (appRouter.currentRoute.value.path === targetPath) {
+    updateActivePage(targetPath);
+    return;
+  }
+  appRouter.push(targetPath);
 }
 
 function updateExchangeBanner() {
@@ -1116,12 +1325,9 @@ function saveRecord() {
   renderHistory();
 }
 
-function renderHistory() {
-  const list = document.getElementById('historyList');
-  const history = getHistory();
+function buildHistoryMarkup(history) {
   if (!history.length) {
-    list.innerHTML = '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
-    return;
+    return '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
   }
   const groups = history.reduce((acc, item) => {
     const date = new Date(item.savedAt);
@@ -1136,7 +1342,7 @@ function renderHistory() {
     return acc;
   }, {});
 
-  list.innerHTML = Object.values(groups).map(group => `
+  return Object.values(groups).map(group => `
     <div class="history-date-group">
       <div class="history-date-label">${group.label}</div>
       ${group.items.map(item => `
@@ -1154,9 +1360,74 @@ function renderHistory() {
       `).join('')}
     </div>
   `).join('');
+}
+
+function buildCompactHistoryMarkup(history) {
+  if (!history.length) {
+    return '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
+  }
+
+  return history.map(item => `
+    <div class="history-item compact" onclick="openHistoryDetail(${item.id})">
+      <div class="history-left">
+        <div class="history-name">${escapeHtml(item.itemName)}</div>
+        <div class="history-meta">
+          <span>${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)}</span>
+          <span class="history-badge currency">${item.sourceCurrency}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function paintHistoryList(listId, history) {
+  const list = document.getElementById(listId);
+  if (!list) return;
+  list.innerHTML = listId === 'calcHistoryList'
+    ? buildCompactHistoryMarkup(history)
+    : buildHistoryMarkup(history);
   list.querySelectorAll('.history-item').forEach((item, index) => {
     setHistoryItemColor(item, history[index]?.currency || history[index]?.sourceCurrency);
   });
+}
+
+function renderHistory() {
+  const history = getHistory();
+  const latestFiveHistory = history.slice(0, 5);
+  paintHistoryList('calcHistoryList', latestFiveHistory);
+}
+
+function getActiveTab() {
+  const routePath = appRouter?.currentRoute?.value?.path || window.location.hash.replace(/^#/, '') || TAB_ROUTE_MAP.calc;
+  return getActiveTabFromPath(routePath);
+}
+
+function handleTabSwipe(direction) {
+  const activeIndex = TAB_SEQUENCE.indexOf(getActiveTab());
+  if (activeIndex === -1) return;
+  const nextIndex = direction === 'left' ? activeIndex + 1 : activeIndex - 1;
+  if (nextIndex < 0 || nextIndex >= TAB_SEQUENCE.length) return;
+  goToTab(TAB_SEQUENCE[nextIndex]);
+}
+
+function setupSwipeNavigation() {
+  const shell = document.getElementById('appShell');
+  if (!shell) return;
+
+  shell.addEventListener('touchstart', event => {
+    const touch = event.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+
+  shell.addEventListener('touchend', event => {
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+    handleTabSwipe(deltaX < 0 ? 'left' : 'right');
+  }, { passive: true });
 }
 
 function openHistoryDetail(recordId) {
@@ -1218,11 +1489,31 @@ document.getElementById('customDiscountInput').addEventListener('input', e => ha
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHistoryModal(); });
 
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHashHistory(),
+  routes: [
+    { path: '/', redirect: TAB_ROUTE_MAP.calc },
+    { path: TAB_ROUTE_MAP.calc, component: { template: '<div></div>' } },
+    { path: TAB_ROUTE_MAP.history, component: { template: '<div></div>' } },
+    { path: TAB_ROUTE_MAP.profile, component: { template: '<div></div>' } },
+    { path: '/:pathMatch(.*)*', redirect: TAB_ROUTE_MAP.calc }
+  ]
+});
+
+router.afterEach(to => {
+  updateActivePage(to.path);
+});
+
+appRouter = router;
+Vue.createApp({ template: '<router-view />' }).use(router).mount('#routerMount');
+
 updateTaxRateInputDisplay();
 renderLucideIcons();
 getExchangeRates();
 renderHistory();
 calculate();
+updateActivePage(router.currentRoute.value.path || TAB_ROUTE_MAP.calc);
+setupSwipeNavigation();
 </script>
 </body>
 </html>
