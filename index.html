@@ -489,26 +489,33 @@
   .category-badge.首饰 { color: #b45309; background: #fffbeb; }
   .category-badge.电子 { color: #1d4ed8; background: #eff6ff; }
   .category-badge.食品 { color: #15803d; background: #f0fdf4; }
+  .category-badge.玩具 { color: #c2410c; background: #fff7ed; }
+  .category-badge.医药 { color: #0f766e; background: #f0fdfa; }
+  .category-badge.美容 { color: #db2777; background: #fdf2f8; }
+  .category-badge.家居 { color: #78350f; background: #fffbeb; }
+  .category-badge.运动 { color: #065f46; background: #ecfdf5; }
   .category-badge.其他 { color: var(--text-600); background: #F3F4F6; }
 
   /* Swipe delete */
-  .history-item-wrap { position: relative; overflow: hidden; border-radius: 20px; margin-bottom: 10px; }
+  .history-item-wrap { position: relative; overflow: hidden; border-radius: 20px; margin-bottom: 10px; touch-action: pan-x; -webkit-overflow-scrolling: touch; }
   .history-item-wrap:last-child { margin-bottom: 0; }
-  .history-item-swipe { display: flex; transition: transform 0.25s ease; }
-  .history-item-wrap.swiped .history-item-swipe { transform: translateX(-72px); }
-  .history-item-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 72px; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border-radius: 0 20px 20px 0; cursor: pointer; flex-shrink: 0; }
+  .history-item-content { display: flex; transition: transform 0.25s ease; background: #fff; border-radius: 20px; padding-right: 80px; }
+  .history-item-wrap.swiped .history-item-content { transform: translateX(-72px); }
+  .history-item-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 72px; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border-radius: 0 20px 20px 0; cursor: pointer; z-index: 2; box-shadow: -4px 0 12px rgba(239,68,68,0.3); }
+  .history-item-delete-btn:active { background: #DC2626; }
 
   /* Confirm dialog */
-  .confirm-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.48); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+  .confirm-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.62); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
   .confirm-overlay.show { display: flex; }
-  .confirm-dialog { background: linear-gradient(135deg, #7B63F1, #8D73F3); border-radius: 28px; padding: 28px 24px; max-width: 320px; width: 100%; color: #fff; box-shadow: 0 24px 60px rgba(124,58,237,0.4); text-align: center; }
-  .confirm-dialog-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-  .confirm-dialog-desc { font-size: 14px; opacity: 0.85; margin-bottom: 22px; line-height: 1.5; }
-  .confirm-dialog-btns { display: flex; gap: 10px; }
-  .confirm-dialog-btn { flex: 1; padding: 13px; border-radius: 18px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
+  .confirm-dialog { background: linear-gradient(135deg, #8B5CF6, #7C3AED); border-radius: 32px; padding: 32px 28px; max-width: 340px; width: 100%; color: #fff; box-shadow: 0 32px 80px rgba(124,58,237,0.5); text-align: center; position: relative; overflow: hidden; }
+  .confirm-dialog::before { content: ''; position: absolute; top: -40px; right: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); pointer-events: none; }
+  .confirm-dialog-title { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .confirm-dialog-desc { font-size: 15px; opacity: 0.88; margin-bottom: 28px; line-height: 1.55; }
+  .confirm-dialog-btns { display: flex; gap: 12px; }
+  .confirm-dialog-btn { flex: 1; padding: 14px 16px; border-radius: 20px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
   .confirm-dialog-btn:active { transform: scale(0.96); }
-  .confirm-dialog-btn.cancel { background: rgba(255,255,255,0.18); color: #fff; }
-  .confirm-dialog-btn.danger { background: #EF4444; color: #fff; box-shadow: 0 8px 20px rgba(239,68,68,0.3); }
+  .confirm-dialog-btn.cancel { background: rgba(255,255,255,0.18); color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .confirm-dialog-btn.danger { background: #EF4444; color: #fff; box-shadow: 0 8px 24px rgba(239,68,68,0.4); }
   .history-price { font-size: 18px; color: var(--purple-700); font-weight: 800; text-align: right; flex-shrink: 0; margin-left: 12px; }
   .history-cny { font-size: 18px; font-weight: 800; color: var(--purple-700); }
   .history-orig { font-size: 11px; color: var(--text-500); margin-top: 3px; }
@@ -1029,7 +1036,9 @@
         <option value="sg">新加坡（S$ 退9%）</option>
         <option value="ch">瑞士（CHF 退8%）</option>
         <option value="us">美国（$ 退0%）</option>
+        <option value="cn">中国（¥ 退0%）</option>
       </select>
+      <div style="font-size:11px;color:var(--text-500);margin-top:6px;">选择国家后将根据当地货币计算，已选不可更改</div>
     </div>
 
     <div class="exchange-banner" id="exchangeBanner" style="display:none;">
@@ -1191,6 +1200,11 @@
               <option value="首饰">首饰</option>
               <option value="电子">电子</option>
               <option value="食品">食品</option>
+              <option value="玩具">玩具</option>
+              <option value="医药">医药</option>
+              <option value="美容">美容</option>
+              <option value="家居">家居</option>
+              <option value="运动">运动</option>
               <option value="其他">其他</option>
             </select>
           </div>
@@ -1235,7 +1249,7 @@
 
         <div class="form-group">
           <label for="profileNickname">昵称</label>
-          <input id="profileNickname" type="text" placeholder="输入你的昵称" maxlength="20">
+          <input id="profileNickname" type="text" placeholder="输入你的昵称" maxlength="20" onfocus="this.select()">
         </div>
 
         <div class="form-group">
@@ -1616,12 +1630,17 @@ function formatHistoryAmountSummary(item) {
 }
 
 const CATEGORIES = {
-  鞋包: { keywords: ['鞋','靴','包','袋','箱','履','表带'], color: '鞋包' },
-  美妆: { keywords: ['口红','唇膏','粉底','护肤','精华','面霜','妆','香水','美甲','眼影','腮红','遮瑕','睫毛','眉笔'], color: '美妆' },
-  服饰: { keywords: ['衣','裙','裤','袜','帽','巾','丝','衫','牛仔裤','T恤','外套','大衣','毛衣','围巾'], color: '服饰' },
-  首饰: { keywords: ['戒','项链','耳环','手链','镯','珠','钻','表'], color: '首饰' },
-  电子: { keywords: ['手机','电脑','耳机','充电宝','相机','游戏机','iPad','Mac','Watch'], color: '电子' },
-  食品: { keywords: ['零食','巧克力','糖果','饼干','咖啡','奶粉','糕','糖'], color: '食品' }
+  鞋包: { keywords: ['鞋','靴','包','袋','箱','履','表带','拖靴','帆布','运动鞋'], color: '鞋包' },
+  美妆: { keywords: ['口红','唇膏','粉底','护肤','精华','面霜','妆','香水','美甲','眼影','腮红','遮瑕','睫毛','眉笔','隔离','防晒','卸妆','洗面'], color: '美妆' },
+  服饰: { keywords: ['衣','裙','裤','袜','帽','巾','丝','衫','牛仔裤','T恤','外套','大衣','毛衣','围巾','旗袍','西装','童装'], color: '服饰' },
+  首饰: { keywords: ['戒','项链','耳环','手链','镯','珠','钻','表','手饰','胸针'], color: '首饰' },
+  电子: { keywords: ['手机','电脑','耳机','充电宝','相机','游戏机','iPad','Mac','Watch','音箱','键盘','鼠标','平板'], color: '电子' },
+  食品: { keywords: ['零食','巧克力','糖果','饼干','咖啡','奶粉','糕','糖','果干','坚果','奶茶','薯片'], color: '食品' },
+  玩具: { keywords: ['玩具','玩偶','模型','拼图','乐高','积木','毛绒','游戏','遥控','手办'], color: '玩具' },
+  医药: { keywords: ['药','药品','保健品','维生素','鱼油','胶原蛋白','面膜','膏药','体温计','口罩','消毒液'], color: '医药' },
+  美容: { keywords: ['美容','SPA','美发','护发','洗发','润发','睫毛','美睫','半永久','纹眉'], color: '美容' },
+  家居: { keywords: ['家具','家居','床上','枕头','被子','收纳','香薰','蜡烛','餐具','厨具'], color: '家居' },
+  运动: { keywords: ['运动','跑步','健身','瑜伽','球鞋','泳衣','单车','登山','背包'], color: '运动' }
 };
 
 function getCategory(itemName) {
@@ -1646,6 +1665,14 @@ function handleSwipeEnd(e, wrap) {
   } else {
     wrap.classList.remove('swiped');
   }
+}
+function handleHistoryItemTap(el, id) {
+  const wrap = el.closest('.history-item-wrap');
+  if (wrap && wrap.classList.contains('swiped')) {
+    wrap.classList.remove('swiped');
+    return;
+  }
+  openHistoryDetail(id);
 }
 function confirmDeleteOne(id) {
   showConfirmDialog({
@@ -1751,7 +1778,9 @@ function renderProfileBadges(history = getHistory()) {
   const el = document.getElementById('profileBadges');
   if (!el) return;
   const earned = computeBadges(history);
-  el.innerHTML = earned.map(b => `<span title="${b.id}" style="font-size:22px;cursor:default;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${b.emoji}</span>`).join('');
+  if (!earned.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">' +
+    earned.map(b => `<div title="${b.id}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#F3E8FF,#EDE9FE);border:1px solid #DDD6FE;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--purple-700);cursor:default;white-space:nowrap;"><span style="font-size:13px;">${b.emoji}</span>${b.id}</div>`).join('') + '</div>';
 }
 function getProfileStats(history = getHistory()) {
   const countryMap = new Map();
@@ -2132,8 +2161,8 @@ function buildHistoryMarkup(history) {
         const origAmt = formatAmount(item.price, item.sourceCurrency, item.sourceSymbol);
         return `
         <div class="history-item-wrap" ontouchstart="handleSwipeStart(event,this)" ontouchend="handleSwipeEnd(event,this)">
-          <div class="history-item-swipe">
-            <div class="history-item" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="openHistoryDetail(${item.id})">
+          <div class="history-item-content">
+            <div class="history-item" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="handleHistoryItemTap(this,${item.id})">
               <div class="history-left">
                 <div class="history-name">${escapeHtml(item.itemName)}</div>
                 <div class="history-meta">
@@ -2144,8 +2173,8 @@ function buildHistoryMarkup(history) {
               </div>
               <div class="history-cny">¥${cnyAmt}</div>
             </div>
-            <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
           </div>
+          <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
         </div>`;
       }).join('')}
     </div>
