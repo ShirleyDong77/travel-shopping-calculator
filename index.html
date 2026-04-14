@@ -1322,30 +1322,7 @@
             <span class="history-page-title">历史记录</span>
             <input id="historySearchInput" type="text" placeholder="🔍 搜索商品名称" style="flex:1;min-width:0;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px;font-size:13px;background:#fff;">
           </div>
-        </div>
-        <div class="history-filter-row">
-          <select id="historyDateFilter" style="flex:1;">
-            <option value="all">全部日期</option>
-            <option value="today">今天</option>
-            <option value="yesterday">昨天</option>
-            <option value="week">本周</option>
-            <option value="month">本月</option>
-          </select>
-          <select id="historyCurrencyFilter" style="flex:1;">
-            <option value="all">全部币种</option>
-            <option value="JPY">日元</option>
-            <option value="USD">美元</option>
-            <option value="EUR">欧元</option>
-            <option value="CNY">人民币</option>
-            <option value="GBP">英镑</option>
-            <option value="KRW">韩元</option>
-            <option value="THB">泰铢</option>
-            <option value="AUD">澳元</option>
-            <option value="SGD">新加坡元</option>
-            <option value="CHF">瑞士法郎</option>
-          </select>
-        </div>
-      </div>
+        </div>      </div>
 
       <div class="card history-list-card">
         <div class="history-list-header">
@@ -2592,8 +2569,8 @@ function updateHistoryCurrencyFilterOptions(history = getHistory()) {
 
 function applyHistoryFilter() {
   const history = getHistory();
-  const dateFilter = document.getElementById('historyDateFilter')?.value || 'all';
-  const currencyFilter = document.getElementById('historyCurrencyFilter')?.value || 'all';
+  const dateFilter = 'all'; // 日期筛选器已移除
+  const currencyFilter = 'all'; // 币种筛选器已移除
   const categoryFilter = 'all'; // 分类筛选已移除
   const keyword = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
 
@@ -2807,8 +2784,6 @@ function clearHistory() {
   });
 }
 
-document.getElementById('historyDateFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
-document.getElementById('historyCurrencyFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
 // category filter removed
 document.getElementById('historySearchInput').addEventListener('input', () => renderHistoryPage(applyHistoryFilter()));
 
