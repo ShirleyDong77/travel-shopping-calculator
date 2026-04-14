@@ -835,6 +835,37 @@
   .profile-edit-hint { font-size: 12px; color: var(--text-500); margin-top: 6px; }
 
   /* SVG 饼图 */
+  /* Profile data stats - three numbers in a row */
+  .profile-data-stats {
+    margin-bottom: 16px;
+  }
+  .profile-data-stats-row {
+    display: flex;
+    gap: 0;
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.25);
+  }
+  .profile-data-stat-item {
+    flex: 1;
+    text-align: center;
+    padding: 16px 8px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  .profile-data-stat-item:last-child { border-right: none; }
+  .profile-data-stat-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .profile-data-stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+  }
+
   .profile-chart-section { margin-top: 16px; }
   .profile-chart-title { font-size: 15px; font-weight: 700; color: var(--text-900); margin-bottom: 12px; }
   .profile-pie-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -1344,7 +1375,7 @@
             </div>
             <button class="profile-hero-edit-btn" onclick="openProfileEdit()" title="编辑资料">✎</button>
           </div>
-          <div class="profile-hero-stats" id="profileHeroStats" style="display:none;">
+          <div class="profile-hero-stats" id="profileHeroStats">
             <div class="profile-hero-stat">
               <div class="profile-hero-stat-value" id="profileStatTotal">0</div>
               <div class="profile-hero-stat-label">总记录</div>
@@ -1362,7 +1393,24 @@
         </div>
       </div>
 
-      
+      <!-- 数据统计卡片 -->
+      <div class="card profile-card">
+        <div class="profile-data-stats">
+          <div class="profile-data-stats-row" id="profileDataStatsRow">
+            <div class="profile-data-stat-item">
+              <div class="profile-data-stat-value" id="profileDataStatTotal">0</div>
+              <div class="profile-data-stat-label">总记录</div>
+            </div>
+            <div class="profile-data-stat-item">
+              <div class="profile-data-stat-value" id="profileDataStatCountries">0</div>
+              <div class="profile-data-stat-label">国家数</div>
+            </div>
+            <div class="profile-data-stat-item">
+              <div class="profile-data-stat-value" id="profileDataStatMonth">0</div>
+              <div class="profile-data-stat-label">本月</div>
+            </div>
+          </div>
+        </div>
         <div class="profile-chart-section" id="profileChartSection"></div>
       </div>
     </div>
@@ -2008,12 +2056,20 @@ function renderProfileHeroStats(history = getHistory()) {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
   const monthCount = history.filter(i => i.timestamp >= monthStart).length;
+  // Update hero card stats (may be hidden)
   const statTotal = document.getElementById('profileStatTotal');
   const statCountries = document.getElementById('profileStatCountries');
   const statMonth = document.getElementById('profileStatMonth');
   if (statTotal) statTotal.textContent = total;
   if (statCountries) statCountries.textContent = countries;
   if (statMonth) statMonth.textContent = monthCount;
+  // Update visible data stats row
+  const dataTotal = document.getElementById('profileDataStatTotal');
+  const dataCountries = document.getElementById('profileDataStatCountries');
+  const dataMonth = document.getElementById('profileDataStatMonth');
+  if (dataTotal) dataTotal.textContent = total;
+  if (dataCountries) dataCountries.textContent = countries;
+  if (dataMonth) dataMonth.textContent = monthCount;
 }
 function renderProfileChart(history = getHistory()) {
   const section = document.getElementById('profileChartSection');
