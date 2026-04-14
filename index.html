@@ -6,6 +6,14 @@
 <title>境外算价</title>
 <style>
   :root {
+  --lucide-color: #7C3AED;
+}
+svg {
+  color: inherit;
+  fill: none;
+  stroke: currentColor;
+}
+
     --purple-900: #5f33b8;
     --purple-800: #6D28D9;
     --purple-700: #7C3AED;
@@ -997,6 +1005,9 @@
     width: 20px;
     height: 20px;
     stroke-width: 2.15;
+    color: inherit;
+    fill: none;
+    stroke: currentColor;
   }
   .tab-label {
     line-height: 1;
@@ -1839,6 +1850,9 @@ function showConfirmDialog({ title, desc, onConfirm, confirmText = '确认', can
   }
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmDesc').textContent = desc;
+  const cancelBtn = document.getElementById('confirmCancelBtn');
+  cancelBtn.textContent = cancelText;
+  cancelBtn.className = 'confirm-dialog-btn cancel';
   const okBtn = document.getElementById('confirmOkBtn');
   okBtn.textContent = confirmText;
   okBtn.className = 'confirm-dialog-btn ' + (danger ? 'danger' : '');
