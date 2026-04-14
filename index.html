@@ -382,12 +382,37 @@
     box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
   }
   .save-btn svg { width: 20px; height: 20px; color: #E9D5FF; }
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 116px;
+    gap: 10px;
+    align-items: stretch;
+    margin-top: 14px;
+  }
+  .action-row .save-btn {
+    margin-top: 0;
+  }
+  .clear-btn {
+    padding: 16px 14px;
+    border-radius: 22px;
+    border: 1.5px solid rgba(139, 92, 246, 0.18);
+    background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, #F7F1FF 100%);
+    color: var(--ink-700);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(139, 92, 246, 0.10);
+  }
+  .clear-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 8px 18px rgba(139, 92, 246, 0.12);
+  }
   .save-note {
     margin-top: 10px;
     text-align: center;
     font-size: 12px;
     line-height: 1.5;
-    color: rgba(255,255,255,0.72);
+    color: #555555;
   }
 
   .history-card { background: var(--surface-muted); }
@@ -458,6 +483,138 @@
   .history-badge.currency { color: var(--ink-700); background: #F5F3FF; }
   .history-badge.time { color: var(--text-600); background: #F3F4F6; }
   .history-price { font-size: 16px; color: var(--ink-700); font-weight: 800; text-align: right; flex-shrink: 0; margin-left: 12px; }
+  .history-page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .history-filter-card {
+    padding: 16px;
+  }
+  .history-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .history-page-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink-900);
+    letter-spacing: -0.03em;
+  }
+  .history-page-copy {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-600);
+  }
+  .history-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .history-action-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .history-action-btn.secondary {
+    background: #F5F3FF;
+    color: var(--ink-700);
+  }
+  .history-action-btn.danger {
+    background: #EF4444;
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(239, 68, 68, 0.22);
+  }
+  .history-action-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .history-filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .history-filter-grid .form-group:last-child {
+    grid-column: 1 / -1;
+  }
+  .history-selection-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.10), rgba(196, 181, 253, 0.18));
+    border: 1px solid rgba(167, 139, 250, 0.24);
+    color: var(--ink-700);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .history-selection-bar.show {
+    display: flex;
+  }
+  .history-selection-copy {
+    color: var(--text-600);
+    font-weight: 600;
+  }
+  .history-list-card {
+    padding: 16px;
+  }
+  .history-list-container .history-date-group:last-child {
+    margin-bottom: 0;
+  }
+  .history-item.selectable {
+    gap: 12px;
+  }
+  .history-item.selectable .history-left {
+    min-width: 0;
+  }
+  .history-checkbox {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(139, 92, 246, 0.22);
+    background: rgba(255,255,255,0.92);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.92);
+    pointer-events: none;
+  }
+  .history-checkbox svg {
+    width: 14px;
+    height: 14px;
+    color: #fff;
+    opacity: 0;
+  }
+  .history-item.multi-select .history-checkbox,
+  .history-item.checked .history-checkbox {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .history-item.checked {
+    border-color: rgba(139, 92, 246, 0.45);
+    box-shadow: 0 14px 28px rgba(139, 92, 246, 0.16);
+  }
+  .history-item.checked .history-checkbox {
+    background: var(--purple-700);
+    border-color: var(--purple-700);
+    box-shadow: 0 8px 18px rgba(124, 58, 237, 0.22);
+  }
+  .history-item.checked .history-checkbox svg {
+    opacity: 1;
+  }
 
   .empty-state { text-align: center; padding: 28px; color: var(--text-500); font-size: 13px; }
   .history-more {
@@ -477,37 +634,141 @@
     transform: scale(0.985);
   }
 
-  .profile-card {
-    min-height: 240px;
+  .profile-layout {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 14px;
-    text-align: center;
+    gap: 16px;
   }
-  .profile-icon {
-    width: 56px;
-    height: 56px;
-    margin: 0 auto;
-    display: grid;
-    place-items: center;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.14), rgba(212, 184, 232, 0.32));
-    color: var(--purple-600);
+  .profile-card {
+    padding: 18px;
   }
-  .profile-icon svg {
-    width: 28px;
-    height: 28px;
+  .profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .profile-avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+    object-fit: cover;
+    border: 2px solid rgba(139, 92, 246, 0.14);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(233, 213, 255, 0.82));
+    box-shadow: 0 16px 28px rgba(139, 92, 246, 0.12);
+    flex-shrink: 0;
+  }
+  .profile-hero-copy {
+    min-width: 0;
   }
   .profile-title {
     font-size: 22px;
     font-weight: 800;
     color: var(--ink-900);
   }
-  .profile-copy {
+  .profile-subtitle {
+    margin-top: 4px;
     font-size: 14px;
-    line-height: 1.7;
+    font-weight: 700;
+    color: var(--ink-700);
+  }
+  .profile-copy {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.6;
     color: var(--text-600);
+  }
+  .profile-section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-900);
+    margin-bottom: 14px;
+  }
+  .profile-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .profile-avatar-meta {
+    min-width: 0;
+  }
+  .profile-avatar-hint {
+    font-size: 12px;
+    color: var(--text-500);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .profile-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #F5F3FF;
+    color: var(--ink-700);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid rgba(139, 92, 246, 0.10);
+  }
+  .profile-upload-input {
+    display: none;
+  }
+  .profile-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .profile-stat-item {
+    border-radius: 20px;
+    padding: 16px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCF8FF 100%);
+    border: 1px solid rgba(212, 184, 232, 0.34);
+  }
+  .profile-stat-label {
+    font-size: 12px;
+    color: var(--text-500);
+  }
+  .profile-stat-value {
+    margin-top: 8px;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ink-900);
+  }
+  .profile-country-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .profile-country-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCF8FF 100%);
+    border: 1px solid rgba(212, 184, 232, 0.28);
+  }
+  .profile-country-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-900);
+  }
+  .profile-country-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-700);
+  }
+  .profile-empty {
+    border-radius: 18px;
+    padding: 20px 16px;
+    text-align: center;
+    background: #FCF8FF;
+    color: var(--text-500);
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   .bottom-tabbar {
@@ -680,10 +941,26 @@
 
   @media (max-width: 420px) {
     .form-row { grid-template-columns: 1fr; }
+    .history-filter-grid { grid-template-columns: 1fr; }
+    .action-row { grid-template-columns: 1fr; }
+    .history-page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .history-page-actions {
+      justify-content: flex-end;
+    }
     .result-final-amount { font-size: 32px; }
     .header h1 { font-size: 28px; }
     .exchange-banner { align-items: flex-start; }
     .exchange-badge { margin-top: 2px; }
+    .profile-hero {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .profile-stat-grid {
+      grid-template-columns: 1fr;
+    }
     .exchange-banner-rate {
       white-space: normal;
       line-height: 1.35;
@@ -803,10 +1080,13 @@
       </div>
     </div>
 
-    <button class="save-btn" onclick="saveRecord()">
-      <i data-lucide="bookmark" aria-hidden="true"></i>
-      <span>保存到历史</span>
-    </button>
+    <div class="action-row">
+      <button class="save-btn" onclick="saveRecord()">
+        <i data-lucide="bookmark" aria-hidden="true"></i>
+        <span>保存到历史</span>
+      </button>
+      <button class="clear-btn" type="button" onclick="resetCalculatorForm()">清空</button>
+    </div>
     <div class="save-note" id="saveExchangeNote">按参考汇率计算（汇率：1 CNY = --）</div>
   </div>
 
@@ -828,22 +1108,118 @@
   </div>
 
   <div class="page" id="history-page" data-route="history">
-    <div class="card profile-card">
-      <div class="profile-icon">
-        <i data-lucide="clipboard-list" aria-hidden="true"></i>
+    <div class="history-page-layout">
+      <div class="card history-filter-card">
+        <div class="history-page-header">
+          <div>
+            <div class="history-page-title">历史记录</div>
+            <div class="history-page-copy">按时间、币种和商品快速筛选</div>
+          </div>
+          <div class="history-page-actions">
+            <button class="history-action-btn secondary" type="button" id="historyMultiSelectBtn" onclick="enterHistoryMultiSelect()">多选</button>
+            <button class="history-action-btn secondary" type="button" id="historyCancelBtn" onclick="exitHistoryMultiSelect()" style="display:none;">取消</button>
+            <button class="history-action-btn danger" type="button" id="historyDeleteBtn" onclick="deleteSelectedHistory()" style="display:none;">删除(已选0)</button>
+          </div>
+        </div>
+        <div class="history-filter-grid">
+          <div class="form-group">
+            <label for="historyDateFilter">日期筛选</label>
+            <select id="historyDateFilter">
+              <option value="all">全部</option>
+              <option value="today">今天</option>
+              <option value="yesterday">昨天</option>
+              <option value="week">本周</option>
+              <option value="month">本月</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="historyCurrencyFilter">币种筛选</label>
+            <select id="historyCurrencyFilter">
+              <option value="all">全部</option>
+              <option value="JPY">JPY</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="CNY">CNY</option>
+              <option value="GBP">GBP</option>
+              <option value="KRW">KRW</option>
+              <option value="THB">THB</option>
+              <option value="AUD">AUD</option>
+              <option value="SGD">SGD</option>
+              <option value="CHF">CHF</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="historySearchInput">商品搜索</label>
+            <input id="historySearchInput" type="text" placeholder="搜索商品名称">
+          </div>
+        </div>
       </div>
-      <div class="profile-title">历史</div>
-      <div class="profile-copy">历史记录页（开发中）</div>
+
+      <div class="card history-list-card">
+        <div class="history-selection-bar" id="historySelectionBar">
+          <span id="historySelectionCount">已选0条</span>
+          <span class="history-selection-copy">点击记录可多选，删除后会同步更新本地历史</span>
+        </div>
+        <div class="history-list-container" id="historyPageList">
+          <div class="empty-state">暂无历史记录，开始算一笔吧～</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="page" id="profile-page" data-route="profile">
-    <div class="card profile-card">
-      <div class="profile-icon">
-        <i data-lucide="user-round" aria-hidden="true"></i>
+    <div class="profile-layout">
+      <div class="card profile-card">
+        <div class="profile-hero">
+          <img class="profile-avatar" id="profileAvatarPreview" alt="用户头像">
+          <div class="profile-hero-copy">
+            <div class="profile-title">我的</div>
+            <div class="profile-subtitle" id="profileHeroName">旅行买手</div>
+            <div class="profile-copy" id="profileHeroMeta">未设置国籍，先完善信息吧。</div>
+          </div>
+        </div>
       </div>
-      <div class="profile-title">我的</div>
-      <div class="profile-copy">个人中心（开发中）</div>
+
+      <div class="card profile-card">
+        <div class="profile-section-title">用户设置</div>
+        <div class="profile-avatar-row">
+          <img class="profile-avatar" id="profileAvatarSetting" alt="头像预览">
+          <div class="profile-avatar-meta">
+            <label class="profile-upload-btn" for="profileAvatarInput">上传头像</label>
+            <input class="profile-upload-input" id="profileAvatarInput" type="file" accept="image/*">
+            <div class="profile-avatar-hint">支持本地图片，保存在当前浏览器。</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="profileNickname">昵称</label>
+          <input id="profileNickname" type="text" placeholder="输入你的昵称" maxlength="20">
+        </div>
+
+        <div class="form-group">
+          <label for="profileNationality">国籍</label>
+          <select id="profileNationality">
+            <option value="">请选择国籍</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card profile-card">
+        <div class="profile-section-title">数据统计</div>
+        <div class="profile-stat-grid">
+          <div class="profile-stat-item">
+            <div class="profile-stat-label">总记录数</div>
+            <div class="profile-stat-value" id="profileTotalRecords">0</div>
+          </div>
+          <div class="profile-stat-item">
+            <div class="profile-stat-label">覆盖国家数</div>
+            <div class="profile-stat-value" id="profileCountryCount">0</div>
+          </div>
+        </div>
+        <div class="profile-country-list" id="profileCountryStats">
+          <div class="profile-empty">暂无历史记录，保存几笔后这里会自动统计。</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -892,8 +1268,10 @@
 const EXCHANGE_API_BASE_URL = 'https://open.er-api.com/v6/latest/';
 const EXCHANGE_CACHE_KEY = 'exchangeRatesCacheV5';
 const HISTORY_KEY = 'calcHistory';
+const PROFILE_KEY = 'profileSettingsV1';
 const EXCHANGE_CACHE_TTL = 60 * 60 * 1000;
 const DEFAULT_FEE_RATE = 0;
+const DEFAULT_PROFILE_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23E9D5FF'/%3E%3Cstop offset='100%25' stop-color='%238B5CF6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='96' height='96' rx='28' fill='url(%23g)'/%3E%3Ccircle cx='48' cy='37' r='16' fill='white' fill-opacity='0.92'/%3E%3Cpath d='M24 78c4.6-13.1 15.1-20 24-20s19.4 6.9 24 20' fill='white' fill-opacity='0.92'/%3E%3C/svg%3E";
 
 const COUNTRY_META = {
   fr: { name: '法国', emoji: '🇫🇷', taxRate: 0.12, currency: 'EUR', symbol: '€' },
@@ -929,6 +1307,8 @@ let activeRateRequestCurrency = '';
 let appRouter = null;
 let touchStartX = 0;
 let touchStartY = 0;
+let historyMultiSelectMode = false;
+let historyCheckedIds = new Set();
 const UI_LANGUAGE = document.documentElement.lang?.toLowerCase().startsWith('en')
   || navigator.language?.toLowerCase().startsWith('en')
   ? 'en'
@@ -1067,18 +1447,81 @@ function formatHistoryDateLabel(dateValue) {
   return `${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
+function getHistoryGroupKey(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatFullHistoryDate(dateValue) {
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  const today = new Date();
+  const isCurrentYear = date.getFullYear() === today.getFullYear();
+  const prefix = formatHistoryDateLabel(date);
+  const exactDate = isCurrentYear
+    ? `${date.getMonth() + 1}月${date.getDate()}日`
+    : `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  return prefix === exactDate ? exactDate : `${prefix} · ${exactDate}`;
+}
+
+function groupHistoryByDate(history, formatter = formatFullHistoryDate) {
+  const groups = [];
+  const groupMap = new Map();
+
+  history.forEach(item => {
+    const key = getHistoryGroupKey(item.savedAt || item.timestamp);
+    if (!groupMap.has(key)) {
+      const group = {
+        key,
+        label: formatter(item.savedAt || item.timestamp),
+        items: []
+      };
+      groupMap.set(key, group);
+      groups.push(group);
+    }
+    groupMap.get(key).items.push(item);
+  });
+
+  return groups;
+}
+
 function normalizeHistory(history) {
   return history
     .map(item => {
-      const savedAt = Number(item.savedAt || item.id || 0);
+      const timestamp = Number(item.timestamp || item.savedAt || item.id || 0);
+      const currency = item.currency || item.sourceCurrency || 'CNY';
+      const originalPrice = Number(item.originalPrice ?? item.price ?? 0);
+      const finalCny = Number(item.finalCny ?? item.cnyAmount ?? 0);
+      const taxRate = Number(item.taxRate ?? 0);
+      const discountPct = Number(item.discountPct ?? item.discount ?? 0);
+      const exchangeRate = Number(item.exchangeRate ?? (originalPrice > 0 ? finalCny / originalPrice : 0));
       return {
         ...item,
-        savedAt,
-        savedAtText: item.savedAtText || formatDateTime(savedAt),
-        savedAtTime: item.savedAtTime || formatHistoryTime(savedAt)
+        id: timestamp,
+        timestamp,
+        savedAt: timestamp,
+        currency,
+        sourceCurrency: currency,
+        sourceSymbol: item.sourceSymbol || (COUNTRY_META[item.country]?.symbol || ''),
+        originalPrice,
+        price: originalPrice,
+        cnyAmount: Number(item.cnyAmount ?? finalCny),
+        finalCny,
+        taxRate,
+        discountPct,
+        discount: discountPct,
+        exchangeRate,
+        country: item.country || 'unknown',
+        countryName: item.countryName || COUNTRY_META[item.country]?.name || item.country || '未知地区',
+        itemName: item.itemName || '未命名商品',
+        savedAtText: item.savedAtText || formatDateTime(timestamp),
+        savedAtTime: item.savedAtTime || formatHistoryTime(timestamp)
       };
     })
-    .sort((a, b) => b.savedAt - a.savedAt);
+    .filter(item => Number.isFinite(item.timestamp) && item.timestamp > 0)
+    .sort((a, b) => b.timestamp - a.timestamp);
 }
 
 function escapeHtml(value) {
@@ -1108,9 +1551,143 @@ function getSourceToCnyRate(currencyCode) {
   return getRateBetween(currencyCode, 'CNY');
 }
 
+function getHistoryItemFinalCny(item) {
+  const finalCny = Number(item.finalCny ?? item.cnyAmount);
+  if (Number.isFinite(finalCny) && finalCny > 0) return finalCny;
+
+  const exchangeRate = Number(item.exchangeRate);
+  if (Number.isFinite(exchangeRate) && exchangeRate > 0) {
+    return Number(item.originalPrice ?? item.price ?? 0) * exchangeRate;
+  }
+
+  const liveRate = getSourceToCnyRate(item.sourceCurrency || item.currency || 'CNY');
+  if (Number.isFinite(liveRate) && liveRate > 0) {
+    return Number(item.originalPrice ?? item.price ?? 0) * liveRate;
+  }
+
+  return 0;
+}
+
+function formatHistoryAmountSummary(item) {
+  return `${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} → ${formatCny(getHistoryItemFinalCny(item))}`;
+}
+
 function formatExchangeRate(rate) {
   if (!Number.isFinite(rate) || rate <= 0) return '—';
   return rate.toFixed(4);
+}
+
+function getDefaultProfileSettings() {
+  return {
+    avatar: DEFAULT_PROFILE_AVATAR,
+    nickname: '旅行买手',
+    nationality: ''
+  };
+}
+
+function getProfileSettings() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+    return { ...getDefaultProfileSettings(), ...stored };
+  } catch {
+    return getDefaultProfileSettings();
+  }
+}
+
+function saveProfileSettings(partialSettings) {
+  const nextSettings = { ...getProfileSettings(), ...partialSettings };
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(nextSettings));
+  renderProfile();
+}
+
+function buildNationalityOptions() {
+  const select = document.getElementById('profileNationality');
+  if (!select) return;
+  const currentValue = getProfileSettings().nationality || '';
+  const options = Object.entries(COUNTRY_META).map(([code, meta]) => `
+    <option value="${code}">${meta.emoji} ${meta.name}</option>
+  `).join('');
+  select.innerHTML = `<option value="">请选择国籍</option>${options}`;
+  select.value = currentValue;
+}
+
+function getProfileStats(history = getHistory()) {
+  const countryMap = new Map();
+  history.forEach(item => {
+    const code = item.country || '';
+    const meta = COUNTRY_META[code];
+    const key = code || item.countryName;
+    const current = countryMap.get(key) || {
+      code,
+      name: meta ? `${meta.emoji} ${meta.name}` : item.countryName || '未知地区',
+      count: 0
+    };
+    current.count += 1;
+    countryMap.set(key, current);
+  });
+
+  const countryStats = Array.from(countryMap.values()).sort((a, b) => {
+    if (b.count !== a.count) return b.count - a.count;
+    return a.name.localeCompare(b.name, 'zh-CN');
+  });
+
+  return {
+    totalRecords: history.length,
+    totalCountries: countryStats.length,
+    countryStats
+  };
+}
+
+function renderProfile(history = getHistory()) {
+  const settings = getProfileSettings();
+  const stats = getProfileStats(history);
+  const meta = settings.nationality ? COUNTRY_META[settings.nationality] : null;
+
+  const heroAvatar = document.getElementById('profileAvatarPreview');
+  const settingAvatar = document.getElementById('profileAvatarSetting');
+  const heroName = document.getElementById('profileHeroName');
+  const heroMeta = document.getElementById('profileHeroMeta');
+  const nicknameInput = document.getElementById('profileNickname');
+  const nationalitySelect = document.getElementById('profileNationality');
+  const totalRecordsEl = document.getElementById('profileTotalRecords');
+  const totalCountriesEl = document.getElementById('profileCountryCount');
+  const countryStatsEl = document.getElementById('profileCountryStats');
+
+  if (heroAvatar) heroAvatar.src = settings.avatar || DEFAULT_PROFILE_AVATAR;
+  if (settingAvatar) settingAvatar.src = settings.avatar || DEFAULT_PROFILE_AVATAR;
+  if (heroName) heroName.textContent = settings.nickname || '旅行买手';
+  if (heroMeta) {
+    heroMeta.textContent = meta
+      ? `国籍：${meta.emoji} ${meta.name}`
+      : '未设置国籍，先完善信息吧。';
+  }
+  if (nicknameInput && nicknameInput.value !== (settings.nickname || '')) {
+    nicknameInput.value = settings.nickname || '';
+  }
+  if (nationalitySelect) nationalitySelect.value = settings.nationality || '';
+  if (totalRecordsEl) totalRecordsEl.textContent = String(stats.totalRecords);
+  if (totalCountriesEl) totalCountriesEl.textContent = String(stats.totalCountries);
+  if (countryStatsEl) {
+    countryStatsEl.innerHTML = stats.countryStats.length
+      ? stats.countryStats.map(item => `
+        <div class="profile-country-item">
+          <span class="profile-country-name">${item.name}</span>
+          <span class="profile-country-count">${item.count} 次</span>
+        </div>
+      `).join('')
+      : '<div class="profile-empty">暂无历史记录，保存几笔后这里会自动统计。</div>';
+  }
+}
+
+function handleProfileAvatarUpload(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result === 'string') {
+      saveProfileSettings({ avatar: reader.result });
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 function formatReferenceRate(rate, currencyCode) {
@@ -1157,10 +1734,12 @@ function goToTab(tabName) {
   const targetPath = TAB_ROUTE_MAP[tabName] || TAB_ROUTE_MAP.calc;
   if (!appRouter) {
     updateActivePage(targetPath);
+    if (tabName === 'history') renderHistoryPage(applyHistoryFilter());
     return;
   }
   if (appRouter.currentRoute.value.path === targetPath) {
     updateActivePage(targetPath);
+    if (tabName === 'history') renderHistoryPage(applyHistoryFilter());
     return;
   }
   appRouter.push(targetPath);
@@ -1336,6 +1915,9 @@ function getHistory() {
     currentHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
   } catch { currentHistory = []; }
   currentHistory = normalizeHistory(currentHistory);
+  historyCheckedIds.forEach(id => {
+    if (!currentHistory.some(item => item.timestamp === id)) historyCheckedIds.delete(id);
+  });
   return currentHistory;
 }
 
@@ -1349,10 +1931,13 @@ function saveRecord() {
   const savedAt = Date.now();
   const record = {
     id: savedAt,
+    timestamp: savedAt,
     itemName: data.itemName || '未命名商品',
     country: currentCountry,
     countryName: `${data.meta.name} ${data.meta.emoji}`,
+    originalPrice: data.price,
     price: data.price,
+    discountPct: currentDiscount,
     discount: currentDiscount,
     discountedPrice: data.discounted,
     taxRate: data.customTaxRate,
@@ -1361,6 +1946,7 @@ function saveRecord() {
     sourceCurrency: data.sourceCurrency,
     sourceSymbol: data.sourceSymbol,
     exchangeRate: data.sourceToCny,
+    cnyAmount: data.finalCny,
     finalCny: data.finalCny,
     discountSavingCny: data.discountSavingCny,
     savedAt,
@@ -1374,37 +1960,39 @@ function saveRecord() {
   renderHistory();
 }
 
+function resetCalculatorForm() {
+  document.getElementById('itemName').value = '';
+  document.getElementById('price').value = '';
+  document.getElementById('taxFreeToggle').checked = false;
+  isTaxFree = false;
+  lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+  updateTaxRateInputDisplay();
+  document.getElementById('customDiscountInput').value = '';
+  document.getElementById('customDiscountWrap').classList.remove('discount-input-active');
+  setDiscount(0);
+  calculate();
+  updateExchangeBanner();
+}
+
 function buildHistoryMarkup(history) {
   if (!history.length) {
     return '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
   }
-  const groups = history.reduce((acc, item) => {
-    const date = new Date(item.savedAt);
-    const groupKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    if (!acc[groupKey]) {
-      acc[groupKey] = {
-        label: formatHistoryDateLabel(item.savedAt),
-        items: []
-      };
-    }
-    acc[groupKey].items.push(item);
-    return acc;
-  }, {});
+  const groups = groupHistoryByDate(history);
 
-  return Object.values(groups).map(group => `
+  return groups.map(group => `
     <div class="history-date-group">
       <div class="history-date-label">${group.label}</div>
       ${group.items.map(item => `
-        <div class="history-item" onclick="openHistoryDetail(${item.id})">
+        <div class="history-item" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="openHistoryDetail(${item.id})">
           <div class="history-left">
             <div class="history-name">${escapeHtml(item.itemName)}</div>
             <div class="history-meta">
-              <span class="history-badge currency">${item.sourceCurrency}</span>
+              <span>${formatHistoryAmountSummary(item)}</span>
               <span>${item.countryName}</span>
               <span class="history-badge time">${item.savedAtTime}</span>
             </div>
           </div>
-          <div class="history-price">${formatCny(item.finalCny)}</div>
         </div>
       `).join('')}
     </div>
@@ -1417,12 +2005,11 @@ function buildCompactHistoryMarkup(history) {
   }
 
   return history.map(item => `
-    <div class="history-item compact" onclick="openHistoryDetail(${item.id})">
+    <div class="history-item compact" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="openHistoryDetail(${item.id})">
       <div class="history-left">
         <div class="history-name">${escapeHtml(item.itemName)}</div>
         <div class="history-meta">
-          <span>${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)}</span>
-          <span class="history-badge currency">${item.sourceCurrency}</span>
+          <span>${formatHistoryAmountSummary(item)}</span>
         </div>
       </div>
     </div>
@@ -1435,15 +2022,184 @@ function paintHistoryList(listId, history) {
   list.innerHTML = listId === 'calcHistoryList'
     ? buildCompactHistoryMarkup(history)
     : buildHistoryMarkup(history);
-  list.querySelectorAll('.history-item').forEach((item, index) => {
-    setHistoryItemColor(item, history[index]?.currency || history[index]?.sourceCurrency);
+  list.querySelectorAll('.history-item').forEach(item => {
+    setHistoryItemColor(item, item.dataset.currency);
   });
+}
+
+function getHistoryDateRange(timestamp) {
+  const target = new Date(timestamp);
+  const start = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime();
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const diffDays = Math.floor((startOfToday - start) / 86400000);
+  const startOfWeek = new Date(now);
+  const day = startOfWeek.getDay() || 7;
+  startOfWeek.setHours(0, 0, 0, 0);
+  startOfWeek.setDate(startOfWeek.getDate() - day + 1);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  return { start, startOfToday, diffDays, startOfWeek: startOfWeek.getTime(), startOfMonth };
+}
+
+function getDateGroupLabel(timestamp) {
+  const { start, startOfToday, diffDays, startOfWeek, startOfMonth } = getHistoryDateRange(timestamp);
+  if (start === startOfToday) return '今天';
+  if (diffDays === 1) return '昨天';
+  if (start >= startOfWeek) return '本周';
+  if (start >= startOfMonth) return '本月';
+  return '更早';
+}
+
+function updateHistoryCurrencyFilterOptions(history = getHistory()) {
+  const filter = document.getElementById('historyCurrencyFilter');
+  if (!filter) return;
+
+  const currentValue = filter.value || 'all';
+  const baseCurrencies = ['JPY', 'USD', 'EUR', 'CNY', 'GBP', 'KRW', 'THB', 'AUD', 'SGD', 'CHF'];
+  const historyCurrencies = history
+    .map(item => item.currency || item.sourceCurrency)
+    .filter(Boolean);
+  const optionValues = ['all', ...Array.from(new Set([...baseCurrencies, ...historyCurrencies])).sort()];
+
+  filter.innerHTML = optionValues.map(value => {
+    const label = value === 'all' ? '全部' : value;
+    return `<option value="${value}">${label}</option>`;
+  }).join('');
+  filter.value = optionValues.includes(currentValue) ? currentValue : 'all';
+}
+
+function applyHistoryFilter() {
+  const history = getHistory();
+  const dateFilter = document.getElementById('historyDateFilter')?.value || 'all';
+  const currencyFilter = document.getElementById('historyCurrencyFilter')?.value || 'all';
+  const keyword = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
+
+  return history.filter(item => {
+    const { start, startOfToday, diffDays, startOfWeek, startOfMonth } = getHistoryDateRange(item.timestamp);
+    const matchesDate = (
+      dateFilter === 'all'
+      || (dateFilter === 'today' && start === startOfToday)
+      || (dateFilter === 'yesterday' && diffDays === 1)
+      || (dateFilter === 'week' && start >= startOfWeek)
+      || (dateFilter === 'month' && start >= startOfMonth)
+    );
+    const matchesCurrency = currencyFilter === 'all' || item.currency === currencyFilter;
+    const matchesKeyword = !keyword || item.itemName.toLowerCase().includes(keyword);
+    return matchesDate && matchesCurrency && matchesKeyword;
+  });
+}
+
+function updateHistorySelectionUI() {
+  const count = historyCheckedIds.size;
+  const selectionBar = document.getElementById('historySelectionBar');
+  const countEl = document.getElementById('historySelectionCount');
+  const deleteBtn = document.getElementById('historyDeleteBtn');
+  const multiBtn = document.getElementById('historyMultiSelectBtn');
+  const cancelBtn = document.getElementById('historyCancelBtn');
+
+  if (countEl) countEl.textContent = `已选${count}条`;
+  if (selectionBar) selectionBar.classList.toggle('show', historyMultiSelectMode);
+  if (deleteBtn) {
+    deleteBtn.style.display = historyMultiSelectMode ? 'inline-flex' : 'none';
+    deleteBtn.textContent = `删除(已选${count})`;
+    deleteBtn.disabled = count === 0;
+  }
+  if (multiBtn) multiBtn.style.display = historyMultiSelectMode ? 'none' : 'inline-flex';
+  if (cancelBtn) cancelBtn.style.display = historyMultiSelectMode ? 'inline-flex' : 'none';
+}
+
+function renderHistoryPage(filteredHistory) {
+  const list = document.getElementById('historyPageList');
+  if (!list) return;
+  const history = Array.isArray(filteredHistory) ? filteredHistory : applyHistoryFilter();
+
+  updateHistorySelectionUI();
+
+  if (!history.length) {
+    list.innerHTML = '<div class="empty-state">暂无历史记录，开始算一笔吧～</div>';
+    return;
+  }
+  const groups = groupHistoryByDate(history);
+
+  list.innerHTML = groups.map(group => `
+    <div class="history-date-group">
+      <div class="history-date-label">${group.label}</div>
+      ${group.items.map(item => `
+        <div class="history-item selectable ${historyMultiSelectMode ? 'multi-select' : ''} ${historyCheckedIds.has(item.timestamp) ? 'checked' : ''}" data-timestamp="${item.timestamp}" onclick="handleHistoryItemClick(${item.timestamp})">
+          <button class="history-checkbox" type="button" aria-label="选择${escapeHtml(item.itemName)}" onclick="toggleHistoryItemCheck(${item.timestamp}, event)">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 10.5 8.2 13.7 15 6.9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="history-left">
+            <div class="history-name">${escapeHtml(item.itemName)}</div>
+            <div class="history-meta">
+              <span>${formatHistoryAmountSummary(item)}</span>
+              <span class="history-badge time">${item.savedAtTime}</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.history-item').forEach(item => {
+    const id = Number(item.dataset.timestamp);
+    const target = history.find(record => record.timestamp === id);
+    if (target) setHistoryItemColor(item, target.currency);
+  });
+}
+
+function enterHistoryMultiSelect() {
+  historyMultiSelectMode = true;
+  historyCheckedIds.clear();
+  updateHistorySelectionUI();
+  renderHistoryPage();
+}
+
+function exitHistoryMultiSelect() {
+  historyMultiSelectMode = false;
+  historyCheckedIds.clear();
+  updateHistorySelectionUI();
+  renderHistoryPage();
+}
+
+function toggleHistoryItemCheck(timestamp, event) {
+  event?.stopPropagation();
+  if (!historyMultiSelectMode) historyMultiSelectMode = true;
+  if (historyCheckedIds.has(timestamp)) {
+    historyCheckedIds.delete(timestamp);
+  } else {
+    historyCheckedIds.add(timestamp);
+  }
+  updateHistorySelectionUI();
+  renderHistoryPage();
+}
+
+function handleHistoryItemClick(timestamp) {
+  if (historyMultiSelectMode) {
+    toggleHistoryItemCheck(timestamp);
+    return;
+  }
+  openHistoryDetail(timestamp);
+}
+
+function deleteSelectedHistory() {
+  if (!historyCheckedIds.size) return;
+  if (!confirm(`确认删除已选中的 ${historyCheckedIds.size} 条历史记录？`)) return;
+  const nextHistory = getHistory().filter(item => !historyCheckedIds.has(item.timestamp));
+  saveHistory(nextHistory);
+  exitHistoryMultiSelect();
+  renderHistory();
 }
 
 function renderHistory() {
   const history = getHistory();
+  updateHistoryCurrencyFilterOptions(history);
   const latestFiveHistory = history.slice(0, 5);
   paintHistoryList('calcHistoryList', latestFiveHistory);
+  renderHistoryPage(applyHistoryFilter());
+  renderProfile(history);
 }
 
 function getActiveTab() {
@@ -1480,15 +2236,15 @@ function setupSwipeNavigation() {
 }
 
 function openHistoryDetail(recordId) {
-  const record = getHistory().find(item => item.id === recordId);
+  const record = getHistory().find(item => item.id === recordId || item.timestamp === recordId);
   if (!record) return;
 
   const details = [
     { label: '商品名称', value: record.itemName },
     { label: '购买地点', value: record.countryName },
     { label: '保存时间', value: record.savedAtText },
-    { label: '原价', value: `${record.sourceCurrency} ${formatAmount(record.price, record.sourceCurrency, record.sourceSymbol)}` },
-    { label: '折扣', value: record.discount > 0 ? `省${record.discount}%` : '无折扣' },
+    { label: '原价', value: formatAmount(record.originalPrice, record.sourceCurrency, record.sourceSymbol) },
+    { label: '折扣', value: record.discountPct > 0 ? `省${record.discountPct}%` : '无折扣' },
     { label: '折扣节省', value: record.discountSavingCny > 0 ? `-¥${Number(record.discountSavingCny).toFixed(2)}` : '¥0' },
     { label: '退税率', value: record.taxRate > 0 ? formatPercent(record.taxRate) : '免税' },
     { label: '退税金额', value: `+¥${Number(record.taxAmount * record.exchangeRate).toFixed(2)}` },
@@ -1520,6 +2276,10 @@ function clearHistory() {
   renderHistory();
 }
 
+document.getElementById('historyDateFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
+document.getElementById('historyCurrencyFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
+document.getElementById('historySearchInput').addEventListener('input', () => renderHistoryPage(applyHistoryFilter()));
+
 document.getElementById('country').addEventListener('change', function() {
   currentCountry = this.value;
   lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
@@ -1535,6 +2295,15 @@ document.getElementById('taxRateInput').addEventListener('input', e => handleTax
 document.getElementById('taxRateInput').addEventListener('blur', normalizeTaxRateInput);
 document.getElementById('taxFreeToggle').addEventListener('change', e => setTaxFreeState(e.target.checked));
 document.getElementById('customDiscountInput').addEventListener('input', e => handleCustomDiscountInput(e.target.value));
+document.getElementById('profileNickname').addEventListener('input', e => {
+  saveProfileSettings({ nickname: e.target.value.trim() || '旅行买手' });
+});
+document.getElementById('profileNationality').addEventListener('change', e => {
+  saveProfileSettings({ nationality: e.target.value });
+});
+document.getElementById('profileAvatarInput').addEventListener('change', e => {
+  handleProfileAvatarUpload(e.target.files?.[0]);
+});
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHistoryModal(); });
 
@@ -1551,15 +2320,20 @@ const router = VueRouter.createRouter({
 
 router.afterEach(to => {
   updateActivePage(to.path);
+  if (getActiveTabFromPath(to.path) === 'history') {
+    renderHistoryPage(applyHistoryFilter());
+  }
 });
 
 appRouter = router;
 Vue.createApp({ template: '<router-view />' }).use(router).mount('#routerMount');
 
 updateTaxRateInputDisplay();
+buildNationalityOptions();
 renderLucideIcons();
 getExchangeRates();
 renderHistory();
+renderProfile();
 calculate();
 updateActivePage(router.currentRoute.value.path || TAB_ROUTE_MAP.calc);
 setupSwipeNavigation();
