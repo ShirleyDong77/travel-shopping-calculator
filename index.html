@@ -482,7 +482,36 @@
   }
   .history-badge.currency { color: var(--ink-700); background: #F5F3FF; }
   .history-badge.time { color: var(--text-600); background: #F3F4F6; }
-  .history-price { font-size: 16px; color: var(--ink-700); font-weight: 800; text-align: right; flex-shrink: 0; margin-left: 12px; }
+  .category-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 8px; font-size: 10px; font-weight: 600; }
+  .category-badge.鞋包 { color: #be185d; background: #fdf2f8; }
+  .category-badge.美妆 { color: #dc2626; background: #fef2f2; }
+  .category-badge.服饰 { color: #7c3aed; background: #f5f3ff; }
+  .category-badge.首饰 { color: #b45309; background: #fffbeb; }
+  .category-badge.电子 { color: #1d4ed8; background: #eff6ff; }
+  .category-badge.食品 { color: #15803d; background: #f0fdf4; }
+  .category-badge.其他 { color: var(--text-600); background: #F3F4F6; }
+
+  /* Swipe delete */
+  .history-item-wrap { position: relative; overflow: hidden; border-radius: 20px; margin-bottom: 10px; }
+  .history-item-wrap:last-child { margin-bottom: 0; }
+  .history-item-swipe { display: flex; transition: transform 0.25s ease; }
+  .history-item-wrap.swiped .history-item-swipe { transform: translateX(-72px); }
+  .history-item-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 72px; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border-radius: 0 20px 20px 0; cursor: pointer; flex-shrink: 0; }
+
+  /* Confirm dialog */
+  .confirm-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.48); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+  .confirm-overlay.show { display: flex; }
+  .confirm-dialog { background: linear-gradient(135deg, #7B63F1, #8D73F3); border-radius: 28px; padding: 28px 24px; max-width: 320px; width: 100%; color: #fff; box-shadow: 0 24px 60px rgba(124,58,237,0.4); text-align: center; }
+  .confirm-dialog-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .confirm-dialog-desc { font-size: 14px; opacity: 0.85; margin-bottom: 22px; line-height: 1.5; }
+  .confirm-dialog-btns { display: flex; gap: 10px; }
+  .confirm-dialog-btn { flex: 1; padding: 13px; border-radius: 18px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
+  .confirm-dialog-btn:active { transform: scale(0.96); }
+  .confirm-dialog-btn.cancel { background: rgba(255,255,255,0.18); color: #fff; }
+  .confirm-dialog-btn.danger { background: #EF4444; color: #fff; box-shadow: 0 8px 20px rgba(239,68,68,0.3); }
+  .history-price { font-size: 18px; color: var(--purple-700); font-weight: 800; text-align: right; flex-shrink: 0; margin-left: 12px; }
+  .history-cny { font-size: 18px; font-weight: 800; color: var(--purple-700); }
+  .history-orig { font-size: 11px; color: var(--text-500); margin-top: 3px; }
   .history-page-layout {
     display: flex;
     flex-direction: column;
@@ -1152,6 +1181,19 @@
             <label for="historySearchInput">商品搜索</label>
             <input id="historySearchInput" type="text" placeholder="搜索商品名称">
           </div>
+          <div class="form-group">
+            <label for="historyCategoryFilter">分类筛选</label>
+            <select id="historyCategoryFilter">
+              <option value="all">全部</option>
+              <option value="鞋包">鞋包</option>
+              <option value="美妆">美妆</option>
+              <option value="服饰">服饰</option>
+              <option value="首饰">首饰</option>
+              <option value="电子">电子</option>
+              <option value="食品">食品</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -1572,6 +1614,88 @@ function formatHistoryAmountSummary(item) {
   return `${formatAmount(item.price, item.sourceCurrency, item.sourceSymbol)} → ${formatCny(getHistoryItemFinalCny(item))}`;
 }
 
+const CATEGORIES = {
+  鞋包: { keywords: ['鞋','靴','包','袋','箱','履','表带'], color: '鞋包' },
+  美妆: { keywords: ['口红','唇膏','粉底','护肤','精华','面霜','妆','香水','美甲','眼影','腮红','遮瑕','睫毛','眉笔'], color: '美妆' },
+  服饰: { keywords: ['衣','裙','裤','袜','帽','巾','丝','衫','牛仔裤','T恤','外套','大衣','毛衣','围巾'], color: '服饰' },
+  首饰: { keywords: ['戒','项链','耳环','手链','镯','珠','钻','表'], color: '首饰' },
+  电子: { keywords: ['手机','电脑','耳机','充电宝','相机','游戏机','iPad','Mac','Watch'], color: '电子' },
+  食品: { keywords: ['零食','巧克力','糖果','饼干','咖啡','奶粉','糕','糖'], color: '食品' }
+};
+
+function getCategory(itemName) {
+  const name = itemName || '';
+  for (const [cat, data] of Object.entries(CATEGORIES)) {
+    if (data.keywords.some(kw => name.includes(kw))) return cat;
+  }
+  return '其他';
+}
+
+let _confirmCallback = null;
+let _swipeStartX = 0;
+let _swipeItem = null;
+function handleSwipeStart(e, wrap) {
+  _swipeStartX = e.touches[0].clientX;
+  _swipeItem = wrap;
+}
+function handleSwipeEnd(e, wrap) {
+  const delta = e.changedTouches[0].clientX - _swipeStartX;
+  if (delta < -60) {
+    wrap.classList.add('swiped');
+  } else {
+    wrap.classList.remove('swiped');
+  }
+}
+function confirmDeleteOne(id) {
+  showConfirmDialog({
+    title: '确认删除？',
+    desc: '删除后可在「我的」页面恢复',
+    confirmText: '删除',
+    danger: true,
+    onConfirm: () => deleteOneHistory(id)
+  });
+}
+function deleteOneHistory(id) {
+  const history = getHistory().filter(h => h.id !== id);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  currentHistory = history;
+  renderHistory();
+  renderHistoryPage(applyHistoryFilter());
+  renderProfile(history);
+}
+function showConfirmDialog({ title, desc, onConfirm, confirmText = '确认', cancelText = '取消', danger = false }) {
+  let overlay = document.getElementById('confirmOverlay');
+  if (!overlay) {
+    const html = `<div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-dialog">
+        <div class="confirm-dialog-title" id="confirmTitle"></div>
+        <div class="confirm-dialog-desc" id="confirmDesc"></div>
+        <div class="confirm-dialog-btns">
+          <button class="confirm-dialog-btn cancel" id="confirmCancelBtn"></button>
+          <button class="confirm-dialog-btn danger" id="confirmOkBtn"></button>
+        </div>
+      </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+    overlay = document.getElementById('confirmOverlay');
+    document.getElementById('confirmCancelBtn').addEventListener('click', hideConfirmDialog);
+    document.getElementById('confirmOkBtn').addEventListener('click', () => { if (_confirmCallback) _confirmCallback(); hideConfirmDialog(); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) hideConfirmDialog(); });
+  }
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmDesc').textContent = desc;
+  const okBtn = document.getElementById('confirmOkBtn');
+  okBtn.textContent = confirmText;
+  okBtn.className = 'confirm-dialog-btn ' + (danger ? 'danger' : '');
+  _confirmCallback = onConfirm || null;
+  overlay.classList.add('show');
+}
+function hideConfirmDialog() {
+  const overlay = document.getElementById('confirmOverlay');
+  if (overlay) overlay.classList.remove('show');
+  _confirmCallback = null;
+}
+
 function formatExchangeRate(rate) {
   if (!Number.isFinite(rate) || rate <= 0) return '—';
   return rate.toFixed(4);
@@ -1983,18 +2107,28 @@ function buildHistoryMarkup(history) {
   return groups.map(group => `
     <div class="history-date-group">
       <div class="history-date-label">${group.label}</div>
-      ${group.items.map(item => `
-        <div class="history-item" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="openHistoryDetail(${item.id})">
-          <div class="history-left">
-            <div class="history-name">${escapeHtml(item.itemName)}</div>
-            <div class="history-meta">
-              <span>${formatHistoryAmountSummary(item)}</span>
-              <span>${item.countryName}</span>
-              <span class="history-badge time">${item.savedAtTime}</span>
+      ${group.items.map(item => {
+        const cat = getCategory(item.itemName);
+        const cnyAmt = formatCny(getHistoryItemFinalCny(item));
+        const origAmt = formatAmount(item.price, item.sourceCurrency, item.sourceSymbol);
+        return `
+        <div class="history-item-wrap" ontouchstart="handleSwipeStart(event,this)" ontouchend="handleSwipeEnd(event,this)">
+          <div class="history-item-swipe">
+            <div class="history-item" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="openHistoryDetail(${item.id})">
+              <div class="history-left">
+                <div class="history-name">${escapeHtml(item.itemName)}</div>
+                <div class="history-meta">
+                  <span class="category-badge ${cat}">${cat}</span>
+                  <span>${origAmt} ${item.countryName}</span>
+                  <span class="history-badge time">${item.savedAtTime}</span>
+                </div>
+              </div>
+              <div class="history-cny">¥${cnyAmt}</div>
             </div>
+            <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
           </div>
-        </div>
-      `).join('')}
+        </div>`;
+      }).join('')}
     </div>
   `).join('');
 }
@@ -2004,16 +2138,22 @@ function buildCompactHistoryMarkup(history) {
     return '<div class="empty-state">暂无计算记录<br>开始算一笔吧～</div>';
   }
 
-  return history.map(item => `
+  return history.map(item => {
+    const cat = getCategory(item.itemName);
+    const cnyAmt = formatCny(getHistoryItemFinalCny(item));
+    const origAmt = formatAmount(item.price, item.sourceCurrency, item.sourceSymbol);
+    return `
     <div class="history-item compact" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="openHistoryDetail(${item.id})">
       <div class="history-left">
         <div class="history-name">${escapeHtml(item.itemName)}</div>
         <div class="history-meta">
-          <span>${formatHistoryAmountSummary(item)}</span>
+          <span class="category-badge ${cat}">${cat}</span>
+          <span>${origAmt} ${item.countryName}</span>
         </div>
       </div>
-    </div>
-  `).join('');
+      <div class="history-cny">¥${cnyAmt}</div>
+    </div>`;
+  }).join('');
 }
 
 function paintHistoryList(listId, history) {
@@ -2072,6 +2212,7 @@ function applyHistoryFilter() {
   const history = getHistory();
   const dateFilter = document.getElementById('historyDateFilter')?.value || 'all';
   const currencyFilter = document.getElementById('historyCurrencyFilter')?.value || 'all';
+  const categoryFilter = document.getElementById('historyCategoryFilter')?.value || 'all';
   const keyword = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
 
   return history.filter(item => {
@@ -2084,8 +2225,9 @@ function applyHistoryFilter() {
       || (dateFilter === 'month' && start >= startOfMonth)
     );
     const matchesCurrency = currencyFilter === 'all' || item.currency === currencyFilter;
+    const matchesCategory = categoryFilter === 'all' || getCategory(item.itemName) === categoryFilter;
     const matchesKeyword = !keyword || item.itemName.toLowerCase().includes(keyword);
-    return matchesDate && matchesCurrency && matchesKeyword;
+    return matchesDate && matchesCurrency && matchesKeyword && matchesCategory;
   });
 }
 
@@ -2186,11 +2328,18 @@ function handleHistoryItemClick(timestamp) {
 
 function deleteSelectedHistory() {
   if (!historyCheckedIds.size) return;
-  if (!confirm(`确认删除已选中的 ${historyCheckedIds.size} 条历史记录？`)) return;
-  const nextHistory = getHistory().filter(item => !historyCheckedIds.has(item.timestamp));
-  saveHistory(nextHistory);
-  exitHistoryMultiSelect();
-  renderHistory();
+  showConfirmDialog({
+    title: '确认删除？',
+    desc: `删除 ${historyCheckedIds.size} 条历史记录`,
+    confirmText: '删除',
+    danger: true,
+    onConfirm: () => {
+      const nextHistory = getHistory().filter(item => !historyCheckedIds.has(item.timestamp));
+      saveHistory(nextHistory);
+      exitHistoryMultiSelect();
+      renderHistory();
+    }
+  });
 }
 
 function renderHistory() {
@@ -2270,14 +2419,22 @@ function handleModalBackdrop(e) {
 }
 
 function clearHistory() {
-  if (!confirm('确认清除全部历史记录？')) return;
-  localStorage.removeItem(HISTORY_KEY);
-  currentHistory = [];
-  renderHistory();
+  showConfirmDialog({
+    title: '确认清除全部历史记录？',
+    desc: '清除后无法恢复',
+    confirmText: '清除',
+    danger: true,
+    onConfirm: () => {
+      localStorage.removeItem(HISTORY_KEY);
+      currentHistory = [];
+      renderHistory();
+    }
+  });
 }
 
 document.getElementById('historyDateFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
 document.getElementById('historyCurrencyFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
+document.getElementById('historyCategoryFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
 document.getElementById('historySearchInput').addEventListener('input', () => renderHistoryPage(applyHistoryFilter()));
 
 document.getElementById('country').addEventListener('change', function() {
