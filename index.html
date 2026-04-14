@@ -1282,22 +1282,7 @@
         <div class="history-page-header">
           <div class="history-title-row">
             <span class="history-page-title">历史记录</span>
-            <input id="historySearchInput" type="text" placeholder="🔍 搜索商品" style="flex:1;min-width:0;">
-            <select id="historyCategoryFilter" style="width:auto;min-width:0;">
-              <option value="all">全部分类</option>
-              <option value="鞋包">鞋包</option>
-              <option value="美妆">美妆</option>
-              <option value="服饰">服饰</option>
-              <option value="首饰">首饰</option>
-              <option value="电子">电子</option>
-              <option value="食品">食品</option>
-              <option value="玩具">玩具</option>
-              <option value="医药">医药</option>
-              <option value="美容">美容</option>
-              <option value="家居">家居</option>
-              <option value="运动">运动</option>
-              <option value="其他">其他</option>
-            </select>
+            <input id="historySearchInput" type="text" placeholder="🔍 搜索商品名称" style="flex:1;min-width:0;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px;font-size:13px;background:#fff;">
           </div>
         </div>
         <div class="history-filter-row">
@@ -1399,7 +1384,7 @@
           <img class="profile-edit-avatar" id="profileEditAvatarPreview" alt="头像">
           <div>
             <label class="profile-edit-upload" for="profileEditAvatarInput">更换头像
-              <input class="profile-edit-upload-input" id="profileEditAvatarInput" type="file" accept="image/*">
+              <input class="profile-edit-upload-input" id="profileEditAvatarInput" type="file" accept="image/jpeg,image/png,image/webp">
             </label>
             <div class="profile-edit-hint">支持本地图片</div>
           </div>
@@ -1973,10 +1958,37 @@ function onNationalityChanged() {
 }
 function handleProfileAvatarUpload(file, previewId) {
   if (!file) return;
+  // Validate file type
+  const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+  if (!validTypes.includes(file.type)) {
+    alert('仅支持 JPG、PNG、WebP 格式图片');
+    return;
+  }
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('图片大小不能超过 5MB');
+    return;
+  }
   const reader = new FileReader();
   reader.onload = function(e) {
-    const preview = document.getElementById(previewId || 'profileEditAvatarPreview');
-    if (preview) preview.src = e.target.result;
+    const img = new Image();
+    img.onload = function() {
+      // Resize if too large (max 400x400 for localStorage efficiency)
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      const preview = document.getElementById(previewId || 'profileEditAvatarPreview');
+      if (preview) preview.src = dataUrl;
+    };
+    img.onerror = function() { alert('图片解析失败，请换一张图片'); };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -2525,7 +2537,7 @@ function applyHistoryFilter() {
   const history = getHistory();
   const dateFilter = document.getElementById('historyDateFilter')?.value || 'all';
   const currencyFilter = document.getElementById('historyCurrencyFilter')?.value || 'all';
-  const categoryFilter = document.getElementById('historyCategoryFilter')?.value || 'all';
+  const categoryFilter = 'all'; // 分类筛选已移除
   const keyword = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
 
   return history.filter(item => {
@@ -2740,7 +2752,7 @@ function clearHistory() {
 
 document.getElementById('historyDateFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
 document.getElementById('historyCurrencyFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
-document.getElementById('historyCategoryFilter').addEventListener('change', () => renderHistoryPage(applyHistoryFilter()));
+// category filter removed
 document.getElementById('historySearchInput').addEventListener('input', () => renderHistoryPage(applyHistoryFilter()));
 
 document.getElementById('country').addEventListener('change', function() {
