@@ -2770,13 +2770,6 @@ document.getElementById('taxRateInput').addEventListener('input', e => handleTax
 document.getElementById('taxRateInput').addEventListener('blur', normalizeTaxRateInput);
 document.getElementById('taxFreeToggle').addEventListener('change', e => setTaxFreeState(e.target.checked));
 document.getElementById('customDiscountInput').addEventListener('input', e => handleCustomDiscountInput(e.target.value));
-document.getElementById('profileNickname').addEventListener('input', e => {
-  saveProfileSettings({ nickname: e.target.value.trim() || '旅行买手' });
-});
-document.getElementById('profileNationality').addEventListener('change', e => {
-  saveProfileSettings({ nationality: e.target.value });
-});
-
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHistoryModal(); });
 
 const router = VueRouter.createRouter({
