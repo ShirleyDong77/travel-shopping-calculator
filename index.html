@@ -2135,16 +2135,6 @@ function renderProfile(history = getHistory()) {
   renderProfileChart(history);
 }
 
-function handleProfileAvatarUpload(file) {
-  if (!file || !file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    if (typeof reader.result === 'string') {
-      saveProfileSettings({ avatar: reader.result });
-    }
-  };
-  reader.readAsDataURL(file);
-}
 
 function formatReferenceRate(rate, currencyCode) {
   if (!Number.isFinite(rate) || rate <= 0) return `-- ${currencyCode}`;
@@ -2782,9 +2772,6 @@ document.getElementById('profileNickname').addEventListener('input', e => {
 });
 document.getElementById('profileNationality').addEventListener('change', e => {
   saveProfileSettings({ nationality: e.target.value });
-});
-document.getElementById('profileAvatarInput').addEventListener('change', e => {
-  handleProfileAvatarUpload(e.target.files?.[0]);
 });
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHistoryModal(); });
