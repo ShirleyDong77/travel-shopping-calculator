@@ -1931,7 +1931,7 @@ function buildNationalityOptions() {
   if (!select) return;
   const currentValue = getProfileSettings().nationality || '';
   const options = Object.entries(COUNTRY_META).map(([code, meta]) => `
-    <option value="${code}">${meta.emoji} ${meta.name}</option>
+    <option value="${code}">${meta.name}</option>
   `).join('');
   select.innerHTML = `<option value="">请选择国籍</option>${options}`;
   select.value = currentValue;
@@ -1972,7 +1972,7 @@ function openProfileEdit() {
   // Build nationality options
   const select = document.getElementById('profileEditNationality');
   select.innerHTML = Object.entries(COUNTRY_META).map(([code, meta]) =>
-    `<option value="${code}">${meta.emoji} ${meta.name}</option>`).join('');
+    `<option value="${code}">${meta.name}</option>`).join('');
   select.value = nationality;
   var fileInput = document.getElementById('profileEditAvatarInput');
   if (fileInput) {
@@ -2113,7 +2113,7 @@ function getProfileStats(history = getHistory()) {
     const key = code || item.countryName;
     const current = countryMap.get(key) || {
       code,
-      name: meta ? `${meta.emoji} ${meta.name}` : item.countryName || '未知地区',
+      name: meta ? meta.name : item.countryName || '未知地区',
       count: 0
     };
     current.count += 1;
@@ -2152,7 +2152,7 @@ function renderProfile(history = getHistory()) {
   if (heroName) heroName.textContent = settings.nickname || '旅行买手';
   if (heroMeta) {
     heroMeta.textContent = meta
-      ? `国籍：${meta.emoji} ${meta.name}`
+      ? `国籍：${meta.name}`
       : '未设置国籍，先完善信息吧。';
   }
   if (nicknameInput && nicknameInput.value !== (settings.nickname || '')) {
@@ -2160,7 +2160,7 @@ function renderProfile(history = getHistory()) {
   }
   if (nationalitySelect) {
     nationalitySelect.innerHTML = Object.entries(COUNTRY_META)
-      .map(([code, meta]) => `<option value="${code}">${meta.emoji} ${meta.name}</option>`).join('');
+      .map(([code, meta]) => `<option value="${code}">${meta.name}</option>`).join('');
     nationalitySelect.value = settings.nationality || '';
   }
   if (totalRecordsEl) totalRecordsEl.textContent = String(stats.totalRecords);
