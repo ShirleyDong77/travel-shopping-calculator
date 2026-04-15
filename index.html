@@ -1924,6 +1924,10 @@ function saveProfileSettings(partialSettings) {
   const nextSettings = { ...getProfileSettings(), ...partialSettings };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(nextSettings));
   renderProfile();
+  // Sync nationality to calc page if nationality changed
+  if (partialSettings.nationality) {
+    window.dispatchEvent(new CustomEvent('nationalityChanged', { detail: partialSettings }));
+  }
 }
 
 function buildNationalityOptions() {
@@ -2225,6 +2229,10 @@ function updateActivePage(routePath) {
 
 function goToTab(tabName) {
   const targetPath = TAB_ROUTE_MAP[tabName] || TAB_ROUTE_MAP.calc;
+  // Sync nationality to currentCountry when switching to calc tab
+  if (tabName === 'calc') {
+    syncCountryFromNationality();
+  }
   if (!appRouter) {
     updateActivePage(targetPath);
     if (tabName === 'history') renderHistoryPage(applyHistoryFilter());
@@ -2806,6 +2814,35 @@ document.getElementById('country').addEventListener('change', function() {
   updateExchangeBanner();
   getExchangeRates(COUNTRY_META[currentCountry].currency);
 });
+
+// Listen for profile nationality changes
+window.addEventListener('nationalityChanged', function(e) {
+  const nationality = e.detail.nationality;
+  if (nationality && COUNTRY_META[nationality]) {
+    currentCountry = nationality;
+    const countrySelect = document.getElementById('country');
+    if (countrySelect) countrySelect.value = nationality;
+    lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+    updateTaxRateInputDisplay();
+    calculate();
+    updateExchangeBanner();
+    getExchangeRates(COUNTRY_META[currentCountry].currency);
+  }
+});
+
+function syncCountryFromNationality() {
+  const settings = getProfileSettings();
+  const nationality = settings.nationality;
+  if (nationality && COUNTRY_META[nationality]) {
+    currentCountry = nationality;
+    const countrySelect = document.getElementById('country');
+    if (countrySelect) countrySelect.value = nationality;
+    lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+    updateTaxRateInputDisplay();
+    calculate();
+    updateExchangeBanner();
+  }
+}
 
 document.getElementById('price').addEventListener('input', calculate);
 document.getElementById('itemName').addEventListener('input', calculate);
