@@ -842,27 +842,27 @@
   .profile-data-stats-row {
     display: flex;
     gap: 0;
-    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-    border-radius: 20px;
+    background: #F3E8FF;
+    border: 1.5px solid #DDD6FE;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(124,58,237,0.25);
   }
   .profile-data-stat-item {
     flex: 1;
     text-align: center;
-    padding: 16px 8px;
-    border-right: 1px solid rgba(255,255,255,0.15);
+    padding: 14px 8px;
+    border-right: 1px solid #E9D5FF;
   }
   .profile-data-stat-item:last-child { border-right: none; }
   .profile-data-stat-value {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
-    color: #fff;
+    color: var(--purple-700);
     line-height: 1.1;
   }
   .profile-data-stat-label {
     font-size: 11px;
-    color: rgba(255,255,255,0.7);
+    color: var(--text-500);
     margin-top: 4px;
   }
 
@@ -875,8 +875,8 @@
   .profile-pie-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .profile-pie-bar { flex: 1; min-width: 0; }
   .profile-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .profile-bar-label { font-size: 12px; color: var(--text-600); width: 60px; flex-shrink: 0; overflow-wrap: break-word; word-break: break-all; }
-  .profile-bar-track { flex: 1; height: 5px; background: #F3E8FF; border-radius: 999px; overflow: hidden; }
+  .profile-bar-label { font-size: 12px; color: var(--text-600); width: 60px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .profile-bar-track { flex: 1; height: 3px; background: #F3E8FF; border-radius: 999px; overflow: hidden; }
   .profile-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #8B5CF6, #A78BFA); transition: width 0.4s ease; }
   .profile-bar-count { font-size: 11px; color: var(--text-500); width: 28px; text-align: right; flex-shrink: 0; }
   .profile-section-title {
@@ -1961,7 +1961,7 @@ function renderProfileBadges(history = getHistory()) {
   if (!el) return;
   const earned = computeBadges(history);
   if (!earned.length) { el.innerHTML = ''; return; }
-  el.innerHTML = earned.map(b => `<div title="${b.id}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#F3E8FF,#EDE9FE);border:1px solid #DDD6FE;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--purple-700);cursor:default;white-space:nowrap;margin:4px;"><span style="display:flex;align-items:center;">${BADGE_ICONS[b.id] || ''}</span>${b.id}</div>`).join('');
+  el.innerHTML = earned.map(b => `<div title="${b.id}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#F3E8FF,#EDE9FE);border:1px solid #DDD6FE;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--purple-700);cursor:default;white-space:nowrap;margin:6px 10px;"><span style="display:flex;align-items:center;">${BADGE_ICONS[b.id] || ''}</span>${b.id}</div>`).join('');
 }
 function openProfileEdit() {
   const settings = getProfileSettings();
@@ -2067,21 +2067,29 @@ function renderProfileChart(history = getHistory()) {
   const entries = Object.entries(catMap).sort((a,b) => b[1]-a[1]);
   const total = history.length;
   const colors = ['#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#EF4444','#6366F1','#14B8A6','#F97316','#84CC16'];
-  const cx = 70, cy = 70, r = 50;
-  const circumference = 2 * Math.PI * r;
-  let startOffset = 0;
+  const cx = 50, cy = 50, outerR = 42, innerR = 24;
   let legendItems = '';
+  let startAngle = -90;
+  let endAngle = -90;
   entries.forEach(([cat, count], i) => {
     const pct = count / total;
-    const dashLen = pct * circumference;
-    const dashGap = circumference - dashLen;
+    endAngle = startAngle + pct * 360;
     const color = colors[i % colors.length];
-    const rotation = startOffset;
     const pctStr = (pct * 100).toFixed(0);
     legendItems += `<div class="profile-pie-legend-item"><span class="profile-pie-dot" style="background:${color}"></span>${cat} ${count}次(${pctStr}%)</div>`;
-    paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="20" stroke-dasharray="${dashLen} ${dashGap}" transform="rotate(${rotation} ${cx} ${cy})" opacity="0.9"/>`;
-    startOffset += (dashLen / circumference) * 360;
+    paths += buildDonutSlice(cx, cy, outerR, innerR, startAngle, endAngle, color);
+    startAngle = endAngle;
   });
+  function buildDonutSlice(cx, cy, outerR, innerR, startAngle, endAngle, color) {
+    const toRad = a => a * Math.PI / 180;
+    const cos = Math.cos, sin = Math.sin;
+    const ox1 = cx + outerR * cos(toRad(startAngle)), oy1 = cy + outerR * sin(toRad(startAngle));
+    const ox2 = cx + outerR * cos(toRad(endAngle)), oy2 = cy + outerR * sin(toRad(endAngle));
+    const ix1 = cx + innerR * cos(toRad(endAngle)), iy1 = cy + innerR * sin(toRad(endAngle));
+    const ix2 = cx + innerR * cos(toRad(startAngle)), iy2 = cy + innerR * sin(toRad(startAngle));
+    const large = (endAngle - startAngle) > 180 ? 1 : 0;
+    return `<path d="M${ox1.toFixed(2)},${oy1.toFixed(2)} A${outerR},${outerR},0,${large},1,${ox2.toFixed(2)},${oy2.toFixed(2)} L${ix1.toFixed(2)},${iy1.toFixed(2)} A${innerR},${innerR},0,${large},0,${ix2.toFixed(2)},${iy2.toFixed(2)} Z" fill="${color}" opacity="0.9"/>`;
+  }
   // Bar chart (countries)
   const countryMap = {};
   history.forEach(i => { const c = COUNTRY_META[i.country]?.name || i.countryName || '未知'; countryMap[c] = (countryMap[c]||0)+1; });
@@ -2094,7 +2102,7 @@ function renderProfileChart(history = getHistory()) {
   section.innerHTML = `
     <div class="profile-chart-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> 消费分布</div>
     <div class="profile-pie-wrap">
-      <svg class="profile-pie-svg" width="140" height="140" viewBox="0 0 140 140">${paths}</svg>
+      <svg class="profile-pie-svg" width="120" height="120" viewBox="0 0 100 100">${paths}</svg>
       <div class="profile-pie-legend">${legendItems}</div>
     </div>
     ${topCountries.length ? `<div class="profile-chart-title" style="margin-top:16px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> 国家排行</div><div class="profile-pie-bar">${barRows}</div>` : ''}`;
