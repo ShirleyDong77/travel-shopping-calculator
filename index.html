@@ -1322,7 +1322,13 @@
             <span class="history-page-title">历史记录</span>
             <input id="historySearchInput" type="text" placeholder="🔍 搜索商品名称" style="flex:1;min-width:0;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px;font-size:13px;background:#fff;">
           </div>
-        </div>      </div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+            <select id="historyCurrencyFilter" onchange="renderHistoryPage(applyHistoryFilter())" style="flex:1;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px;font-size:13px;background:#fff;color:var(--text);">
+              <option value="all">全部币种</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       <div class="card history-list-card">
         <div class="history-list-header">
@@ -2240,10 +2246,7 @@ function updateActivePage(routePath) {
 
 function goToTab(tabName) {
   const targetPath = TAB_ROUTE_MAP[tabName] || TAB_ROUTE_MAP.calc;
-  // Sync nationality to currentCountry when switching to calc tab
-  if (tabName === 'calc') {
-    syncCountryFromNationality();
-  }
+  // nationality 只影响结算币种显示，不改变目的国家——不再同步国家
   if (!appRouter) {
     updateActivePage(targetPath);
     if (tabName === 'history') renderHistoryPage(applyHistoryFilter());
@@ -2394,20 +2397,18 @@ function getExchangeRates(currencyCode = COUNTRY_META[currentCountry].currency) 
       return data.rates;
     })
     .catch(() => {
+      // Fallback: CNY is base, rates are currency-per-CNY (i.e. 1 CNY = X currency)
       const fallbackRates = {
-        CNY: currencyCode === 'CNY' ? 1 : (
-          {
-            USD: 7.25,
-            EUR: 7.88,
-            GBP: 9.32,
-            JPY: 0.0472,
-            KRW: 0.0053,
-            AUD: 4.73,
-            SGD: 5.37,
-            CHF: 8.63,
-            THB: 0.20
-          }[currencyCode] || 0
-        )
+        CNY: 1,
+        USD: 7.25,
+        EUR: 7.88,
+        GBP: 9.32,
+        JPY: 0.0472,
+        KRW: 0.0053,
+        AUD: 4.73,
+        SGD: 5.37,
+        CHF: 8.63,
+        THB: 4.8
       };
       apiRates[currencyCode] = fallbackRates;
       rateUpdatedAtMap[currencyCode] = '离线估算';
@@ -2423,7 +2424,8 @@ function setHistoryItemColor(item, currency) {
   const colorMap = {
     EUR: '#8E78FF', JPY: '#F59E0B', USD: '#10B981',
     GBP: '#3B82F6', KRW: '#EC4899', AUD: '#14B8A6',
-    SGD: '#F97316', CHF: '#6366F1'
+    SGD: '#F97316', CHF: '#6366F1', THB: '#F59E0B',
+    CNY: '#EF4444'
   };
   item.style.borderLeftColor = colorMap[currency] || '#8E78FF';
 }
@@ -2606,7 +2608,7 @@ function updateHistoryCurrencyFilterOptions(history = getHistory()) {
 function applyHistoryFilter() {
   const history = getHistory();
   const dateFilter = 'all'; // 日期筛选器已移除
-  const currencyFilter = 'all'; // 币种筛选器已移除
+  const currencyFilter = document.getElementById('historyCurrencyFilter')?.value || 'all';
   const categoryFilter = 'all'; // 分类筛选已移除
   const keyword = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
 
@@ -2651,6 +2653,7 @@ function renderHistoryPage(filteredHistory) {
   if (!list) return;
   const history = Array.isArray(filteredHistory) ? filteredHistory : applyHistoryFilter();
 
+  updateHistoryCurrencyFilterOptions(history);
   updateHistorySelectionUI();
 
   if (!history.length) {
