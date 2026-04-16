@@ -1779,12 +1779,17 @@ function convertCnyToUserCurrency(cnyAmount) {
   const meta = getUserDisplayCurrency();
   if (!meta) return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
   if (meta.currency === 'CNY') return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
+  // If display currency rate is 0 (not loaded yet) and actively being fetched, show loading
   const rate = getSourceToCnyRate(meta.currency);
   if (rate > 0) {
     const userAmount = cnyAmount / rate;
     return { amount: userAmount, symbol: meta.symbol, currency: meta.currency, formatted: formatAmount(userAmount, meta.currency, meta.symbol) };
   }
-  return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
+  // Rate is 0/missing: show error state instead of silent CNY fallback
+  if (activeRateRequestCurrency === meta.currency) {
+    return { amount: 0, symbol: meta.symbol, currency: meta.currency, formatted: '汇率获取中' };
+  }
+  return { amount: 0, symbol: meta.symbol, currency: meta.currency, formatted: '—' };
 }
 
 function getSourceToCnyRate(currencyCode) {
