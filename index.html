@@ -789,7 +789,9 @@
     border-radius: 28px 28px 0 0;
     overflow: hidden;
     display: flex; flex-direction: column;
-    transform: translateY(100%);
+    transform: translateY(100%) translateZ(0);
+    -webkit-overflow-scrolling: touch;
+    will-change: transform;
     transition: transform 0.3s ease;
   }
   .profile-edit-overlay.show .profile-edit-sheet { transform: translateY(0); }
@@ -2225,19 +2227,23 @@ function formatReferenceRate(rate, currencyCode) {
   return `${rate.toFixed(2)} ${currencyCode}`;
 }
 
-function getSaveExchangeNoteText(currencyCode, rate) {
-  const formattedRate = formatReferenceRate(rate, currencyCode);
+function getSaveExchangeNoteText(fromCurrency, toCurrency, rate) {
+  const formattedRate = formatReferenceRate(rate, toCurrency);
   if (UI_LANGUAGE === 'en') {
-    return `Calculated using reference exchange rate (Rate: 1 CNY = ${formattedRate})`;
+    return `Calculated using reference exchange rate (Rate: 1 ${fromCurrency} = ${formattedRate} ${toCurrency})`;
   }
-  return `按参考汇率计算（汇率：1 CNY = ${formattedRate}）`;
+  return `按参考汇率计算（汇率：1 ${fromCurrency} = ${formattedRate} ${toCurrency}）`;
 }
 
 function updateSaveExchangeNote() {
   const noteEl = document.getElementById('saveExchangeNote');
-  const currencyCode = COUNTRY_META[currentCountry]?.currency || 'CNY';
-  const cnyToSourceRate = getRateBetween('CNY', currencyCode);
-  noteEl.textContent = getSaveExchangeNoteText(currencyCode, cnyToSourceRate);
+  const destMeta = COUNTRY_META[currentCountry];
+  const natMeta = getUserDisplayCurrency();
+  const destCurrency = destMeta?.currency || 'CNY';
+  const natCurrency = natMeta?.currency || 'CNY';
+  // Show rate from nationality currency to destination currency (e.g. THB → EUR)
+  const natToDestRate = natCurrency === destCurrency ? 1 : getRateBetween(natCurrency, destCurrency);
+  noteEl.textContent = getSaveExchangeNoteText(natCurrency, destCurrency, natToDestRate);
 }
 
 function renderLucideIcons() {
@@ -2287,7 +2293,8 @@ function updateExchangeBanner() {
   const sourceEl = document.getElementById('heroRateSource');
   const badgeEl = document.getElementById('exchangeBadge');
   const meta = COUNTRY_META[currentCountry];
-  const rate = meta ? getSourceToCnyRate(meta.currency) : 0;
+  const natMeta = getUserDisplayCurrency();
+  const targetCurrency = natMeta ? natMeta.currency : 'CNY';
   const status = meta ? rateStatusMap[meta.currency] : '';
 
   if (!meta) {
@@ -2303,21 +2310,22 @@ function updateExchangeBanner() {
     return;
   }
 
-  if (!Number.isFinite(rate) || rate <= 0) {
-    heroEl.innerHTML = `1 ${meta.currency} = <strong>-- CNY</strong>`;
+  // Compute displayRate: destination → nationality currency (e.g. EUR → THB)
+  let displayRate = getSourceToCnyRate(meta.currency);
+  if (natMeta && natMeta.currency !== meta.currency) {
+    const natToCny = getSourceToCnyRate(natMeta.currency); // nationality → CNY
+    const destToCny = getSourceToCnyRate(meta.currency);   // destination → CNY
+    displayRate = natToCny > 0 ? destToCny / natToCny : 0; // destination → nationality
+  }
+
+  if (!Number.isFinite(displayRate) || displayRate <= 0) {
+    heroEl.innerHTML = `1 ${meta.currency} = <strong>-- ${targetCurrency}</strong>`;
     sourceEl.textContent = '汇率暂不可用';
     badgeEl.textContent = 'N/A';
     banner.style.display = 'flex';
     return;
   }
 
-  const natMeta = getUserDisplayCurrency();
-  const targetCurrency = natMeta ? natMeta.currency : 'CNY';
-  let displayRate = rate;
-  if (natMeta && natMeta.currency !== 'CNY') {
-    const userRate = getSourceToCnyRate(natMeta.currency);
-    if (userRate > 0) displayRate = rate / userRate;
-  }
   heroEl.innerHTML = `1 ${meta.currency} = <strong>${formatExchangeRate(displayRate)} ${targetCurrency}</strong>`;
   sourceEl.textContent = rateUpdatedAtMap[meta.currency]
     ? `汇率更新时间 ${rateUpdatedAtMap[meta.currency]}`
