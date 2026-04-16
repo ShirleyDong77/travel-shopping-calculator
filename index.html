@@ -2936,6 +2936,11 @@ updateTaxRateInputDisplay();
 buildNationalityOptions();
 renderLucideIcons();
 getExchangeRates();
+// Also fetch nationality currency rate on init if different from destination and not yet loaded
+const initNatMeta = getUserDisplayCurrency();
+if (initNatMeta && initNatMeta.currency !== 'CNY' && initNatMeta.currency !== COUNTRY_META[currentCountry]?.currency && !apiRates[initNatMeta.currency]) {
+  getExchangeRates(initNatMeta.currency);
+}
 renderHistory();
 renderProfile();
 calculate();
