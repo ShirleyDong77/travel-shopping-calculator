@@ -1265,7 +1265,7 @@
 
     <div class="result-card">
       <div class="result-final">
-        <div class="result-final-label">实付金额（CNY）</div>
+        <div class="result-final-label" id="finalPriceLabel">实付金额</div>
         <div class="result-final-amount">
           <span id="finalPrice">¥7,040</span>
         </div>
@@ -2320,7 +2320,13 @@ function calculate() {
   document.getElementById('originalPrice').textContent = formatAmount(data.price, data.sourceCurrency, data.sourceSymbol);
   document.getElementById('discountSaving').textContent = `-${formatAmount(data.discountSavingCny, 'CNY', '¥')}`;
   document.getElementById('taxRefund').textContent = `+${formatAmount(data.taxAmount * data.sourceToCny, 'CNY', '¥')}`;
-  document.getElementById('finalPrice').textContent = formatCny(data.finalCny);
+  const userCurrency = convertCnyToUserCurrency(data.finalCny);
+  document.getElementById('finalPrice').textContent = userCurrency.formatted;
+  const labelEl = document.getElementById('finalPriceLabel');
+  if (labelEl) {
+    const natMeta = getUserDisplayCurrency();
+    labelEl.textContent = natMeta ? `实付金额（${natMeta.currency}）` : '实付金额（CNY）';
+  }
   updateSaveExchangeNote();
 }
 
