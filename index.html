@@ -2227,6 +2227,11 @@ function updateSaveExchangeNote() {
 function renderLucideIcons() {
   if (window.lucide?.createIcons) {
     window.lucide.createIcons();
+  } else {
+    // Retry after CDN script loads
+    setTimeout(() => {
+      if (window.lucide?.createIcons) window.lucide.createIcons();
+    }, 800);
   }
 }
 
@@ -2545,6 +2550,7 @@ function buildCompactHistoryMarkup(history) {
         <div class="history-meta">
           <span class="category-badge ${cat}">${cat}</span>
           <span class="history-orig">${origAmt} ${getCountryDisplayName(item.country, item.countryName)}</span>
+          <span class="history-badge time">${item.savedAtTime}</span>
         </div>
       </div>
       <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item)).formatted}</div>
