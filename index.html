@@ -1322,11 +1322,7 @@
             <span class="history-page-title">历史记录</span>
             <input id="historySearchInput" type="text" placeholder="🔍 搜索商品名称" style="flex:1;min-width:0;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px;font-size:13px;background:#fff;">
           </div>
-          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
-            <select id="historyCurrencyFilter" onchange="renderHistoryPage(applyHistoryFilter())" style="flex:1;border:1.5px solid var(--border);border-radius:14px;padding:8px 12px;font-size:13px;background:#fff;color:var(--text);">
-              <option value="all">全部币种</option>
-            </select>
-          </div>
+
         </div>
       </div>
 
@@ -2078,6 +2074,20 @@ function renderProfileHeroStats(history = getHistory()) {
   if (dataCountries) dataCountries.textContent = countries;
   if (dataMonth) dataMonth.textContent = monthCount;
 }
+const CATEGORY_ICONS = {
+  '鞋包': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+  '美妆': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+  '服饰': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2 12 5.5 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>',
+  '首饰': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>',
+  '电子': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+  '食品': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
+  '玩具': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 16 21 8 15 8"/><path d="M21 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2"/><path d="M3 16h18v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2z"/></svg>',
+  '医药': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M9 2v6m6-6v6M9 12h6"/></svg>',
+  '美容': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5H18l-3.7 2.7L16 15l-4-3-4 3 1.7-4.8L6 7.5h4.5z"/></svg>',
+  '家居': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  '运动': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>',
+  '其他': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>'
+};
 function renderProfileChart(history = getHistory()) {
   const section = document.getElementById('profileChartSection');
   if (!section) return;
@@ -2089,6 +2099,7 @@ function renderProfileChart(history = getHistory()) {
   const total = history.length;
   const colors = ['#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#EF4444','#6366F1','#14B8A6','#F97316','#84CC16'];
   const cx = 50, cy = 50, outerR = 42, innerR = 24;
+  let paths = '';
   let legendItems = '';
   let startAngle = -90;
   let endAngle = -90;
@@ -2097,7 +2108,7 @@ function renderProfileChart(history = getHistory()) {
     endAngle = startAngle + pct * 360;
     const color = colors[i % colors.length];
     const pctStr = (pct * 100).toFixed(0);
-    legendItems += `<div class="profile-pie-legend-item"><span class="profile-pie-dot" style="background:${color}"></span>${cat} ${count}次(${pctStr}%)</div>`;
+    legendItems += `<div class="profile-pie-legend-item"><span class="profile-pie-dot" style="background:${color}"></span><span style="display:inline-flex;align-items:center;gap:3px;">${CATEGORY_ICONS[cat] || ''}${cat}</span> ${count}次(${pctStr}%)</div>`;
     paths += buildDonutSlice(cx, cy, outerR, innerR, startAngle, endAngle, color);
     startAngle = endAngle;
   });
