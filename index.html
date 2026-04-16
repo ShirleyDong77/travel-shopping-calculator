@@ -2228,11 +2228,11 @@ function formatReferenceRate(rate, currencyCode) {
 }
 
 function getSaveExchangeNoteText(fromCurrency, toCurrency, rate) {
-  const formattedRate = formatReferenceRate(rate, toCurrency);
+  const formattedRate = formatReferenceRate(rate, toCurrency); // already includes currencyCode
   if (UI_LANGUAGE === 'en') {
-    return `Calculated using reference exchange rate (Rate: 1 ${fromCurrency} = ${formattedRate} ${toCurrency})`;
+    return `Calculated using reference exchange rate (Rate: 1 ${fromCurrency} = ${formattedRate})`;
   }
-  return `按参考汇率计算（汇率：1 ${fromCurrency} = ${formattedRate} ${toCurrency}）`;
+  return `按参考汇率计算（汇率：1 ${fromCurrency} = ${formattedRate}）`;
 }
 
 function updateSaveExchangeNote() {
