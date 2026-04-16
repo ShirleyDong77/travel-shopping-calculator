@@ -586,21 +586,6 @@
     cursor: not-allowed;
     box-shadow: none;
   }
-  .history-filter-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  .history-filter-row select {
-    flex: 1;
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    padding: 8px 12px;
-    font-size: 13px;
-    background: #fff;
-    color: var(--text-900);
-    appearance: auto;
-  }
   .history-list-header {
     display: flex;
     gap: 8px;
@@ -2625,29 +2610,11 @@ function getDateGroupLabel(timestamp) {
   return '更早';
 }
 
-function updateHistoryCurrencyFilterOptions(history = getHistory()) {
-  const filter = document.getElementById('historyCurrencyFilter');
-  if (!filter) return;
-
-  const currentValue = filter.value || 'all';
-  const baseCurrencies = ['JPY', 'USD', 'EUR', 'CNY', 'GBP', 'KRW', 'THB', 'AUD', 'SGD', 'CHF'];
-  const historyCurrencies = history
-    .map(item => item.currency || item.sourceCurrency)
-    .filter(Boolean);
-  const optionValues = ['all', ...Array.from(new Set([...baseCurrencies, ...historyCurrencies])).sort()];
-
-  const CURRENCY_NAMES = { JPY:'日元', USD:'美元', EUR:'欧元', CNY:'人民币', GBP:'英镑', KRW:'韩元', THB:'泰铢', AUD:'澳元', SGD:'新加坡元', CHF:'瑞士法郎' };
-  filter.innerHTML = optionValues.map(value => {
-    const label = value === 'all' ? '全部' : (CURRENCY_NAMES[value] || value);
-    return `<option value="${value}">${label}</option>`;
-  }).join('');
-  filter.value = optionValues.includes(currentValue) ? currentValue : 'all';
-}
 
 function applyHistoryFilter() {
   const history = getHistory();
   const dateFilter = 'all'; // 日期筛选器已移除
-  const currencyFilter = document.getElementById('historyCurrencyFilter')?.value || 'all';
+  const currencyFilter = 'all'; // 币种筛选已移除
   const categoryFilter = 'all'; // 分类筛选已移除
   const keyword = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
 
@@ -2692,7 +2659,6 @@ function renderHistoryPage(filteredHistory) {
   if (!list) return;
   const history = Array.isArray(filteredHistory) ? filteredHistory : applyHistoryFilter();
 
-  updateHistoryCurrencyFilterOptions(history);
   updateHistorySelectionUI();
 
   if (!history.length) {
@@ -2774,7 +2740,6 @@ function deleteSelectedHistory() {
 
 function renderHistory() {
   const history = getHistory();
-  updateHistoryCurrencyFilterOptions(history);
   const latestFiveHistory = history.slice(0, 5);
   paintHistoryList('calcHistoryList', latestFiveHistory);
   renderHistoryPage(applyHistoryFilter());
