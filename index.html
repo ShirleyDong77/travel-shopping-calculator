@@ -2311,7 +2311,14 @@ function updateExchangeBanner() {
     return;
   }
 
-  heroEl.innerHTML = `1 ${meta.currency} = <strong>${formatExchangeRate(rate)} CNY</strong>`;
+  const natMeta = getUserDisplayCurrency();
+  const targetCurrency = natMeta ? natMeta.currency : 'CNY';
+  let displayRate = rate;
+  if (natMeta && natMeta.currency !== 'CNY') {
+    const userRate = getSourceToCnyRate(natMeta.currency);
+    if (userRate > 0) displayRate = rate / userRate;
+  }
+  heroEl.innerHTML = `1 ${meta.currency} = <strong>${formatExchangeRate(displayRate)} ${targetCurrency}</strong>`;
   sourceEl.textContent = rateUpdatedAtMap[meta.currency]
     ? `汇率更新时间 ${rateUpdatedAtMap[meta.currency]}`
     : '汇率更新时间 —';
@@ -2353,14 +2360,16 @@ function calculate() {
   const data = getCalculationData();
 
   document.getElementById('originalPrice').textContent = formatAmount(data.price, data.sourceCurrency, data.sourceSymbol);
-  document.getElementById('discountSaving').textContent = `-${formatAmount(data.discountSavingCny, 'CNY', '¥')}`;
-  document.getElementById('taxRefund').textContent = `+${formatAmount(data.taxAmount * data.sourceToCny, 'CNY', '¥')}`;
+  const discountUser = convertCnyToUserCurrency(data.discountSavingCny);
+  const taxUser = convertCnyToUserCurrency(data.taxAmount * data.sourceToCny);
+  document.getElementById('discountSaving').textContent = `-${discountUser.formatted}`;
+  document.getElementById('taxRefund').textContent = `+${taxUser.formatted}`;
   const userCurrency = convertCnyToUserCurrency(data.finalCny);
   document.getElementById('finalPrice').textContent = userCurrency.formatted;
   const labelEl = document.getElementById('finalPriceLabel');
   if (labelEl) {
     const natMeta = getUserDisplayCurrency();
-    labelEl.textContent = natMeta ? `实付金额（${natMeta.currency}）` : '实付金额（CNY）';
+    labelEl.textContent = natMeta ? `实付金额（${natMeta.symbol}）` : '实付金额（¥）';
   }
   updateSaveExchangeNote();
 }
