@@ -1746,6 +1746,17 @@ function getRateBetween(fromCurrency, toCurrency) {
   if (fromCurrency === toCurrency) return 1;
   if (apiRates[fromCurrency]?.[toCurrency]) return apiRates[fromCurrency][toCurrency];
   if (apiRates[toCurrency]?.[fromCurrency]) return 1 / apiRates[toCurrency][fromCurrency];
+  // Fallback: try via destination country's currency (loaded in apiRates)
+  const destCurrency = COUNTRY_META[currentCountry]?.currency;
+  if (destCurrency && fromCurrency !== destCurrency && toCurrency !== destCurrency) {
+    const viaDest = apiRates[fromCurrency]?.[destCurrency];
+    const toDestFromCny = apiRates[toCurrency]?.[destCurrency];
+    const cnyFromDest = apiRates[destCurrency]?.CNY;
+    // viaDest/toDestFromCny gives from/to (e.g. THB/JPY), then * CNY/JPY gives from/CNY
+    if (viaDest && toDestFromCny && cnyFromDest) {
+      return (viaDest / toDestFromCny) * cnyFromDest;
+    }
+  }
   return 0;
 }
 function getUserDisplayCurrency() {
@@ -2823,17 +2834,14 @@ document.getElementById('country').addEventListener('change', function() {
 
 // Listen for profile nationality changes
 window.addEventListener('nationalityChanged', function(e) {
-  const nationality = e.detail.nationality;
-  if (nationality && COUNTRY_META[nationality]) {
-    currentCountry = nationality;
-    const countrySelect = document.getElementById('country');
-    if (countrySelect) countrySelect.value = nationality;
-    lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
-    updateTaxRateInputDisplay();
-    calculate();
-    updateExchangeBanner();
-    getExchangeRates(COUNTRY_META[currentCountry].currency);
+  // nationality 变更只影响显示币种，不改变目的国家
+  // 如果国籍货币汇率未加载，先获取
+  const natMeta = getUserDisplayCurrency();
+  if (natMeta && natMeta.currency !== 'CNY' && !apiRates[natMeta.currency]) {
+    getExchangeRates(natMeta.currency);
   }
+  calculate();
+  updateSaveExchangeNote();
 });
 
 function syncCountryFromNationality() {
