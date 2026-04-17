@@ -2808,7 +2808,7 @@ function openHistoryDetail(recordId) {
 
   const details = [
     { label: '商品名称', value: record.itemName },
-    { label: '购买地点', value: record.countryName },
+    { label: '购买地点', value: `${record.countryName}${COUNTRY_META[record.country]?.emoji || ''}` },
     { label: '保存时间', value: record.savedAtText },
     { label: '原价', value: formatAmount(record.originalPrice, record.sourceCurrency, record.sourceSymbol) },
     { label: '折扣', value: record.discountPct > 0 ? `省${record.discountPct}%` : '无折扣' },
