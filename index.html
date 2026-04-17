@@ -1174,6 +1174,7 @@
     <div class="form-group">
       <label for="country">目的国家 / 当地货币</label>
       <select id="country">
+        <option value="">选择目的国家</option>
         <option value="fr">法国（€ 退12%）</option>
         <option value="it">意大利（€ 退12%）</option>
         <option value="de">德国（€ 退12%）</option>
@@ -1215,7 +1216,7 @@
     <div class="form-row">
       <div class="form-group">
         <label for="price">当地价格</label>
-        <input type="number" id="price" placeholder="输入价格" value="1000" min="0" step="0.01">
+        <input type="number" id="price" placeholder="输入价格" value="" min="0" step="0.01">
       </div>
       <div class="form-group">
         <label for="taxRateInput">退税率（%）</label>
@@ -1487,13 +1488,13 @@ const COUNTRY_META = {
 };
 
 let currentDiscount = 0;
-let currentCountry = 'fr';
+let currentCountry = '';
 let isTaxFree = false;
 let apiRates = {};
 let rateUpdatedAtMap = {};
 let rateStatusMap = {};
 let currentHistory = [];
-let lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+let lastEditableTaxRate = COUNTRY_META[currentCountry]?.taxRate * 100 || 0;
 let isCustomDiscountActive = false;
 let activeRateRequestCurrency = '';
 let appRouter = null;
@@ -1582,7 +1583,7 @@ function normalizeTaxRateInput() {
   const parsed = parseFloat(input.value);
   lastEditableTaxRate = Number.isFinite(parsed)
     ? Math.min(Math.max(parsed, 0), 100)
-    : COUNTRY_META[currentCountry].taxRate * 100;
+    : COUNTRY_META[currentCountry]?.taxRate * 100 || 0;
   updateTaxRateInputDisplay();
   calculate();
 }
@@ -2323,7 +2324,25 @@ function updateExchangeBanner() {
 }
 
 function getCalculationData() {
-  const meta = COUNTRY_META[currentCountry];
+  const activeCountry = document.getElementById('country')?.value || currentCountry;
+  if (!activeCountry || !COUNTRY_META[activeCountry]) {
+    return {
+      itemName: '',
+      meta: null,
+      sourceCurrency: '',
+      sourceSymbol: '',
+      price: 0,
+      discounted: 0,
+      taxAmount: 0,
+      discountSaving: 0,
+      discountSavingCny: 0,
+      afterTax: 0,
+      finalCny: 0,
+      sourceToCny: 0,
+      customTaxRate: 0
+    };
+  }
+  const meta = COUNTRY_META[activeCountry];
   const sourceCurrency = meta.currency;
   const sourceSymbol = meta.symbol;
   const price = Math.max(parseFloat(document.getElementById('price').value) || 0, 0);
@@ -2392,7 +2411,7 @@ function writeCache(currencyCode, rates, updatedAt) {
   localStorage.setItem(EXCHANGE_CACHE_KEY, JSON.stringify(store));
 }
 
-function getExchangeRates(currencyCode = COUNTRY_META[currentCountry].currency) {
+function getExchangeRates(currencyCode = COUNTRY_META[currentCountry]?.currency) {
   const cached = readCache(currencyCode);
   if (cached?.rates) {
     apiRates[currencyCode] = cached.rates;
@@ -2405,7 +2424,7 @@ function getExchangeRates(currencyCode = COUNTRY_META[currentCountry].currency) 
 
   activeRateRequestCurrency = currencyCode;
   rateStatusMap[currencyCode] = 'loading';
-  if (COUNTRY_META[currentCountry].currency === currencyCode) {
+  if (COUNTRY_META[currentCountry]?.currency === currencyCode) {
     updateExchangeBanner();
   }
   return fetch(`${EXCHANGE_API_BASE_URL}${currencyCode}`)
@@ -2512,7 +2531,7 @@ function resetCalculatorForm() {
   document.getElementById('price').value = '';
   document.getElementById('taxFreeToggle').checked = false;
   isTaxFree = false;
-  lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+  lastEditableTaxRate = COUNTRY_META[currentCountry]?.taxRate * 100 || 0;
   updateTaxRateInputDisplay();
   document.getElementById('customDiscountInput').value = '';
   document.getElementById('customDiscountWrap').classList.remove('discount-input-active');
@@ -2836,11 +2855,13 @@ document.getElementById('historySearchInput').addEventListener('input', () => re
 
 document.getElementById('country').addEventListener('change', function() {
   currentCountry = this.value;
-  lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
+  lastEditableTaxRate = COUNTRY_META[currentCountry]?.taxRate * 100 || 0;
   updateTaxRateInputDisplay();
   calculate();
   updateExchangeBanner();
-  getExchangeRates(COUNTRY_META[currentCountry].currency);
+  if (currentCountry && COUNTRY_META[currentCountry]) {
+    getExchangeRates(COUNTRY_META[currentCountry].currency);
+  }
 });
 
 // Listen for profile nationality changes
@@ -2859,13 +2880,15 @@ function syncCountryFromNationality() {
   const settings = getProfileSettings();
   const nationality = settings.nationality;
   if (nationality && COUNTRY_META[nationality]) {
-    currentCountry = nationality;
+    // 只更新显示的退税额度，不改变目的国家
     const countrySelect = document.getElementById('country');
-    if (countrySelect) countrySelect.value = nationality;
-    lastEditableTaxRate = COUNTRY_META[currentCountry].taxRate * 100;
-    updateTaxRateInputDisplay();
-    calculate();
-    updateExchangeBanner();
+    const activeCountry = countrySelect?.value || currentCountry;
+    if (activeCountry && COUNTRY_META[activeCountry]) {
+      lastEditableTaxRate = COUNTRY_META[activeCountry].taxRate * 100;
+      updateTaxRateInputDisplay();
+      calculate();
+      updateExchangeBanner();
+    }
   }
 }
 
