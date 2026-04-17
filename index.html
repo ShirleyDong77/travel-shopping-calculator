@@ -1685,7 +1685,7 @@ function normalizeHistory(history) {
       const timestamp = Number(item.timestamp || item.savedAt || item.id || 0);
       const currency = item.currency || item.sourceCurrency || 'CNY';
       const originalPrice = Number(item.originalPrice ?? item.price ?? 0);
-      const finalCny = Number(item.finalCny ?? item.cnyAmount ?? 0);
+      const finalCny = Number(item.finalCny != null ? item.finalCny : (item.cnyAmount != null ? item.cnyAmount : 0));
       const taxRate = Number(item.taxRate ?? 0);
       const discountPct = Number(item.discountPct ?? item.discount ?? 0);
       const exchangeRate = Number(item.exchangeRate ?? (originalPrice > 0 ? finalCny / originalPrice : 0));
@@ -1788,8 +1788,8 @@ function getSourceToCnyRate(currencyCode) {
 }
 
 function getHistoryItemFinalCny(item) {
-  const finalCny = Number(item.finalCny ?? item.cnyAmount);
-  if (Number.isFinite(finalCny) && finalCny > 0) return finalCny;
+  const finalCny = Number(item.finalCny != null ? item.finalCny : (item.cnyAmount != null ? item.cnyAmount : undefined));
+  if (Number.isFinite(finalCny) && finalCny >= 0) return finalCny;
 
   const exchangeRate = Number(item.exchangeRate);
   if (Number.isFinite(exchangeRate) && exchangeRate > 0) {
