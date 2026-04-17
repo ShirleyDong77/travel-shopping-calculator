@@ -1762,8 +1762,11 @@ function getCountryDisplayName(countryCode, countryName) {
   return countryName || '未知';
 }
 
-function convertCnyToUserCurrency(cnyAmount) {
-  const meta = getUserDisplayCurrency();
+function convertCnyToUserCurrency(cnyAmount, nationalityOverride) {
+  // nationalityOverride: use saved nationality (from history item) instead of current setting
+  const settings = getProfileSettings();
+  const nationality = nationalityOverride || settings.nationality || '';
+  const meta = nationality && COUNTRY_META[nationality] ? COUNTRY_META[nationality] : null;
   if (!meta) return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
   if (meta.currency === 'CNY') return { amount: cnyAmount, symbol: '¥', currency: 'CNY', formatted: formatCny(cnyAmount) };
   // If display currency rate is 0 (not loaded yet) and actively being fetched, show loading
@@ -2492,6 +2495,7 @@ function saveRecord() {
     cnyAmount: data.finalCny,
     finalCny: data.finalCny,
     discountSavingCny: data.discountSavingCny,
+    savedNationality: getProfileSettings().nationality || '',
     savedAt,
     savedAtText: formatDateTime(savedAt),
     savedAtTime: formatHistoryTime(savedAt)
@@ -2542,7 +2546,7 @@ function buildHistoryMarkup(history) {
                   <span class="history-badge time">${item.savedAtTime}</span>
                 </div>
               </div>
-              <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item)).formatted}</div>
+              <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item), item.savedNationality).formatted}</div>
             </div>
           </div>
           <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
@@ -2571,7 +2575,7 @@ function buildCompactHistoryMarkup(history) {
           <span class="history-badge time">${item.savedAtTime}</span>
         </div>
       </div>
-      <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item)).formatted}</div>
+      <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item), item.savedNationality).formatted}</div>
     </div>`;
   }).join('');
 }
