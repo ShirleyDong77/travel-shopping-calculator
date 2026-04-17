@@ -1589,7 +1589,7 @@ function normalizeTaxRateInput() {
 }
 
 function getDecimals(currencyCode) {
-  return ['JPY', 'KRW'].includes(currencyCode) ? 0 : 1;
+  return ['JPY', 'KRW'].includes(currencyCode) ? 0 : 2;
 }
 
 function formatAmount(amount, currencyCode, symbolOverride) {
@@ -2374,18 +2374,16 @@ function getCalculationData() {
 function calculate() {
   const data = getCalculationData();
 
-  const natMeta = getUserDisplayCurrency();
-  const sourceEmoji = data.meta?.emoji || '';
-  document.getElementById('originalPrice').textContent = formatAmount(data.price, data.sourceCurrency, data.sourceSymbol) + sourceEmoji;
+  document.getElementById('originalPrice').textContent = formatAmount(data.price, data.sourceCurrency, data.sourceSymbol);
   const discountUser = convertCnyToUserCurrency(data.discountSavingCny);
   const taxUser = convertCnyToUserCurrency(data.taxAmount * data.sourceToCny);
   document.getElementById('discountSaving').textContent = `-${discountUser.formatted}`;
   document.getElementById('taxRefund').textContent = `+${taxUser.formatted}`;
   const userCurrency = convertCnyToUserCurrency(data.finalCny);
-  const userEmoji = natMeta?.emoji || '';
-  document.getElementById('finalPrice').textContent = userCurrency.formatted + userEmoji;
+  document.getElementById('finalPrice').textContent = userCurrency.formatted;
   const labelEl = document.getElementById('finalPriceLabel');
   if (labelEl) {
+    const natMeta = getUserDisplayCurrency();
     labelEl.textContent = natMeta ? `实付金额（${natMeta.symbol}）` : '实付金额（¥）';
   }
   updateSaveExchangeNote();
