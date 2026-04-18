@@ -2580,7 +2580,7 @@ function buildCompactHistoryMarkup(history) {
     const cnyAmt = formatCny(getHistoryItemFinalCny(item));
     const origAmt = formatAmount(item.price, item.sourceCurrency, item.sourceSymbol);
     return `
-    <div class="history-item-wrap">
+    <div class="history-item-wrap" ontouchstart="handleSwipeStart(event,this)" ontouchend="handleSwipeEnd(event,this)">
       <div class="history-item-content">
         <div class="history-item compact" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="handleHistoryItemTap(this,${item.id})">
           <div class="history-left">
@@ -2594,6 +2594,7 @@ function buildCompactHistoryMarkup(history) {
           <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item), item.savedNationality).formatted}</div>
         </div>
       </div>
+      <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
     </div>`;
   }).join('');
 }
