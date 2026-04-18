@@ -2561,7 +2561,7 @@ function buildHistoryMarkup(history) {
                 <div class="history-name">${escapeHtml(item.itemName)}</div>
                 <div class="history-meta">
                   <span class="category-badge ${cat}">${cat}</span>
-                  <span class="history-orig">${origAmt} ${getCountryDisplayName(item.country, item.countryName)}</span>
+                  <span class="history-orig">${origAmt} ${COUNTRY_META[item.country]?.emoji || ''}${item.countryName}</span>
                   <span class="history-badge time">${item.savedAtTime}</span>
                 </div>
               </div>
@@ -2590,7 +2590,7 @@ function buildCompactHistoryMarkup(history) {
         <div class="history-name">${escapeHtml(item.itemName)}</div>
         <div class="history-meta">
           <span class="category-badge ${cat}">${cat}</span>
-          <span class="history-orig">${origAmt} ${getCountryDisplayName(item.country, item.countryName)}</span>
+          <span class="history-orig">${origAmt} ${COUNTRY_META[item.country]?.emoji || ''}${item.countryName}</span>
           <span class="history-badge time">${item.savedAtTime}</span>
         </div>
       </div>
