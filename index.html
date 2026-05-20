@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>境外算价</title>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
 <style>
   :root {
   --lucide-color: #7C3AED;
@@ -2704,22 +2705,32 @@ function renderHistoryPage(filteredHistory) {
   list.innerHTML = groups.map(group => `
     <div class="history-date-group">
       <div class="history-date-label">${group.label}</div>
-      ${group.items.map(item => `
-        <div class="history-item selectable ${historyMultiSelectMode ? 'multi-select' : ''} ${historyCheckedIds.has(item.timestamp) ? 'checked' : ''}" data-timestamp="${item.timestamp}" onclick="handleHistoryItemClick(${item.timestamp})">
-          <button class="history-checkbox" type="button" aria-label="选择${escapeHtml(item.itemName)}" onclick="toggleHistoryItemCheck(${item.timestamp}, event)">
-            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M5 10.5 8.2 13.7 15 6.9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-          </button>
-          <div class="history-left">
-            <div class="history-name">${escapeHtml(item.itemName)}</div>
-            <div class="history-meta">
-              <span>${formatHistoryAmountSummary(item)}</span>
-              <span class="history-badge time">${item.savedAtTime}</span>
+      ${group.items.map(item => {
+        const cat = getCategory(item.itemName);
+        const origAmt = formatAmount(item.price, item.sourceCurrency, item.sourceSymbol);
+        return `
+        <div class="history-item-wrap" ontouchstart="handleSwipeStart(event,this)" ontouchend="handleSwipeEnd(event,this)">
+          <div class="history-item-content">
+            <div class="history-item selectable ${historyMultiSelectMode ? 'multi-select' : ''} ${historyCheckedIds.has(item.timestamp) ? 'checked' : ''}" data-timestamp="${item.timestamp}" data-currency="${escapeHtml(item.sourceCurrency)}" onclick="handleHistoryItemClick(${item.timestamp})">
+              <button class="history-checkbox" type="button" aria-label="选择${escapeHtml(item.itemName)}" onclick="toggleHistoryItemCheck(${item.timestamp}, event)">
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M5 10.5 8.2 13.7 15 6.9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <div class="history-left">
+                <div class="history-name">${escapeHtml(item.itemName)}</div>
+                <div class="history-meta">
+                  <span class="category-badge ${cat}">${cat}</span>
+                  <span class="history-orig">${origAmt} ${COUNTRY_META[item.country]?.emoji || ''}${item.countryName}</span>
+                  <span class="history-badge time">${item.savedAtTime}</span>
+                </div>
+              </div>
+              <div class="history-final">${convertCnyToUserCurrency(getHistoryItemFinalCny(item), item.savedNationality).formatted}</div>
             </div>
           </div>
-        </div>
-      `).join('')}
+          <div class="history-item-delete-btn" onclick="event.stopPropagation(); confirmDeleteOne(${item.id})">删除</div>
+        </div>`;
+      }).join('')}
     </div>
   `).join('');
 
